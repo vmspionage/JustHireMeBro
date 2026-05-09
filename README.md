@@ -15,7 +15,7 @@ Every run is different. Cards are drawn from weighted pools covering job posting
 
 - **Procedural card engine** — 80+ unique cards across 8 categories (job, recruiter, post, network, resume, investigate, rest, event)
 - **7 playable origins** — each with unique starting stats and passive perks
-- **Day-by-day roguelite loop** — manage energy, money, hope, credibility, and burnout across a ticking clock
+- **Day-by-day card game loop** — manage energy, money, hope, credibility, and burnout across a ticking clock
 - **Micro-events** — boss fights, CAPTCHAs, video interviews, personality assessments, and more
 - **32 achievements** — for the completionists (and the deeply troubled)
 - **18 endings** — 9 victory paths and 9 loss paths, each with satirical HR-style review letters
