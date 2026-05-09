@@ -2988,7 +2988,8 @@ profileViewed: [
         const diff = s[key] - (prevS[key] || 0);
         if (diff !== 0) {
           const icons = {rent:'💰',hope:'💡',burnout:'🔥',credibility:'🎯',clout:'⭐',atsFavor:'🤖',robotSuspicion:'👁️',humanContact:'🤝',energy:'⚡',scamEvidence:'🚩',ghostEvidence:'👻',scamsFell:'🛡️'};
-          changesHTML.push(`<span class="stat-change ${diff>0?'up':'down'}">${icons[key]||''} ${key}: ${diff>0?'+':''}${diff}</span>`);
+          const names = {rent:'Rent Money',hope:'Hope',burnout:'Burnout',credibility:'Credibility',clout:'Clout',atsFavor:'Bot Aura',robotSuspicion:'Robot Suspicion',humanContact:'Human Contact',energy:'Energy',scamEvidence:'Scam Evidence',ghostEvidence:'Ghost Evidence',scamsFell:'Scams Felled'};
+          changesHTML.push(`<span class="stat-change ${diff>0?'up':'down'}">${icons[key]||''} ${names[key]||key}: ${diff>0?'+':''}${diff}</span>`);
         }
       }
     }
