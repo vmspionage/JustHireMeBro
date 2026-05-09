@@ -243,7 +243,7 @@ body{font-family:var(--font-ui);background:var(--bg);color:var(--text);min-heigh
 .stat-change{display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .5rem;border-radius:3px;font-size:.8rem;font-family:var(--font-mono)}
 .stat-change.up{background:#e8f5e8;color:#2a6a2a}
 .stat-change.down{background:#f5e8e8;color:var(--red)}
-.modal-result{max-width:440px}
+.modal-result,.modal-followup{max-width:440px}
 .result-response{font-family:var(--font-display);font-size:1.15rem;font-weight:700;color:var(--navy);text-align:center;margin-bottom:1.25rem;line-height:1.5;padding:0 .5rem}
 .result-stat-changes{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-bottom:.5rem}
 .result-stat{display:inline-flex;align-items:center;gap:.4rem;padding:.4rem .8rem;border-radius:var(--radius);font-size:.85rem;font-family:var(--font-mono);font-weight:600;background:var(--card-bg);border:1px solid var(--card-border)}
@@ -430,6 +430,18 @@ body{font-family:var(--font-ui);background:var(--bg);color:var(--text);min-heigh
       <div id="result-stat-changes" class="result-stat-changes"></div>
     </div>
     <div class="modal-actions"><button class="title-btn" id="result-continue" aria-label="Got it">Got it</button></div>
+  </div>
+</div>
+
+
+<div class="modal-overlay" id="followup-modal">
+  <div class="modal modal-followup">
+    <div class="modal-title" id="followup-title">📧 Follow-Up</div>
+    <div class="modal-body">
+      <div id="followup-response" class="result-response"></div>
+      <div id="followup-stat-changes" class="result-stat-changes"></div>
+    </div>
+    <div class="modal-actions"><button class="title-btn" id="followup-continue" aria-label="Got it">Got it</button></div>
   </div>
 </div>
 
@@ -1820,17 +1832,22 @@ const Engine = (() => {
   function followUpLead(leadId) {
     const g = _g;
     const lead = g.run.activeLeads.find(l => l.id === leadId);
-    if (!lead || g.run.energy < 1) return;
+    if (!lead || g.run.energy < 1) return null;
     g.run.energy--;
+    const beforeStats = JSON.parse(JSON.stringify(g.run.stats));
 
     if (_rng() < 0.4) {
       lead.daysSinceUpdate = 0;
       lead.stageIdx++;
       const names = ['Recruiter Screen','Video Interview','Take-Home','Panel Interview','Final Interview'];
-      g.run.log.push({day:g.run.day, text:`Followed up with ${lead.company}. They responded: "${names[Math.min(lead.stageIdx-1, names.length-1)] || 'We\'re still reviewing'}"!`});
+      const stageName = names[Math.min(lead.stageIdx-1, names.length-1)] || "We're still reviewing";
+      g.run.log.push({day:g.run.day, text:`Followed up with ${lead.company}. They responded: "${stageName}"!`});
+      return { title:'📧 Good Response!', response:`Followed up with ${lead.company}. They responded: "${stageName}"!`, stats:[] };
     } else {
-      g.run.log.push({day:g.run.day, text:`Followed up with ${lead.company}. They saw your message. Then ghosted again.`});
       g.run.stats.hope = DATA.clamp((g.run.stats.hope||0) - 3, 0, 100);
+      g.run.log.push({day:g.run.day, text:`Followed up with ${lead.company}. They saw your message. Then ghosted again.`});
+      const deltas = computeStatDeltas(beforeStats, g.run.stats);
+      return { title:'📭 Ghosted Again', response:`Followed up with ${lead.company}. They saw your message. Then ghosted again.`, stats:deltas };
     }
   }
 
@@ -2827,6 +2844,21 @@ profileViewed: [
     };
   }
 
+  function showFollowUpModal(result) {
+    const modal = document.getElementById('followup-modal');
+    document.getElementById('followup-title').textContent = result.title;
+    document.getElementById('followup-response').textContent = result.response;
+    document.getElementById('followup-stat-changes').innerHTML = (result.stats||[]).map(d => {
+      const sign = d.delta > 0 ? '+' : '';
+      const cls = d.delta > 0 ? 'positive' : 'negative';
+      const arrow = d.delta > 0 ? '↑' : '↓';
+      return `<div class="result-stat ${cls}">${d.icon} ${d.display}<span class="delta ${cls}">${sign}${d.delta} ${arrow}</span></div>`;
+    }).join('');
+    modal.classList.add('active');
+    setTimeout(() => document.getElementById('followup-continue').focus(), 100);
+    document.getElementById('followup-continue').onclick = () => modal.classList.remove('active');
+  }
+
   function renderLeads() {
     const g = E.state;
     const list = document.getElementById('leads-list');
@@ -2865,11 +2897,12 @@ profileViewed: [
     /* Follow-up handlers */
     list.querySelectorAll('.lead-followup-btn:not(:disabled)').forEach(btn => {
       btn.onclick = () => {
-        E.followUpLead(btn.dataset.lead);
+        const result = E.followUpLead(btn.dataset.lead);
         renderLeads();
         renderStatBar();
         renderRunLog();
         checkDayEnd();
+        if (result) showFollowUpModal(result);
       };
     });
 
