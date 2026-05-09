@@ -30,9 +30,9 @@ Every run is different. Cards are drawn from weighted pools covering job posting
 | Credibility | Your "resume score" — affects lead quality and offer chances |
 | Burnout | Stacks from overwork — game over at 10 |
 | Money | Rent is due every few days — go broke and it's over |
-| ATS Favor | How much the automated systems like you |
+| Bot Aura | How much the automated systems like you |
 | Robot Suspicion | AI screening flags you — too high and you're blacklisted |
-| Buzzwords | Keyword stack that boosts ATS Favor |
+| Buzzwords | Keyword stack that boosts Bot Aura |
 | Clout | Social capital from networking — unlocks special paths |
 
 ## How to Play

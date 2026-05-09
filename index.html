@@ -590,7 +590,7 @@ const DATA = (() => {
     "Today on Linkfluence: someone discovered empathy and turned it into a carousel.",
     "A CEO has announced that sleep is a legacy dependency.",
     "Recruiters are circling back by moving forward.",
-    "The ATS has rejected itself for insufficient keyword alignment.",
+    "The Bot Aura has rejected itself for insufficient keyword alignment.",
     "A startup is hiring a founding intern to disrupt compensation.",
     "The market demands AI skills. The robot rejects your AI résumé.",
     "A job post has been reposted so many times it gained sentience.",
@@ -645,9 +645,9 @@ const DATA = (() => {
       mk({id:'foreign-rec',title:'Foreign Recruiter for a US Role',category:'job',flavor:'"Hello dear, are you available for opportunity?" No salary. No company. Just vibes.',cost:{energy:1},redFlags:4,ghostChance:.6,scamChance:.2,weight:.6,effects:[{type:'lead',real:.15,ats:20,gm:.15,sm:.25}],buttons:[{label:'Respond Politely',cost:{energy:1},effect:'apply'},{label:'Report Scam',cost:{energy:0},effect:'reportScam'},{label:'Ignore',cost:{energy:0},effect:'discard'}],pay:'"Competitive (in your currency)"'}),
       mk({id:'pays-tokens',title:'The Job That Pays in Tokens',category:'job',flavor:'Base: 500 $HIVE tokens. Vesting: 4 years. Valuation: "soon."',cost:{energy:1},redFlags:4,ghostChance:.7,weight:.4,effects:[{type:'lead',real:.1,ats:15,gm:.2,sm:.2,founder:1}],buttons:[{label:'Accept Tokens',cost:{energy:1},effect:'applyTokens'},{label:'Ask for USD',cost:{energy:1},effect:'askUSD'},{label:'Ignore',cost:{energy:0},effect:'discard'}],pay:'500 $HIVE (worth... vibes?)'}),
       mk({id:'hvac-company',title:'A Real, Boring, Mid-Sized B2B Company',category:'job',flavor:'They make accounting software for HVAC contractors. The benefits are genuinely good. The dream.',cost:{energy:1},redFlags:0,ghostChance:.1,weight:.3,effects:[{type:'lead',real:.9,ats:20,gm:-.3,sm:0,offer:.15}],buttons:[{label:'Apply (This is the one)',cost:{energy:1},effect:'applyCareful'},{label:'Investigate',cost:{energy:0},effect:'investigate'},{label:'Ignore',cost:{energy:0},effect:'discard'}],pay:'$70k–$95k + dental + 401k'}),
-      mk({id:'unicorn',title:'THE UNICORN JOB',category:'job',flavor:'Perfect role. Perfect salary. Requires: Network ≥ 30, ATS ≥ 60, Credibility ≥ 60.',cost:{energy:1},redFlags:0,ghostChance:.05,weight:.05,conditions:[{stat:'atsFavor',min:60},{stat:'credibility',min:60},{stat:'humanContact',min:30}],effects:[{type:'lead',real:.95,ats:10,gm:-.4,sm:0,offer:.3}],buttons:[{label:'Apply (You Earned This)',cost:{energy:1},effect:'applyCareful'},{label:'Investigate',cost:{energy:0},effect:'investigate'},{label:'Ignore',cost:{energy:0},effect:'discard'}],pay:'$140k–$180k + equity + PTO + standing desk'}),
+      mk({id:'unicorn',title:'THE UNICORN JOB',category:'job',flavor:'Perfect role. Perfect salary. Requires: Network ≥ 30, Bot Aura ≥ 60, Credibility ≥ 60.',cost:{energy:1},redFlags:0,ghostChance:.05,weight:.05,conditions:[{stat:'atsFavor',min:60},{stat:'credibility',min:60},{stat:'humanContact',min:30}],effects:[{type:'lead',real:.95,ats:10,gm:-.4,sm:0,offer:.3}],buttons:[{label:'Apply (You Earned This)',cost:{energy:1},effect:'applyCareful'},{label:'Investigate',cost:{energy:0},effect:'investigate'},{label:'Ignore',cost:{energy:0},effect:'discard'}],pay:'$140k–$180k + equity + PTO + standing desk'}),
       mk({id:'boss-fight',title:'Workday Password Reset',category:'job',flavor:'"Your new password must contain a capital letter, a number, a symbol, and the tears of a junior developer."',cost:{energy:1},isBoss:true,weight:.3,effects:[{type:'bossFight'}],buttons:[{label:'Face the Boss',cost:{energy:1},effect:'bossFight'},{label:'Back Away',cost:{energy:0},effect:'discard'}],pay:'Your sanity'}),
-      mk({id:'easy-apply-10',title:'Easy Apply to 10 Jobs',category:'job',flavor:'One button. Zero thought. Your résumé is now in 10 ATS systems weeping simultaneously.',cost:{energy:1},redFlags:0,ghostChance:.8,weight:1.5,effects:[{type:'bulkApply',count:10}],buttons:[{label:'Mass Apply',cost:{energy:1},effect:'bulkApply'},{label:'Stop Before Ruin',cost:{energy:0},effect:'discard'}],pay:'Your dignity × 10'}),
+      mk({id:'easy-apply-10',title:'Easy Apply to 10 Jobs',category:'job',flavor:'One button. Zero thought. Your résumé is now in 10 Bot Aura systems weeping simultaneously.',cost:{energy:1},redFlags:0,ghostChance:.8,weight:1.5,effects:[{type:'bulkApply',count:10}],buttons:[{label:'Mass Apply',cost:{energy:1},effect:'bulkApply'},{label:'Stop Before Ruin',cost:{energy:0},effect:'discard'}],pay:'Your dignity × 10'}),
       mk({id:'glassdoor-portal',title:'Company Website Portal',category:'job',flavor:'The application form has 47 mandatory fields. Three require essay responses. All are "optional."',cost:{energy:2},redFlags:2,ghostChance:.35,weight:.7,effects:[{type:'lead',real:.5,ats:20,gm:-.05,sm:.05,burnout:.1}],buttons:[{label:'Face the Labyrinth',cost:{energy:2},effect:'applyPortal'},{label:'Back Away',cost:{energy:0},effect:'discard'}],pay:'$75k–$105k'}),
     ],
     recruiter:[
@@ -664,7 +664,7 @@ const DATA = (() => {
     ],
     post:[
       mk({id:'thrilled',title:'"Thrilled to Announce..."',category:'post',flavor:'"I\'m thrilled to announce that I\'m actively, desperately, looking for a job!"',cost:{energy:1},redFlags:0,weight:1.2,effects:[{type:'post',clout:8,cred:-2}],buttons:[{label:'Post This',cost:{energy:1},effect:'postThis'},{label:'Delete',cost:{energy:0},effect:'discard'}]}),
-      mk({id:'humbled',title:'"Humbled to Be Rejected — Here\'s What I Learned"',category:'post',flavor:'"The rejection taught me that rejection exists. Thank you, ATS-bot #47."',cost:{energy:1},redFlags:0,weight:1,effects:[{type:'post',clout:12,cred:5,viral:.15}],buttons:[{label:'Post (Sincere)',cost:{energy:1},effect:'postSincere'},{label:'Post (Cringe)',cost:{energy:1},effect:'postCringe'},{label:'Delete',cost:{energy:0},effect:'discard'}]}),
+      mk({id:'humbled',title:'"Humbled to Be Rejected — Here\'s What I Learned"',category:'post',flavor:'"The rejection taught me that rejection exists. Thank you, Bot Aura-bot #47."',cost:{energy:1},redFlags:0,weight:1,effects:[{type:'post',clout:12,cred:5,viral:.15}],buttons:[{label:'Post (Sincere)',cost:{energy:1},effect:'postSincere'},{label:'Post (Cringe)',cost:{energy:1},effect:'postCringe'},{label:'Delete',cost:{energy:0},effect:'discard'}]}),
       mk({id:'interviewed-toddler',title:'"I Interviewed My Toddler. Here\'s What It Taught Me About B2B SaaS."',category:'post',flavor:'"My 2-year-old said no 47 times. This is how your funnel feels."',cost:{energy:1},redFlags:0,weight:.6,effects:[{type:'post',clout:25,cred:3,viral:.4}],buttons:[{label:'Post (Viral Lottery)',cost:{energy:1},effect:'postViral'},{label:'Too Cringe',cost:{energy:0},effect:'discard'}]}),
       mk({id:'comment-resume',title:'"Comment RESUME for My Free Template"',category:'post',flavor:'The oldest trick in the book. Engagement bait at its finest.',cost:{energy:1},redFlags:1,weight:1.3,effects:[{type:'post',clout:10,cred:-5,buzz:.3}],buttons:[{label:'Post Engagement Bait',cost:{energy:1},effect:'postBait'},{label:'Too Cringe',cost:{energy:0},effect:'discard'}]}),
       mk({id:'agree-post',title:'"Agree?"',category:'post',flavor:'A single-word post under a photo of a laptop at sunset.',cost:{energy:0},redFlags:1,weight:1.5,effects:[{type:'post',clout:5,cred:-8,viral:.1,agree:true}],buttons:[{label:'Post "Agree?"',cost:{energy:1},effect:'postAgree'},{label:'Delete',cost:{energy:0},effect:'discard'}]}),
@@ -685,14 +685,14 @@ const DATA = (() => {
       mk({id:'mentor',title:'Mentor Coffee',category:'network',flavor:'"I\'ve been where you are. Let me tell you about my journey."',cost:{energy:1},redFlags:0,weight:.6,effects:[{type:'net',cred:5,hope:5}],buttons:[{label:'Meet',cost:{energy:1},effect:'mentorMeet'},{label:'Too Much Effort',cost:{energy:0},effect:'discard'}]}),
     ],
     resume:[
-      mk({id:'keyword-stuff',title:'Keyword Stuff Résumé',category:'resume',flavor:'Added "synergy," "AI-powered," "disruptive," and "thought leadership." The ATS weeps with joy. The humans flee.',cost:{energy:1},redFlags:2,weight:1.2,effects:[{type:'atsFavor',mod:8},{type:'robotSuspicion',mod:5},{type:'credMod',mod:-2,ifBelow:5}],buttons:[{label:'Keyword Stuff',cost:{energy:1},effect:'keywordStuff'},{label:'Be Honest',cost:{energy:0},effect:'discard'}]}),
+      mk({id:'keyword-stuff',title:'Keyword Stuff Résumé',category:'resume',flavor:'Added "synergy," "AI-powered," "disruptive," and "thought leadership." The Bot Aura weeps with joy. The humans flee.',cost:{energy:1},redFlags:2,weight:1.2,effects:[{type:'atsFavor',mod:8},{type:'robotSuspicion',mod:5},{type:'credMod',mod:-2,ifBelow:5}],buttons:[{label:'Keyword Stuff',cost:{energy:1},effect:'keywordStuff'},{label:'Be Honest',cost:{energy:0},effect:'discard'}]}),
       mk({id:'rewrite-bullets',title:'Rewrite Bullets as Impact Metrics',category:'resume',flavor:'"Increased synergy by 40% YoY by leveraging stakeholders."',cost:{energy:1},redFlags:0,weight:1,effects:[{type:'atsFavor',mod:5},{type:'credMod',mod:5}],buttons:[{label:'Rewrite',cost:{energy:1},effect:'rewriteBullets'},{label:'Too Boring',cost:{energy:0},effect:'discard'}]}),
       mk({id:'add-ai',title:'Add "AI" to Everything',category:'resume',flavor:'"Java Developer" → "AI-Powered Java Developer." "Filing Clerk" → "AI-Enhanced Document Strategist."',cost:{energy:1},redFlags:1,weight:1.5,effects:[{type:'buzzwordAdd'},{type:'atsFavor',mod:3},{type:'robotSuspicion',mod:8}],buttons:[{label:'AI-ify',cost:{energy:1},effect:'addAI'},{label:'Keep It Real',cost:{energy:0},effect:'discard'}]}),
       mk({id:'certificate',title:'Take Free Certificate',category:'resume',flavor:'"AI for Business Leaders: A Beginner\'s Guide to Nothing." Certificate awarded instantly.',cost:{energy:1},redFlags:0,weight:1,effects:[{type:'atsFavor',mod:4},{type:'cloutMod',mod:3}],buttons:[{label:'Complete Certificate',cost:{energy:1},effect:'certComplete'},{label:'Not Worth It',cost:{energy:0},effect:'discard'}]}),
       mk({id:'portfolio',title:'Build Portfolio Project',category:'resume',flavor:'A real project. Real code. Real credibility.',cost:{energy:2},redFlags:0,weight:.8,effects:[{type:'credMod',mod:8},{type:'atsFavor',mod:5},{type:'offerChance',mod:.05}],buttons:[{label:'Build It',cost:{energy:2},effect:'buildPortfolio'},{label:'Too Time-Consuming',cost:{energy:0},effect:'discard'}]}),
-      mk({id:'plain-text',title:'Plain-Text Résumé Cleanup',category:'resume',flavor:'Removed all fancy formatting that the ATS hates. Looks like a crime report.',cost:{energy:1},redFlags:0,weight:.8,effects:[{type:'robotSuspicion',mod:-5},{type:'atsFavor',mod:3}],buttons:[{label:'Clean Up',cost:{energy:1},effect:'plainText'},{label:'Keep Fancy Format',cost:{energy:0},effect:'discard'}]}),
+      mk({id:'plain-text',title:'Plain-Text Résumé Cleanup',category:'resume',flavor:'Removed all fancy formatting that the Bot Aura hates. Looks like a crime report.',cost:{energy:1},redFlags:0,weight:.8,effects:[{type:'robotSuspicion',mod:-5},{type:'atsFavor',mod:3}],buttons:[{label:'Clean Up',cost:{energy:1},effect:'plainText'},{label:'Keep Fancy Format',cost:{energy:0},effect:'discard'}]}),
       mk({id:'cover-letter',title:'Customize Cover Letter',category:'resume',flavor:'A genuine, personalized cover letter. Not written by an AI. How quaint.',cost:{energy:1},redFlags:0,weight:.7,effects:[{type:'offerChance',mod:.1}],buttons:[{label:'Write Cover Letter',cost:{energy:1},effect:'writeCover'},{label:'AI-Generated',cost:{energy:0},effect:'aiCover'},{label:'Skip',cost:{energy:0},effect:'discard'}]}),
-      mk({id:'lie-years',title:'Lie About Years of Experience',category:'resume',flavor:'You have 2 years. You put 8. The ATS is pleased. The background check will not be.',cost:{energy:0},redFlags:4,weight:.6,effects:[{type:'atsFavor',mod:10},{type:'robotSuspicion',mod:8}],buttons:[{label:'Lie (8 Years)',cost:{energy:1},effect:'lieYears'},{label:'Tell Truth (2 Years)',cost:{energy:0},effect:'discard'},{label:'Ignore',cost:{energy:0},effect:'discard'}]}),
+      mk({id:'lie-years',title:'Lie About Years of Experience',category:'resume',flavor:'You have 2 years. You put 8. The Bot Aura is pleased. The background check will not be.',cost:{energy:0},redFlags:4,weight:.6,effects:[{type:'atsFavor',mod:10},{type:'robotSuspicion',mod:8}],buttons:[{label:'Lie (8 Years)',cost:{energy:1},effect:'lieYears'},{label:'Tell Truth (2 Years)',cost:{energy:0},effect:'discard'},{label:'Ignore',cost:{energy:0},effect:'discard'}]}),
     ],
     gig:[
       mk({id:'fiverr-gig',title:'Fiverr Gig: "I Will Write Your LinkedIn About"',category:'gig',flavor:'$5 for 50 words of corporate nonsense. The algorithm loves you.',cost:{energy:0},weight:.9,effects:[{type:'rentMod',mod:15}],buttons:[{label:'Do the Gig',cost:{energy:0},effect:'fiverrGig'},{label:'My Dignity > $5',cost:{energy:0},effect:'discard'}]}),
@@ -733,10 +733,10 @@ const DATA = (() => {
 
   /* BACKGROUNDS */
   const BACKGROUNDS=[
-    {id:'recent-grad',name:'Recent Grad',icon:'🎓',vibe:'Optimistic. Doomed.',perk:'+2 Hope, free "Brand New LinkedIn" card',penalty:'Lower ATS Favor',stats:{hope:52,burnout:0,credibility:50,rent:100,clout:0,atsFavor:7,robotSuspicion:0,humanContact:5,energy:3,maxEnergy:3}},
+    {id:'recent-grad',name:'Recent Grad',icon:'🎓',vibe:'Optimistic. Doomed.',perk:'+2 Hope, free "Brand New LinkedIn" card',penalty:'Lower Bot Aura',stats:{hope:52,burnout:0,credibility:50,rent:100,clout:0,atsFavor:7,robotSuspicion:0,humanContact:5,energy:3,maxEnergy:3}},
     {id:'mid-career',name:'Mid-Career Pivot',icon:'🔄',vibe:'Tired. Wise. Tired.',perk:'+20 Network, +5 Credibility',penalty:'"Overqualified" event fires more',stats:{hope:50,burnout:0,credibility:55,rent:100,clout:0,atsFavor:10,robotSuspicion:0,humanContact:25,energy:3,maxEnergy:3}},
     {id:'tech-refugee',name:'Tech Refugee',icon:'🏚️',vibe:'Eyes have seen things.',perk:'+30 Rent (severance), Open-to-Work Halo',penalty:'+10 Burnout, recruiter spam doubled',stats:{hope:50,burnout:10,credibility:50,rent:130,clout:0,atsFavor:10,robotSuspicion:0,humanContact:5,energy:3,maxEnergy:3}},
-    {id:'bootcamp',name:'Bootcamp Survivor',icon:'💻',vibe:'Confident in JavaScript.',perk:'+15 ATS Favor, +1 Energy day 1',penalty:'+15 Robot Suspicion, AI detection risk doubled',stats:{hope:50,burnout:0,credibility:50,rent:100,clout:0,atsFavor:25,robotSuspicion:15,humanContact:5,energy:4,maxEnergy:4}},
+    {id:'bootcamp',name:'Bootcamp Survivor',icon:'💻',vibe:'Confident in JavaScript.',perk:'+15 Bot Aura, +1 Energy day 1',penalty:'+15 Robot Suspicion, AI detection risk doubled',stats:{hope:50,burnout:0,credibility:50,rent:100,clout:0,atsFavor:25,robotSuspicion:15,humanContact:5,energy:4,maxEnergy:4}},
     {id:'career-goblin',name:'Career Goblin',icon:'👺',vibe:'The everyman experience.',perk:'Balanced stats, +1 extra feed card/day',penalty:'Nothing',stats:{hope:50,burnout:0,credibility:50,rent:100,clout:0,atsFavor:10,robotSuspicion:0,humanContact:5,energy:3,maxEnergy:3}},
     {id:'reformed-influencer',name:'Reformed Influencer',icon:'📱',vibe:'Chastened. Still posts.',perk:'Posts cost 1 less Energy',penalty:'-10 Credibility',locked:true,lockHint:'Unlock: Hit 200 Clout in a run',stats:{hope:50,burnout:0,credibility:40,rent:100,clout:0,atsFavor:10,robotSuspicion:0,humanContact:5,energy:3,maxEnergy:3}},
     {id:'ghost-vigilante',name:'Ghost Job Vigilante',icon:'🔍',vibe:'Sees through walls.',perk:'Investigate cards cost 0 Energy',penalty:'Cannot use Easy Apply',locked:true,lockHint:'Unlock: Expose 25 ghost jobs across runs',stats:{hope:50,burnout:0,credibility:50,rent:100,clout:0,atsFavor:10,robotSuspicion:0,humanContact:5,energy:3,maxEnergy:3}},
@@ -758,7 +758,7 @@ const DATA = (() => {
     {id:'ghost-vig',name:'Ghost Job Vigilante',desc:'Expose 25 ghost jobs across all runs.',hidden:false},
     {id:'kindly-champ',name:'Kindly Champion',desc:'Correctly report 5 scam recruiters.',hidden:false},
     {id:'workday-warr',name:'Workday Warrior',desc:'Survive 10 company portal applications.',hidden:false},
-    {id:'parser-ate',name:'The Parser Ate My Homework',desc:'Lose 30+ ATS Favor to a single event.',hidden:false},
+    {id:'parser-ate',name:'The Parser Ate My Homework',desc:'Lose 30+ Bot Aura to a single event.',hidden:false},
     {id:'humbled-hon',name:'Humbled and Honored',desc:'Gain 100 Clout in one day.',hidden:false},
     {id:'agree-ach',name:'Agree?',desc:'Get a one-word "Agree?" post to go viral.',hidden:false},
     {id:'touch-grass-s',name:'Touch Grass Speedrun',desc:'Win without ever exceeding 50 Burnout.',hidden:false},
@@ -768,7 +768,7 @@ const DATA = (() => {
     {id:'circle-back',name:'Circle Back Champion',desc:'Have 8 active leads at once.',hidden:false},
     {id:'no-takehomes',name:'No Take-Homes',desc:'Win without completing a take-home.',hidden:false},
     {id:'pure-human',name:'Pure Human',desc:'Win with Robot Suspicion ≤ 10 throughout.',hidden:false},
-    {id:'pure-robot',name:'Pure Robot',desc:'Win with ATS ≥ 90 and Robot Susp ≥ 70.',hidden:false},
+    {id:'pure-robot',name:'Pure Robot',desc:'Win with Bot Aura ≥ 90 and Robot Susp ≥ 70.',hidden:false},
     {id:'recruiter-bingo',name:'Recruiter Bingo',desc:'Trigger 5 distinct recruiter cards in one run.',hidden:false},
     {id:'30-days',name:'The 30 Days Are a Lifetime',desc:'Reach day 30 in any state.',hidden:false},
     {id:'first-round',name:'First-Round Knockout',desc:'Get an offer before day 10.',hidden:false},
@@ -797,7 +797,7 @@ const DATA = (() => {
     'kindly-end':{name:'Kindly Do the Needful',type:'loss',icon:'🎭',review:'You fell for {scams} scams. The scammers now have your SSN, your check deposit, and your dignity.'},
     'ai-detected':{name:'AI Detected AI',type:'loss',icon:'🤖',review:'Your Robot Suspicion hit 100. An AI determined you are an AI. The bureaucracy of machines is endless.'},
     'culture-fit':{name:'Culture Fit Not Found',type:'loss',icon:'🧩',review:'Your Credibility hit 0. You are now "not a culture fit" in every system on Earth.'},
-    'ats-ate-end':{name:'The ATS Ate Your Résumé',type:'loss',icon:'📄',review:'A catastrophic ATS loss has left your résumé as digital soup. Your career is now a .txt file titled "HELP."'},
+    'ats-ate-end':{name:'The Bot Aura Ate Your Résumé',type:'loss',icon:'📄',review:'A catastrophic Bot Aura loss has left your résumé as digital soup. Your career is now a .txt file titled "HELP."'},
   };
 
   /* MICRO-EVENT DATA */
@@ -1029,7 +1029,7 @@ const Engine = (() => {
       g.run.stats.atsFavor = DATA.clamp((g.run.stats.atsFavor || 0) + 3, 0, 100);
       g.run.stats.robotSuspicion = DATA.clamp((g.run.stats.robotSuspicion || 0) + 5, 0, 100);
       g.run.stats.credibility = DATA.clamp((g.run.stats.credibility || 0) - 2, 0, 100);
-      g.run.log.push({day:g.run.day, text:'Added "AI" to everything. The ATS is pleased. Humans are not.'});
+      g.run.log.push({day:g.run.day, text:'Added "AI" to everything. The Bot Aura is pleased. Humans are not.'});
     } else if (effect.effect === 'applyPortal') {
       track('portalApps', 1);
       g.run.stats.burnout = DATA.clamp((g.run.stats.burnout || 0) + 3, 0, 100);
@@ -1211,7 +1211,7 @@ const Engine = (() => {
     g.run.flags.referralUsed = true;
     g.run.stats.humanContact = DATA.clamp((g.run.stats.humanContact||0) + 3, 0, 999);
     g.run.stats.hope = DATA.clamp((g.run.stats.hope||0) + 5, 0, 100);
-    g.run.log.push({day:g.run.day, text:'Used a referral! Your friend\'s cousin\'s friend works there. The ATS has been bypassed.'});
+    g.run.log.push({day:g.run.day, text:'Used a referral! Your friend\'s cousin\'s friend works there. The Bot Aura has been bypassed.'});
   }
 
   function processResume(card) {
@@ -1220,7 +1220,7 @@ const Engine = (() => {
       g.run.stats.atsFavor = DATA.clamp((g.run.stats.atsFavor||0) + 8, 0, 100);
       g.run.stats.robotSuspicion = DATA.clamp((g.run.stats.robotSuspicion||0) + 5, 0, 100);
       if ((g.run.stats.credibility||0) < 5) g.run.stats.credibility = DATA.clamp((g.run.stats.credibility||0) - 5, 0, 100);
-      g.run.log.push({day:g.run.day, text:'Keyword-stuffed your résumé. The ATS loves it. Your soul weeps.'});
+      g.run.log.push({day:g.run.day, text:'Keyword-stuffed your résumé. The Bot Aura loves it. Your soul weeps.'});
     } else if (card.id === 'rewrite-bullets') {
       g.run.stats.atsFavor = DATA.clamp((g.run.stats.atsFavor||0) + 5, 0, 100);
       g.run.stats.credibility = DATA.clamp((g.run.stats.credibility||0) + 5, 0, 100);
@@ -1232,7 +1232,7 @@ const Engine = (() => {
       g.run.stats.atsFavor = DATA.clamp((g.run.stats.atsFavor||0) + 3, 0, 100);
       g.run.stats.robotSuspicion = DATA.clamp((g.run.stats.robotSuspicion||0) + 8, 0, 100);
       g.run.stats.credibility = DATA.clamp((g.run.stats.credibility||0) - 2, 0, 100);
-      g.run.log.push({day:g.run.day, text:'Added "AI" to everything. The ATS is pleased. Humans flee.'});
+      g.run.log.push({day:g.run.day, text:'Added "AI" to everything. The Bot Aura is pleased. Humans flee.'});
     } else if (card.id === 'certificate') {
       g.run.stats.atsFavor = DATA.clamp((g.run.stats.atsFavor||0) + 4, 0, 100);
       g.run.stats.clout = DATA.clamp((g.run.stats.clout||0) + 3, 0, 999);
@@ -1244,17 +1244,17 @@ const Engine = (() => {
     } else if (card.id === 'plain-text') {
       g.run.stats.robotSuspicion = DATA.clamp((g.run.stats.robotSuspicion||0) - 5, 0, 100);
       g.run.stats.atsFavor = DATA.clamp((g.run.stats.atsFavor||0) + 3, 0, 100);
-      g.run.log.push({day:g.run.day, text:'Cleaned up résumé to plain text. Looks like a crime report. ATS happy.'});
+      g.run.log.push({day:g.run.day, text:'Cleaned up résumé to plain text. Looks like a crime report. Bot Aura happy.'});
     } else if (card.id === 'cover-letter') {
       g.run.stats.credibility = DATA.clamp((g.run.stats.credibility||0) + 3, 0, 100);
       g.run.log.push({day:g.run.day, text:'Wrote a genuine cover letter. Not AI-generated. How brave.'});
     } else if (card.id === 'aiCover') {
       g.run.stats.robotSuspicion = DATA.clamp((g.run.stats.robotSuspicion||0) + 5, 0, 100);
-      g.run.log.push({day:g.run.day, text:'Used AI to write a cover letter about being authentic. The irony is lost on the ATS.'});
+      g.run.log.push({day:g.run.day, text:'Used AI to write a cover letter about being authentic. The irony is lost on the Bot Aura.'});
     } else if (card.id === 'lie-years') {
       g.run.stats.atsFavor = DATA.clamp((g.run.stats.atsFavor||0) + 10, 0, 100);
       g.run.stats.robotSuspicion = DATA.clamp((g.run.stats.robotSuspicion||0) + 8, 0, 100);
-      g.run.log.push({day:g.run.day, text:'Liied about experience. The ATS is happy. The background check is not.'});
+      g.run.log.push({day:g.run.day, text:'Liied about experience. The Bot Aura is happy. The background check is not.'});
     }
   }
 
@@ -1648,7 +1648,7 @@ const Engine = (() => {
         _g.run.flags.bossFightWon = true;
         _g.run.flags.bossFightWonFirstTry = failures === 0;
         _g.run.stats.atsFavor = DATA.clamp((_g.run.stats.atsFavor||0) + 5, 0, 100);
-        _g.run.log.push({day:_g.run.day, text:'🔐 Defeated the Workday Password Reset Boss! ATS Favor +5. The password was "hunter42B!"'});
+        _g.run.log.push({day:_g.run.day, text:'🔐 Defeated the Workday Password Reset Boss! Bot Aura +5. The password was "hunter42B!"'});
       } else {
         failures++;
         failEl.textContent = `Failures: ${failures}/3`;
@@ -1895,7 +1895,7 @@ const UI = (() => {
     'Checking if recruiters are nearby...',
     'Scanning for ghost jobs...',
     'Compiling rejection letters...',
-    'Loading ATS compatibility...',
+    'Loading Bot Aura compatibility...',
     'Initializing doomscroll protocol...',
     'Your résumé is being parsed...',
     'A recruiter viewed your profile (probably just a bot)...',
@@ -2068,11 +2068,11 @@ const UI = (() => {
     const failureStats = ['rent','hope','burnout','credibility','atsFavor','robotSuspicion','humanContact'];
     const stats = [
       {icon:'💰', key:'rent', max:999, label:'Rent', funny:'Rent Money — because the void charges $1,200/month.', fail:'⚠️ Hits 0 = Game Over (Evicted!)'},
-      {icon:'💡', key:'hope', max:100, label:'Hope', funny:'Hope — the first thing the ATS deletes.', fail:'⚠️ Hits 0 = Game Over (Gave up.)'},
+      {icon:'💡', key:'hope', max:100, label:'Hope', funny:'Hope — the first thing the Bot Aura deletes.', fail:'⚠️ Hits 0 = Game Over (Gave up.)'},
       {icon:'🔥', key:'burnout', max:100, label:'Burnout', funny:'Burnout — your new personality trait.', fail:'⚠️ Hits 100 = Game Over (Crash.)'},
       {icon:'🎯', key:'credibility', max:100, label:'Cred', funny:'Credibility — how much the robots trust you.', fail:'⚠️ Hits 0 = Game Over (Doxxed.)'},
       {icon:'⭐', key:'clout', max:999, label:'Clout', funny:'Clout — the only metric that matters on Linkfluence.'},
-      {icon:'🤖', key:'atsFavor', max:100, label:'ATS', funny:'ATS Favor — how much the résumé-parser loves you.', fail:'⚠️ Hits 0 = Game Over (Blacklisted.)'},
+      {icon:'🤖', key:'atsFavor', max:100, label:'Bot Aura', funny:'Bot Aura — how much the résumé-parser loves you.', fail:'⚠️ Hits 0 = Game Over (Blacklisted.)'},
       {icon:'👁️', key:'robotSuspicion', max:100, label:'Robot Susp', funny:'Robot Suspicion — are you human? The machine doubts.', fail:'⚠️ Hits 100 = Game Over (Banned.)'},
       {icon:'🤝', key:'humanContact', max:999, label:'Human', funny:'Human Contact — real people who like you.', fail:'⚠️ Hits 0 = Game Over (Isolated.)'},
     ];
@@ -2186,7 +2186,7 @@ const UI = (() => {
       burnout: { icon:'🔥', label:'Burnout', display:'Burnout' },
       credibility: { icon:'🎯', label:'Cred', display:'Credibility' },
       clout: { icon:'⭐', label:'Clout', display:'Clout' },
-      atsFavor: { icon:'🤖', label:'ATS', display:'ATS Favor' },
+      atsFavor: { icon:'🤖', label:'Bot Aura', display:'Bot Aura' },
       robotSuspicion: { icon:'👁️', label:'Robot', display:'Robot Suspicion' },
       humanContact: { icon:'🤝', label:'Human', display:'Human Contact' },
       energy: { icon:'⚡', label:'Energy', display:'Energy' },
@@ -2216,15 +2216,15 @@ const UI = (() => {
     const responses = {
       apply: [
         'Your résumé entered the void. It will be seen by someone. Maybe.',
-        'Application submitted! The ATS has absorbed your dreams into its training data.',
+        'Application submitted! The Bot Aura has absorbed your dreams into its training data.',
         'You applied. Somewhere, a recruiter feels a faint disturbance in the force.',
         'Job applied to. Your hope went up slightly. Your rent did not.',
       ],
       applyCareful: [
-        'Applied with meticulous attention to detail. Your ATS score took a hit though.',
-        'Careful application submitted. Credibility gained, ATS favor lost. The eternal balance.',
+        'Applied with meticulous attention to detail. Your Bot Aura score took a hit though.',
+        'Careful application submitted. Credibility gained, Bot Aura favor lost. The eternal balance.',
         'You read the entire job description. Most applicants didn\'t. You still got rejected.',
-        'Applied carefully. Every field filled. Every question answered. The ATS marked it "underqualified."',
+        'Applied carefully. Every field filled. Every question answered. The Bot Aura marked it "underqualified."',
       ],
       applyEasy: [
         'Easy Apply clicked! Your robot suspicion ticked up. The machines are watching.',
@@ -2235,7 +2235,7 @@ const UI = (() => {
       applyDesperate: [
         'Desperate application submitted. Your robot suspicion jumped. They know.',
         'You applied so fast even you didn\'t read the requirements. Classic.',
-        'Applied with the energy of someone who hasn\'t slept in 47 hours. The ATS can smell the desperation.',
+        'Applied with the energy of someone who hasn\'t slept in 47 hours. The Bot Aura can smell the desperation.',
         'You hit submit before reading the salary range. Future-you will be proud. Present-you is not.',
         'Desperate mode: activated. Your application quality dropped. Your energy expenditure tripled. Math checks out.',
       ],
@@ -2243,7 +2243,7 @@ const UI = (() => {
         'Buzzword injection successful. Your clout increased. Your soul decreased.',
         'Applied with maximum buzzword density. The algorithm loves you now.',
         'You stuffed "synergy," "disruption," and "leveraging AI" into the application. HR called it "cringe."',
-        'Buzzword bingo complete. You\'ve used every buzzword since 2016. The ATS is confused. Clout: +1.',
+        'Buzzword bingo complete. You\'ve used every buzzword since 2016. The Bot Aura is confused. Clout: +1.',
       ],
       applyPortal: [
         'Workday portal entered. Your burnout increased. You may never leave.',
@@ -2252,7 +2252,7 @@ const UI = (() => {
         'Workday portal: where applications go to die. You submitted yours into the abyss. The abyss submitted you to a background check.',
       ],
       addAI: [
-        '"AI-powered" added to everything. The ATS is pleased. Humans are skeptical.',
+        '"AI-powered" added to everything. The Bot Aura is pleased. Humans are skeptical.',
         'You injected "AI" into your profile. Credibility dropped, robot suspicion rose.',
         'Added "AI" to 3 projects. Now they\'re all "AI-powered." They were just spreadsheets.',
         'You labeled your resume summary "AI-optimized." The AI rejected it. For being too human.',
@@ -2327,7 +2327,7 @@ const UI = (() => {
         'You declined. Safe choice. Sometimes the best application is the one you don\'t submit.',
         'Cancelled. You walked away from the job posting. The posting didn\'t even notice. Fair.',
         'Declined and deleted. Your inbox is 0.7% less painful. Progress.',
-        'You chose peace over a job. The ATS will not forgive you. Or maybe it\'s already forgotten.',
+        'You chose peace over a job. The Bot Aura will not forgive you. Or maybe it\'s already forgotten.',
       ],
       ignore: [
         'Ignored. Your in-box grows quieter. Peace, of a sort.',
@@ -2375,7 +2375,7 @@ const UI = (() => {
       ],
       referral: [
         'Referral secured! A real human passed along your résumé. This means something.',
-        'Someone referred you. The human referral network is stronger than the ATS.',
+        'Someone referred you. The human referral network is stronger than the Bot Aura.',
         'You got a referral. The referrer said "let me know if you hear anything." You heard nothing.',
         'Referral submitted. The hiring manager saw it. Then forgot. Then remembered. Then forgot again.',
       ],
@@ -2474,15 +2474,15 @@ negotiateRemote: [
       ],
 bulkApply: [
         'You applied to 50 jobs in one hour. Your burnout increased. Your hope did not.',
-        'Bulk application sent. The ATS rejected them all. At least you tried.',
+        'Bulk application sent. The Bot Aura rejected them all. At least you tried.',
         'You applied to 100 jobs. 99 were "easy apply." 1 was a 20-page form. You filled out the form. It was a scam.',
         'Bulk applied. Your résumé was sent to 47 companies. 46 of them didn\'t reply. The 47th asked for a reference.',
       ],
 keywordStuff: [
-        'You stuffed keywords into your résumé. The ATS approved. The hiring manager rejected.',
-        'Keyword injection successful. Your résumé now reads like a Wikipedia article. The ATS loves it.',
-        'You added "Python," "JavaScript," and "AI" to your résumé. You know none of them. The ATS doesn\'t care.',
-        'Keyword stuffing: your résumé now has "synergy" 14 times. The ATS marked it "top 1% candidate." The hiring manager disagrees.',
+        'You stuffed keywords into your résumé. The Bot Aura approved. The hiring manager rejected.',
+        'Keyword injection successful. Your résumé now reads like a Wikipedia article. The Bot Aura loves it.',
+        'You added "Python," "JavaScript," and "AI" to your résumé. You know none of them. The Bot Aura doesn\'t care.',
+        'Keyword stuffing: your résumé now has "synergy" 14 times. The Bot Aura marked it "top 1% candidate." The hiring manager disagrees.',
       ],
       // Post responses
 postAgree: [
@@ -2567,20 +2567,20 @@ slideIn: [
       // Resume responses
       rewriteBullets: [
         'You rewrote your résumé bullets as "impact metrics." It now reads like a war crime confession.',
-        'Bullet points transformed into quantified achievements. Your experience is now "optimized for ATS."',
+        'Bullet points transformed into quantified achievements. Your experience is now "optimized for Bot Aura."',
         'You rewrote your résumé. "Managed team" became "Led cross-functional synergy initiatives." HR called it "cringe."',
-        'Résumé bullets rewritten. "Worked on project" became "Spearheaded paradigm-shifting deliverables." The ATS approved. You lied.',
+        'Résumé bullets rewritten. "Worked on project" became "Spearheaded paradigm-shifting deliverables." The Bot Aura approved. You lied.',
       ],
       writeCover: [
         'You wrote a cover letter. The job posting said "cover letters are optional." You wrote 3 paragraphs anyway.',
-        'Cover letter composed. You poured your soul into it. The company uses an ATS that strips all soul.',
+        'Cover letter composed. You poured your soul into it. The company uses a Bot Aura that strips all soul.',
         'Cover letter written. The job posting said "no cover letters." You sent it anyway. They replied "as stated, no cover letters."',
-        'You wrote a cover letter. It was 4 paragraphs. The ATS read it as "applicant: unknown." You added "to whom it may concern."',
+        'You wrote a cover letter. It was 4 paragraphs. The Bot Aura read it as "applicant: unknown." You added "to whom it may concern."',
       ],
       plainText: [
         'You sent your résumé as plain text. The HR director cried. Some things should stay PDF.',
         'Plain-text résumé sent. The formatting is gone but your desperation remains intact.',
-        'You sent your résumé as plain text. The ATS parsed it as "applicant: error." You resent it as a Word doc.',
+        'You sent your résumé as plain text. The Bot Aura parsed it as "applicant: error." You resent it as a Word doc.',
         'Plain-text résumé: you thought it was "minimalist." The recruiter thought it was "broken." Both were correct.',
       ],
       // Investigate responses
@@ -2606,14 +2606,14 @@ slideIn: [
         'You completed a "certificate course" that took 3 weeks and cost $49.99. You are now "certified."',
         'Certificate earned. LinkedIn notified your 500+ connections. You feel accomplished and slightly foolish.',
         'Certificate completed. It was a 2-hour Udemy course. You added it to your résumé. Your manager added "suspicious."',
-        'You earned a certificate. It was from a "university" that doesn\'t exist. The ATS didn\'t notice. Your future employer might.',
+        'You earned a certificate. It was from a "university" that doesn\'t exist. The Bot Aura didn\'t notice. Your future employer might.',
       ],
       // Event/micro-event responses
       captchaEvent: [
         'Captcha: "Select all squares with bicycles." You selected 47 squares. The machine is unimpressed.',
         'Captcha challenge completed. You proved you\'re not a robot. The job application still rejected you.',
         'Captcha: "Select all images with traffic lights." You selected 12. 8 were wrong. You failed. The job application continued.',
-        'Captcha challenge: "Prove you\'re human." You clicked 15 images of buses. The ATS said "close enough." You cried.',
+        'Captcha challenge: "Prove you\'re human." You clicked 15 images of buses. The Bot Aura said "close enough." You cried.',
       ],
       bossFight: [
         'Boss fight: The Final Interview. You defeated it with "synergy" and a PowerPoint. The offer is coming.',
@@ -2706,9 +2706,9 @@ eatCereal: [
       // Other responses
       deleteApp: [
         'You deleted a job application. Freedom. The company will never know what they missed.',
-        'Application withdrawn. The ATS系统将显示"applicant declined." You declined nothing. You were declined.',
+        'Application withdrawn. The Bot Aura will show "applicant declined." You declined nothing. You were declined.',
         'You deleted the application. The company sent a thank you email. You deleted that too.',
-        'Application deleted. The ATS marked it "applicant withdrew." You withdrew nothing. You were withdrawing from reality.',
+        'Application deleted. The Bot Aura marked it "applicant withdrew." You withdrew nothing. You were withdrawing from reality.',
       ],
 doomscroll: [
         'Doomscrolling for 2 hours. You learned about a job in a field you don\'t want in a city you don\'t live in.',
@@ -2971,7 +2971,7 @@ profileViewed: [
     const recaps = [
       `You applied to ${apps} jobs, spoke to ${humans} humans, offended ${robots} robots, and were ghosted by ${comp}, a company that may not exist.`,
       `Today you became a thought leader after posting "synergy" under a photo of a laptop. ${DATA.pick(DATA.NAMES)} from ${DATA.genComp()} wants to know if you're open to work.`,
-      `Your résumé entered the ATS as a PDF and emerged as soup. ${DATA.pick(DATA.NAMES)} sent you a message: "Great fit! Send resume." Then ghosted.`,
+      `Your résumé entered the Bot Aura as a PDF and emerged as soup. ${DATA.pick(DATA.NAMES)} sent you a message: "Great fit! Send resume." Then ghosted.`,
       `You were rejected for lacking ${Math.floor(Math.random()*20)+10} years of experience in tomorrow's AI tool. ${DATA.pick(DATA.NAMES)} says "circle back."`,
       `A recruiter named ${DATA.pick(DATA.NAMES)} ghosted you after asking you to schedule a call. You achieved employment progress through the ancient art of ${apps > 5 ? 'desperation' : 'hoping'}.`,
       `You investigated ${comp}'s listing. It has been open since the ${DATA.pick(hists)}.`,
@@ -3045,7 +3045,7 @@ profileViewed: [
       <tr><td>Ghost jobs exposed</td><td>${g.run.stats.ghostEvidence||0}</td></tr>
       <tr><td>Scams reported</td><td>${g.run.stats.scamEvidence||0}</td></tr>
       <tr><td>Final Clout</td><td>${s.clout||0}</td></tr>
-      <tr><td>Final ATS Favor</td><td>${s.atsFavor||0}</td></tr>
+      <tr><td>Final Bot Aura</td><td>${s.atsFavor||0}</td></tr>
       <tr><td>Final Burnout</td><td>${s.burnout||0}</td></tr>
       <tr><td>Final Hope</td><td>${s.hope||0}</td></tr>
       <tr><td>Final Cred</td><td>${s.credibility||0}</td></tr>
