@@ -1,13 +1,13 @@
 # Just Hire Me Bro
 
-> A satirical job-hunting roguelite.
+> A satirical job-hunting game.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Status](https://img.shields.io/badge/status-v1.0.0-green)]()
 
 ## What is it?
 
-**Just Hire Me Bro** is a single-file, browser-based card game that turns the modern job search into a ruthless roguelite. You play as a job seeker grinding through applications, recruiter calls, background checks, and the occasional boss fight — all rendered in a satirical take on corporate hiring culture.
+**Just Hire Me Bro** is a single-file, browser-based card game that turns the modern job search into a ruthless game. You play as a job seeker grinding through applications, recruiter calls, background checks, and the occasional boss fight — all rendered in a satirical take on corporate hiring culture.
 
 Every run is different. Cards are drawn from weighted pools covering job postings, recruiter interactions, resume hacks, networking, investigations, and random events. Your stats shift with every decision — burn out too fast and it's game over. Land enough leads and you might actually get hired.
 
