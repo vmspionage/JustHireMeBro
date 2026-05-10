@@ -147,6 +147,10 @@ body{font-family:var(--font-ui);background:var(--bg);color:var(--text);min-heigh
 #game-screen.active{display:flex}
 .stat-bar{display:flex;flex-wrap:wrap;gap:.35rem;padding:.5rem .75rem;background:var(--navy);color:#fff;font-size:.8rem;align-items:center;justify-content:center;border-bottom:1px solid rgba(255,255,255,.1);position:relative;z-index:10}
 .stat-item{display:flex;align-items:center;gap:.2rem;padding:.2rem .3rem;border-radius:3px;position:relative;cursor:help}
+/* Floating stat deltas (above stat bar items) */
+   .stat-float{position:absolute;top:-2rem;left:50%;transform:translateX(-50%) scale(0.4);font-size:1.3rem;font-weight:900;pointer-events:none;white-space:nowrap;animation:statFloat 2.4s ease-out forwards;z-index:20;text-shadow:0 1px 6px rgba(27,42,78,.6),0 0 2px rgba(255,255,255,.3)}
+   .stat-float.up{color:#4caf50}.stat-float.down{color:var(--red)}
+   @keyframes statFloat{0%{opacity:0;transform:translateX(-50%) scale(0.4) translateY(6px)}10%{opacity:1;transform:translateX(-50%) scale(1.2) translateY(0)}25%{transform:translateX(-50%) scale(1.1) translateY(0)}100%{opacity:0;transform:translateX(-50%) scale(1) translateY(-22px)}}
 .stat-item:hover{background:rgba(255,255,255,.1)}
 .stat-item .stat-icon{font-size:.9rem}
 .stat-item .stat-val{font-family:var(--font-mono);font-weight:700;min-width:2ch;text-align:right}
@@ -236,12 +240,13 @@ body{font-family:var(--font-ui);background:var(--bg);color:var(--text);min-heigh
 .run-log{max-height:200px;overflow-y:auto}
 .run-log-entry{font-size:.72rem;padding:.2rem 0;border-bottom:1px solid rgba(0,0,0,.05);line-height:1.3}
 .run-log-entry .log-day{font-family:var(--font-mono);font-weight:700;color:var(--navy);margin-right:.25rem}
+.run-log-entry .log-deltas{color:var(--accent);font-size:.7rem;margin-left:.3rem;white-space:nowrap;}
  /* Stat delta toasts */
   .stat-delta-toast{position:fixed;top:90px;right:1rem;z-index:150;display:flex;flex-direction:column;gap:.3rem;align-items:flex-end;pointer-events:none}
-  .stat-delta{display:inline-flex;align-items:center;gap:.3rem;padding:.25rem .7rem;border-radius:20px;font-size:.78rem;font-family:var(--font-mono);font-weight:700;animation:deltaFly 1.1s ease-out forwards;white-space:nowrap;box-shadow:0 2px 8px rgba(27,42,78,.15)}
+  .stat-delta{display:inline-flex;align-items:center;gap:.3rem;padding:.25rem .7rem;border-radius:20px;font-size:.78rem;font-family:var(--font-mono);font-weight:700;animation:deltaFly 2.2s ease-in-out forwards;white-space:nowrap;box-shadow:0 2px 8px rgba(27,42,78,.15)}
   .stat-delta.up{background:#e8f5e8;color:#2a6a2a;border:1px solid rgba(42,106,42,.3)}
   .stat-delta.down{background:#f5e8e8;color:var(--red);border:1px solid rgba(217,72,59,.3)}
-  @keyframes deltaFly{0%{opacity:0;transform:translateY(8px)}15%{opacity:1;transform:translateY(0)}75%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-12px)}}
+  @keyframes deltaFly{0%{opacity:0;transform:translateY(8px)}15%{opacity:1;transform:translateY(0)}85%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-12px)}}
 
   .doomscroll-btn{position:fixed;bottom:1.5rem;right:1.5rem;z-index:50;font-family:var(--font-display);font-size:1rem;padding:.75rem 1.5rem;background:var(--red);color:#fff;border:none;border-radius:var(--radius);cursor:pointer;box-shadow:0 4px 12px rgba(217,72,59,.3);transition:all .15s}
 .doomscroll-btn:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(217,72,59,.4)}
@@ -368,7 +373,7 @@ body{font-family:var(--font-ui);background:var(--bg);color:var(--text);min-heigh
   <h1 class="title-logo">Just Hire Me <span class="accent">Bro</span></h1>
   <p class="title-tagline">A satirical job-hunting simulator about fake jobs, real rent, and the professional networking website that must not be named.</p>
   <div class="wins-display" id="wins-display"></div>
-  <button class="title-btn" id="btn-start" aria-label="Start Applying Into the Void">⚡ Start Applying Into the Void</button>
+  <button class="title-btn" id="btn-start" aria-label="Start Applying Into the Void">☕ Start Applying Into the Void</button>
   <div class="title-links">
     <button class="title-btn secondary" id="btn-howto" aria-label="How to Play">📖 How to Play</button>
     <button class="title-btn secondary" id="btn-achievements" aria-label="Achievements">🏆 Achievements</button>
@@ -408,7 +413,7 @@ body{font-family:var(--font-ui);background:var(--bg);color:var(--text);min-heigh
     <div class="leads-panel" id="leads-panel" role="navigation" aria-label="Active leads">
       <div class="panel-day-info" id="panel-day-info">
         <span class="panel-day-num" id="day-display">Day 1 / 30</span>
-        <span class="panel-energy" id="energy-display"><span class="energy-icon">⚡</span> 3/3</span>
+        <span class="panel-energy" id="energy-display"><span class="energy-icon">☕</span> 3/3</span>
       </div>
       <div class="panel-title">📋 Active Leads</div>
       <div id="leads-list"></div>
@@ -420,7 +425,7 @@ body{font-family:var(--font-ui);background:var(--bg);color:var(--text);min-heigh
         <div class="news-ticker" id="news-ticker"></div>
       </div>
       <div class="rail-section">
-        <div class="rail-title">📝 Run Log</div>
+        <div class="rail-title">📝 Journal</div>
         <div class="run-log" id="run-log"></div>
       </div>
     </div>
@@ -1029,7 +1034,7 @@ const Engine = (() => {
       finalCount: 0, stalled: false
     };
     g.run.activeLeads.push(lead);
-    g.run.log.push({day:g.run.day, text:`Applied to ${role} at ${comp}`});
+    pushLog(g.run.day, `Applied to ${role} at ${comp}`);
     return lead;
   }
 
@@ -1053,6 +1058,7 @@ const Engine = (() => {
       if (g.run.energy < eCost) return;
       g.run.energy -= eCost;
     }
+    snapStats();
 
     if (effect.effect === 'apply' || effect.effect === 'applyCareful') {
       if (effect.effect === 'applyCareful') {
@@ -1072,35 +1078,35 @@ const Engine = (() => {
       track('applicationsSubmitted', 1);
     } else if (effect.effect === 'fiverrGig') {
       g.run.stats.rent = DATA.clamp((g.run.stats.rent || 0) + 15, 0, 9999);
-      g.run.log.push({day: g.run.day, text: 'Did a Fiverr gig. $15 earned. Your soul: devalued.'});
+      pushLog(g.run.day, 'Did a Fiverr gig. $15 earned. Your soul: devalued.');
     } else if (effect.effect === 'uberGig') {
       g.run.stats.rent = DATA.clamp((g.run.stats.rent || 0) + 20, 0, 9999);
       g.run.stats.hope = DATA.clamp((g.run.stats.hope || 0) - 3, 0, 100);
-      g.run.log.push({day: g.run.day, text: 'Drove for rideshare. Made $20. The passenger cried. You did not.'});
+      pushLog(g.run.day, 'Drove for rideshare. Made $20. The passenger cried. You did not.');
     } else if (effect.effect === 'userTest') {
       g.run.stats.rent = DATA.clamp((g.run.stats.rent || 0) + 10, 0, 9999);
       g.run.stats.hope = DATA.clamp((g.run.stats.hope || 0) + 2, 0, 100);
-      g.run.log.push({day: g.run.day, text: 'Did user testing. $10 earned. You felt seen. For 10 minutes.'});
+      pushLog(g.run.day, 'Did user testing. $10 earned. You felt seen. For 10 minutes.');
     } else if (effect.effect === 'dataEntry') {
       g.run.stats.rent = DATA.clamp((g.run.stats.rent || 0) + 12, 0, 9999);
       g.run.stats.hope = DATA.clamp((g.run.stats.hope || 0) - 5, 0, 100);
       g.run.stats.atsFavor = DATA.clamp((g.run.stats.atsFavor || 0) + 2, 0, 100);
-      g.run.log.push({day: g.run.day, text: 'Data entry marathon. $12 earned. 10,000 rows later, a script replaced you.'});
+      pushLog(g.run.day, 'Data entry marathon. $12 earned. 10,000 rows later, a script replaced you.');
     } else if (effect.effect === 'consulting') {
       g.run.stats.rent = DATA.clamp((g.run.stats.rent || 0) + 50, 0, 9999);
       g.run.stats.humanContact = DATA.clamp((g.run.stats.humanContact || 0) + 3, 0, 999);
-      g.run.log.push({day: g.run.day, text: 'Consulting call. $50 earned. You sold "digital transformation" to a guy who uses Windows 7.'});
+      pushLog(g.run.day, 'Consulting call. $50 earned. You sold "digital transformation" to a guy who uses Windows 7.');
       exposeGhost();
     } else if (effect.effect === 'investigate') {
       g.run.stats.robotSuspicion = DATA.clamp(g.run.stats.robotSuspicion - 1, 0, 100);
       g.run.stats.hope = DATA.clamp(g.run.stats.hope + 2, 0, 100);
-      g.run.log.push({day:g.run.day, text:'Investigated red flags. Found more red flags.'});
+      pushLog(g.run.day, 'Investigated red flags. Found more red flags.');
       if (card.id === 'reposted') g.run.flags.repostExposed = true;
     } else if (effect.effect === 'reportScam') {
       g.run.stats.scamEvidence = DATA.clamp((g.run.stats.scamEvidence || 0) + 1, 0, 100);
       g.run.flags.scamsReported = (g.run.flags.scamsReported || 0) + 1;
       track('scamsReported', 1);
-      g.run.log.push({day:g.run.day, text:'Reported a scam to Linkfluence. They said "we\'ll look into it." They won\'t.'});
+      pushLog(g.run.day, 'Reported a scam to Linkfluence. They said "we\'ll look into it." They won\'t.');
     } else if (effect.effect === 'applyTokens') {
       g.run.stats.clout = DATA.clamp((g.run.stats.clout || 0) + 5, 0, 1000);
       g.run.stats.buzzwords = g.run.stats.buzzwords || [];
@@ -1114,7 +1120,7 @@ const Engine = (() => {
       g.run.stats.atsFavor = DATA.clamp((g.run.stats.atsFavor || 0) + 3, 0, 100);
       g.run.stats.robotSuspicion = DATA.clamp((g.run.stats.robotSuspicion || 0) + 5, 0, 100);
       g.run.stats.credibility = DATA.clamp((g.run.stats.credibility || 0) - 2, 0, 100);
-      g.run.log.push({day:g.run.day, text:'Added "AI" to everything. The Bot Aura is pleased. Humans are not.'});
+      pushLog(g.run.day, 'Added "AI" to everything. The Bot Aura is pleased. Humans are not.');
     } else if (effect.effect === 'applyPortal') {
       track('portalApps', 1);
       g.run.stats.hope = DATA.clamp((g.run.stats.hope || 0) - 3, 0, 100);
@@ -1134,10 +1140,10 @@ const Engine = (() => {
       createLead(card);
     } else if (effect.effect === 'askCity') {
       const city = DATA.pick(DATA.CITIES, _rng);
-      g.run.log.push({day:g.run.day, text:`Asked about relocation. They said "${city}". You've never heard of it.`});
+      pushLog(g.run.day, `Asked about relocation. They said "${city}". You've never heard of it.`);
     } else if (effect.effect === 'applyPipeline') {
       /* Evergreen = instant ghost */
-      g.run.log.push({day:g.run.day, text:'Applied to the evergreen pipeline. There is no pipeline. There is only void.'});
+      pushLog(g.run.day, 'Applied to the evergreen pipeline. There is no pipeline. There is only void.');
       track('ghostsExposed', 1);
       track('ghostsExposedLifetime', 1);
       g.run.stats.ghostEvidence = DATA.clamp((g.run.stats.ghostEvidence || 0) + 1, 0, 100);
@@ -1161,7 +1167,7 @@ const Engine = (() => {
       g.run.stats.robotSuspicion = DATA.clamp((g.run.stats.robotSuspicion||0)+5,0,100);
       g.run.stats.hope = DATA.clamp((g.run.stats.hope||0)-3,0,100);
       track('applicationsSubmitted', count);
-      g.run.log.push({day:g.run.day, text:`Mass-applied to ${count} jobs. Your résumé now weeps.`});
+      pushLog(g.run.day, `Mass-applied to ${count} jobs. Your résumé now weeps.`);
     } else if (effect.effect === 'bossFight') {
       startBossFight();
     } else if (effect.effect === 'postThis') {
@@ -1170,7 +1176,7 @@ const Engine = (() => {
       processPost(card);
     } else if (effect.effect === 'postCringe') {
       card.effects.forEach(e => { if(e.clout) g.run.stats.clout = DATA.clamp((g.run.stats.clout||0)+e.clout*.5,0,1000); if(e.cred) g.run.stats.credibility = DATA.clamp((g.run.stats.credibility||0)+e.cred,0,100); });
-      g.run.log.push({day:g.run.day, text:'Posted cringey content. The algorithm punished you.'});
+      pushLog(g.run.day, 'Posted cringey content. The algorithm punished you.');
     } else if (effect.effect === 'postViral') {
       processPost(card);
     } else if (effect.effect === 'postBait') {
@@ -1209,44 +1215,44 @@ const Engine = (() => {
     else if (effect.effect === 'sleep') { processRest(card); }
     else if (effect.effect === 'doomscroll') {
       g.run.stats.hope = DATA.clamp((g.run.stats.hope||0)-5,0,100);
-      g.run.log.push({day:g.run.day, text:'Doomscrolled instead of sleeping. Hope -5.'});
+      pushLog(g.run.day, 'Doomscrolled instead of sleeping. Hope -5.');
     } else if (effect.effect === 'recruitReply') {
       const roll = _rng();
-      if (roll < 0.3) { g.run.stats.hope = DATA.clamp((g.run.stats.hope||0)+5,0,100); g.run.stats.humanContact = DATA.clamp((g.run.stats.humanContact||0)+1,0,999); g.run.log.push({day:g.run.day, text:'A recruiter actually replied! "Great fit! Send resume!" ... then ghosted.'}); }
-      else if (roll < 0.6) { g.run.stats.hope = DATA.clamp((g.run.stats.hope||0)-3,0,100); g.run.log.push({day:g.run.day, text:'Recruiter reply was just a template. "We are pleased to inform you..." pleased with whom?'}); }
-      else if (roll < 0.8) { g.run.stats.robotSuspicion = DATA.clamp((g.run.stats.robotSuspicion||0)+2,0,100); g.run.log.push({day:g.run.day, text:'Recruiter asked for your SSN. You politely declined. They blocked you.'}); }
-      else { g.run.stats.clout = DATA.clamp((g.run.stats.clout||0)+3,0,999); g.run.log.push({day:g.run.day, text:'The recruiter liked your profile picture. Clout +3.'}); }
+      if (roll < 0.3) { g.run.stats.hope = DATA.clamp((g.run.stats.hope||0)+5,0,100); g.run.stats.humanContact = DATA.clamp((g.run.stats.humanContact||0)+1,0,999); pushLog(g.run.day, 'A recruiter actually replied! "Great fit! Send resume!" ... then ghosted.'); }
+      else if (roll < 0.6) { g.run.stats.hope = DATA.clamp((g.run.stats.hope||0)-3,0,100); pushLog(g.run.day, 'Recruiter reply was just a template. "We are pleased to inform you..." pleased with whom?'); }
+      else if (roll < 0.8) { g.run.stats.robotSuspicion = DATA.clamp((g.run.stats.robotSuspicion||0)+2,0,100); pushLog(g.run.day, 'Recruiter asked for your SSN. You politely declined. They blocked you.'); }
+      else { g.run.stats.clout = DATA.clamp((g.run.stats.clout||0)+3,0,999); pushLog(g.run.day, 'The recruiter liked your profile picture. Clout +3.'); }
     } else if (effect.effect === 'recruitBlock') {
-      g.run.log.push({day:g.run.day, text:'Blocked a recruiter. Feels good. Makes you feel smaller.'});
+      pushLog(g.run.day, 'Blocked a recruiter. Feels good. Makes you feel smaller.');
     } else if (effect.effect === 'recruitCall') {
-      g.run.log.push({day:g.run.day, text:'Scheduled a "quick 15-min call." It will be 45 minutes and involve a PowerPoint.'});
+      pushLog(g.run.day, 'Scheduled a "quick 15-min call." It will be 45 minutes and involve a PowerPoint.');
       g.run.stats.hope = DATA.clamp((g.run.stats.hope||0)-2,0,100);
     } else if (effect.effect === 'sendSSN') {
       g.run.stats.scamsFell = (g.run.stats.scamsFell||0)+1;
       g.run.flags.scamsReceived = (g.run.flags.scamsReceived||0) + 1;
       g.run.stats.hope = DATA.clamp((g.run.stats.hope||0)-15,0,100);
       g.run.stats.rent = DATA.clamp((g.run.stats.rent||0)-200,0,9999);
-      g.run.log.push({day:g.run.day, text:'Sent your SSN to a scammer. They said "Thank you, dear!" and disappeared.'});
+      pushLog(g.run.day, 'Sent your SSN to a scammer. They said "Thank you, dear!" and disappeared.');
     } else if (effect.effect === 'acceptCheck') {
       g.run.stats.scamsFell = (g.run.stats.scamsFell||0)+1;
       g.run.flags.scamsReceived = (g.run.flags.scamsReceived||0) + 1;
       g.run.stats.rent = DATA.clamp((g.run.stats.rent||0)-100,0,9999);
-      g.run.log.push({day:g.run.day, text:'Accepted the check deposit scam. The check bounced. You owe $500.'});
+      pushLog(g.run.day, 'Accepted the check deposit scam. The check bounced. You owe $500.');
     } else if (effect.effect === 'reverseImg') {
       g.run.stats.scamEvidence = DATA.clamp((g.run.stats.scamEvidence||0)+1,0,100);
-      g.run.log.push({day:g.run.day, text:'Reverse image search confirmed: the recruiter is a stock photo model named "Anna." Scam Evidence +1.'});
+      pushLog(g.run.day, 'Reverse image search confirmed: the recruiter is a stock photo model named "Anna." Scam Evidence +1.');
     } else if (effect.effect === 'glassbore') {
-      g.run.log.push({day:g.run.day, text:'Checked Glassbore. Review: "4 stars, would be PIPped again." - Current Employee'});
+      pushLog(g.run.day, 'Checked Glassbore. Review: "4 stars, would be PIPped again." - Current Employee');
     } else if (effect.effect === 'askSalary') {
       g.run.stats.hope = DATA.clamp((g.run.stats.hope||0)+5,0,100);
       g.run.stats.credibility = DATA.clamp((g.run.stats.credibility||0)+3,0,100);
-      g.run.log.push({day:g.run.day, text:'Asked for salary range. The recruiter said "competitive." You said "I\'ll take that."'});
+      pushLog(g.run.day, 'Asked for salary range. The recruiter said "competitive." You said "I\'ll take that."');
     } else if (effect.effect === 'declineUnpaid') {
       g.run.stats.credibility = DATA.clamp((g.run.stats.credibility||0)+5,0,100);
-      g.run.log.push({day:g.run.day, text:'Declined the unpaid take-home. The hiring manager said "We respect boundaries." They did not.'});
+      pushLog(g.run.day, 'Declined the unpaid take-home. The hiring manager said "We respect boundaries." They did not.');
     } else if (effect.effect === 'saveReferral') {
       g.run.flags.referralSaved = true;
-      g.run.log.push({day:g.run.day, text:'Saved the referral for later. It may never be used. Like your hopes.'});
+      pushLog(g.run.day, 'Saved the referral for later. It may never be used. Like your hopes.');
     } else if (effect.effect === 'algChange') {
       /* Effects already applied */
     } else if (effect.effect === 'layoffWave') { /* effects applied */ }
@@ -1259,57 +1265,61 @@ const Engine = (() => {
     else if (effect.effect === 'friendHired') { /* effects applied */ }
     else if (effect.effect === 'vibesShift') { /* effects applied */ }
     else if (effect.effect === 'discard') {
-      g.run.log.push({day:g.run.day, text:'Skipped past another opportunity. The void appreciates your time.'});
+      pushLog(g.run.day, 'Skipped past another opportunity. The void appreciates your time.');
     } else if (effect.effect === 'captchaEvent') { startCaptcha(); }
     else if (effect.effect === 'paEvent') { startPA(); }
     else if (effect.effect === 'nothing') {
       if (_rng() > (effect.chance||0)) {
-        g.run.log.push({day:g.run.day, text:'...nothing happened. The recruiter never replied. Classic.'});
+        pushLog(g.run.day, '...nothing happened. The recruiter never replied. Classic.');
       }
     }
   }
 
   function processPost(card) {
     const g = _g;
+    snapStats();
     g.run.stats.clout = DATA.clamp((g.run.stats.clout||0) + 10, 0, 1000);
     g.run.stats.credibility = DATA.clamp((g.run.stats.credibility||0) - 2, 0, 100);
     if (card.effects && card.effects[0].viral && _rng() < card.effects[0].viral) {
       g.run.stats.clout = DATA.clamp((g.run.stats.clout||0) + 25, 0, 1000);
       g.run.stats.hope = DATA.clamp((g.run.stats.hope||0) + 10, 0, 100);
-      g.run.log.push({day:g.run.day, text:'Your post went VIRAL. 14k reactions. 12k of them are bots. 2k are recruiters.'});
+      pushLog(g.run.day, 'Your post went VIRAL. 14k reactions. 12k of them are bots. 2k are recruiters.');
       track('viralPosts', 1);
       if (card.effects[0].agree) track('agreeViral', 1);
     } else {
-      g.run.log.push({day:g.run.day, text:'Posted on Linkfluence. Got 3 likes. 1 is from your mom.'});
+      pushLog(g.run.day, 'Posted on Linkfluence. Got 3 likes. 1 is from your mom.');
     }
   }
 
   function processNetwork(card) {
     const g = _g;
+    snapStats();
     g.run.stats.humanContact = DATA.clamp((g.run.stats.humanContact||0) + 2, 0, 999);
     g.run.stats.hope = DATA.clamp((g.run.stats.hope||0) + 2, 0, 100);
-    g.run.log.push({day:g.run.day, text:'Connected with a human. They liked your post. The circle of life.'});
+    pushLog(g.run.day, 'Connected with a human. They liked your post. The circle of life.');
   }
 
   function processReferral() {
     const g = _g;
+    snapStats();
     g.run.flags.referralUsed = true;
     g.run.stats.humanContact = DATA.clamp((g.run.stats.humanContact||0) + 3, 0, 999);
     g.run.stats.hope = DATA.clamp((g.run.stats.hope||0) + 5, 0, 100);
-    g.run.log.push({day:g.run.day, text:'Used a referral! Your friend\'s cousin\'s friend works there. Bot Aura has been bypassed.'});
+    pushLog(g.run.day, 'Used a referral! Your friend\'s cousin\'s friend works there. Bot Aura has been bypassed.');
   }
 
   function processResume(card) {
     const g = _g;
+    snapStats();
     if (card.id === 'keyword-stuff') {
       g.run.stats.atsFavor = DATA.clamp((g.run.stats.atsFavor||0) + 8, 0, 100);
       g.run.stats.robotSuspicion = DATA.clamp((g.run.stats.robotSuspicion||0) + 5, 0, 100);
       if ((g.run.stats.credibility||0) < 5) g.run.stats.credibility = DATA.clamp((g.run.stats.credibility||0) - 5, 0, 100);
-      g.run.log.push({day:g.run.day, text:'Keyword-stuffed your résumé. Bot Aura loves it. Your soul weeps.'});
+      pushLog(g.run.day, 'Keyword-stuffed your résumé. Bot Aura loves it. Your soul weeps.');
     } else if (card.id === 'rewrite-bullets') {
       g.run.stats.atsFavor = DATA.clamp((g.run.stats.atsFavor||0) + 5, 0, 100);
       g.run.stats.credibility = DATA.clamp((g.run.stats.credibility||0) + 5, 0, 100);
-      g.run.log.push({day:g.run.day, text:'Rewrote bullets as impact metrics. "Increased synergy by 40% YoY."'});
+      pushLog(g.run.day, 'Rewrote bullets as impact metrics. "Increased synergy by 40% YoY."');
     } else if (card.id === 'add-ai') {
       g.run.stats.buzzwords = g.run.stats.buzzwords || [];
       g.run.stats.buzzwords.push('AI');
@@ -1317,54 +1327,55 @@ const Engine = (() => {
       g.run.stats.atsFavor = DATA.clamp((g.run.stats.atsFavor||0) + 3, 0, 100);
       g.run.stats.robotSuspicion = DATA.clamp((g.run.stats.robotSuspicion||0) + 8, 0, 100);
       g.run.stats.credibility = DATA.clamp((g.run.stats.credibility||0) - 2, 0, 100);
-      g.run.log.push({day:g.run.day, text:'Added "AI" to everything. Bot Aura is pleased. Humans flee.'});
+      pushLog(g.run.day, 'Added "AI" to everything. Bot Aura is pleased. Humans flee.');
     } else if (card.id === 'certificate') {
       g.run.stats.atsFavor = DATA.clamp((g.run.stats.atsFavor||0) + 4, 0, 100);
       g.run.stats.clout = DATA.clamp((g.run.stats.clout||0) + 3, 0, 999);
-      g.run.log.push({day:g.run.day, text:'Completed "AI for Business Leaders: A Beginner\'s Guide to Nothing."'});
+      pushLog(g.run.day, 'Completed "AI for Business Leaders: A Beginner\'s Guide to Nothing."');
     } else if (card.id === 'portfolio') {
       g.run.stats.credibility = DATA.clamp((g.run.stats.credibility||0) + 8, 0, 100);
       g.run.stats.atsFavor = DATA.clamp((g.run.stats.atsFavor||0) + 5, 0, 100);
-      g.run.log.push({day:g.run.day, text:'Built a portfolio project. Real code. Real credibility. Real time wasted.'});
+      pushLog(g.run.day, 'Built a portfolio project. Real code. Real credibility. Real time wasted.');
     } else if (card.id === 'plain-text') {
       g.run.stats.robotSuspicion = DATA.clamp((g.run.stats.robotSuspicion||0) - 5, 0, 100);
       g.run.stats.atsFavor = DATA.clamp((g.run.stats.atsFavor||0) + 3, 0, 100);
-      g.run.log.push({day:g.run.day, text:'Cleaned up résumé to plain text. Looks like a crime report. Bot Aura happy.'});
+      pushLog(g.run.day, 'Cleaned up résumé to plain text. Looks like a crime report. Bot Aura happy.');
     } else if (card.id === 'cover-letter') {
       g.run.stats.credibility = DATA.clamp((g.run.stats.credibility||0) + 3, 0, 100);
-      g.run.log.push({day:g.run.day, text:'Wrote a genuine cover letter. Not AI-generated. How brave.'});
+      pushLog(g.run.day, 'Wrote a genuine cover letter. Not AI-generated. How brave.');
     } else if (card.id === 'aiCover') {
       g.run.stats.robotSuspicion = DATA.clamp((g.run.stats.robotSuspicion||0) + 5, 0, 100);
-      g.run.log.push({day:g.run.day, text:'Used AI to write a cover letter about being authentic. The irony is lost on the Bot Aura.'});
+      pushLog(g.run.day, 'Used AI to write a cover letter about being authentic. The irony is lost on the Bot Aura.');
     } else if (card.id === 'lie-years') {
       g.run.stats.atsFavor = DATA.clamp((g.run.stats.atsFavor||0) + 10, 0, 100);
       g.run.stats.robotSuspicion = DATA.clamp((g.run.stats.robotSuspicion||0) + 8, 0, 100);
-      g.run.log.push({day:g.run.day, text:'Lied about experience. The Bot Aura is happy. The background check is not.'});
+      pushLog(g.run.day, 'Lied about experience. The Bot Aura is happy. The background check is not.');
     }
   }
 
   function processRest(card) {
     const g = _g;
+    snapStats();
     if (card.id === 'touch-grass') {
       g.run.stats.hope = DATA.clamp((g.run.stats.hope||0) + 18, 0, 100);
-      g.run.log.push({day:g.run.day, text:'Touched grass. It was green. You forgot what green looked like.'});
+      pushLog(g.run.day, 'Touched grass. It was green. You forgot what green looked like.');
     } else if (card.id === 'delete-app') {
       g.run.stats.hope = DATA.clamp((g.run.stats.hope||0) + 25, 0, 100);
       g.run.flags.noRecruiterTomorrow = true;
-      g.run.log.push({day:g.run.day, text:'Deleted the app. For one day. Tomorrow you\'ll reinstall it. You always do.'});
+      pushLog(g.run.day, 'Deleted the app. For one day. Tomorrow you\'ll reinstall it. You always do.');
     } else if (card.id === 'therapy') {
       g.run.stats.hope = DATA.clamp((g.run.stats.hope||0) + 35, 0, 100);
       g.run.stats.rent = DATA.clamp((g.run.stats.rent||0) - 30, 0, 9999);
-      g.run.log.push({day:g.run.day, text:'Therapy session. Therapist: "The job market isn\'t a personal attack." You: "That\'s... helpful."'});
+      pushLog(g.run.day, 'Therapy session. Therapist: "The job market isn\'t a personal attack." You: "That\'s... helpful."');
     } else if (card.id === 'cookMeal') {
       g.run.stats.hope = DATA.clamp((g.run.stats.hope||0) + 7, 0, 100);
-      g.run.log.push({day:g.run.day, text:'Cooked a real meal. It tasted like... not sadness.'});
+      pushLog(g.run.day, 'Cooked a real meal. It tasted like... not sadness.');
     } else if (card.id === 'eatCereal') {
       g.run.stats.hope = DATA.clamp((g.run.stats.hope||0) + 2, 0, 100);
-      g.run.log.push({day:g.run.day, text:'Ate cereal for dinner. The cereal was cold. Just like your prospects.'});
+      pushLog(g.run.day, 'Ate cereal for dinner. The cereal was cold. Just like your prospects.');
     } else if (card.id === 'sleep') {
       g.run.stats.hope = DATA.clamp((g.run.stats.hope||0) + 3, 0, 100);
-      g.run.log.push({day:g.run.day, text:'Slept. The only thing the job market hasn\'t figured out how to monetize.'});
+      pushLog(g.run.day, 'Slept. The only thing the job market hasn\'t figured out how to monetize.');
     }
   }
 
@@ -1376,7 +1387,7 @@ const Engine = (() => {
     g.run.flags.ghostsExposed = (g.run.flags.ghostsExposed||0) + 1;
     track('ghostsExposed', 1);
     track('ghostsExposedLifetime', 1);
-    g.run.log.push({day:g.run.day, text:'Exposed a ghost job! The listing had been open since the invention of dial-up.'});
+    pushLog(g.run.day, 'Exposed a ghost job! The listing had been open since the invention of dial-up.');
   }
 
   /* Lead progression at end of day */
@@ -1397,7 +1408,7 @@ const Engine = (() => {
 
       /* Auto-ghost after 7 days */
       if (lead.daysSinceUpdate >= 7 && lead.stageIdx < 8) {
-        g.run.log.push({day:g.run.day, text:`${lead.company} ghosted you after ${lead.daysSinceUpdate} days. Classic.`});
+        pushLog(g.run.day, `${lead.company} ghosted you after ${lead.daysSinceUpdate} days. Classic.`);
         g.run.activeLeads.splice(i, 1);
         track('leadsGhosted', 1);
         track('leadsGhostedRun', 1);
@@ -1417,17 +1428,17 @@ const Engine = (() => {
           if (lead.stageIdx >= 8) {
             /* OFFER! */
             offers.push(lead);
-            g.run.log.push({day:g.run.day, text:`🎉 OFFER from ${lead.company}: ${lead.role} — ${lead.pay}!`});
+            pushLog(g.run.day, `🎉 OFFER from ${lead.company}: ${lead.role} — ${lead.pay}!`);
             g.run.activeLeads.splice(i, 1);
             lead.stageIdx = 8;
           } else {
             lead.history.push({day:g.run.day, text:stageNames[lead.stageIdx] || 'Stage ' + (lead.stageIdx+1)});
-            g.run.log.push({day:g.run.day, text:`${lead.company}: Moved to "${stageNames[lead.stageIdx] || 'unknown'}"`});
+            pushLog(g.run.day, `${lead.company}: Moved to "${stageNames[lead.stageIdx] || 'unknown'}"`);
           }
           advanced = true;
         } else if (_rng() < lead.ghostChance) {
           /* Ghost */
-          g.run.log.push({day:g.run.day, text:`${lead.company} ghosted you. Your résumé is now part of their "talent pipeline."`});
+          pushLog(g.run.day, `${lead.company} ghosted you. Your résumé is now part of their "talent pipeline."`);
           g.run.activeLeads.splice(i, 1);
           track('leadsGhosted', 1);
           track('leadsGhostedRun', 1);
@@ -1437,19 +1448,19 @@ const Engine = (() => {
           g.run.stats.scamsFell = (g.run.stats.scamsFell||0) + 1;
           g.run.flags.scamsReceived = (g.run.flags.scamsReceived||0) + 1;
           g.run.stats.hope = DATA.clamp((g.run.stats.hope||0) - 5, 0, 100);
-          g.run.log.push({day:g.run.day, text:`${lead.company} turned out to be a scam! They asked for your SSN.`});
+          pushLog(g.run.day, `${lead.company} turned out to be a scam! They asked for your SSN.`);
           g.run.activeLeads.splice(i, 1);
         } else if (_rng() < 0.15) {
           /* Paused */
           lead.stalled = true;
           lead.history.push({day:g.run.day, text:'Role paused'});
-          g.run.log.push({day:g.run.day, text:`${lead.company}: Role put on hold. "Due to strategic realignment."`});
+          pushLog(g.run.day, `${lead.company}: Role put on hold. "Due to strategic realignment."`);
         } else {
           /* Stall */
           if (lead.daysSinceUpdate > 3) {
             g.run.stats.hope = DATA.clamp((g.run.stats.hope||0) - 1, 0, 100);
           }
-          g.run.log.push({day:g.run.day, text:`${lead.company}: No update. Stalling. Classic.`});
+          pushLog(g.run.day, `${lead.company}: No update. Stalling. Classic.`);
         }
       }
     }
@@ -1461,12 +1472,12 @@ const Engine = (() => {
     const g = _g;
     g.run.day++;
     g.run.energy = g.run.maxEnergy;
-    g.run.log.push({day:g.run.day, text:`☀️ Day ${g.run.day} begins.`});
+    pushLog(g.run.day, `☀️ Day ${g.run.day} begins.`);
 
     /* Weekly rent */
     if (g.run.day % 5 === 0 && g.run.day > 0) {
       g.run.stats.rent = DATA.clamp((g.run.stats.rent||0) - 25, 0, 9999);
-      g.run.log.push({day:g.run.day, text:'💸 Rent due! -$25. The landlord does not accept "vibes" as payment.'});
+      pushLog(g.run.day, '💸 Rent due! -$25. The landlord does not accept "vibes" as payment.');
     }
 
     /* Sleep recovery */
@@ -1729,8 +1740,9 @@ const Engine = (() => {
         _g.run.flags.bossFightActive = false;
         _g.run.flags.bossFightWon = true;
         _g.run.flags.bossFightWonFirstTry = failures === 0;
+        snapStats();
         _g.run.stats.atsFavor = DATA.clamp((_g.run.stats.atsFavor||0) + 5, 0, 100);
-        _g.run.log.push({day:_g.run.day, text:'🔐 Defeated the Workday Password Reset Boss! Bot Aura +5. The password was "hunter42B!"'});
+        pushLog(_g.run.day, '🔐 Defeated the Workday Password Reset Boss! Bot Aura +5. The password was "hunter42B!"');
       } else {
         failures++;
         failEl.textContent = `Failures: ${failures}/3`;
@@ -1738,8 +1750,9 @@ const Engine = (() => {
           pw.classList.remove('active');
           input.removeEventListener('input', renderReqs);
           _g.run.flags.bossFightActive = false;
+          snapStats();
           _g.run.stats.hope = DATA.clamp((_g.run.stats.hope||0) - 10, 0, 100);
-          _g.run.log.push({day:_g.run.day, text:'🔐 Boss Fight failed 3 times. You wasted Energy on password resets. Hope -10.'});
+          pushLog(_g.run.day, '🔐 Boss Fight failed 3 times. You wasted Energy on password resets. Hope -10.');
         } else {
           /* Add harder requirements */
           if (activeReqs.length < DATA.PW_REQS.length) activeReqs.push(DATA.PW_REQS[activeReqs.length]);
@@ -1752,7 +1765,7 @@ const Engine = (() => {
       pw.classList.remove('active');
       input.removeEventListener('input', renderReqs);
       _g.run.flags.bossFightActive = false;
-      _g.run.log.push({day:_g.run.day, text:'🔐 Gave up on the password reset. Some battles you just can\'t win.'});
+      pushLog(_g.run.day, '🔐 Gave up on the password reset. Some battles you just can\'t win.');
     };
 
     pw.classList.add('active');
@@ -1769,8 +1782,9 @@ const Engine = (() => {
         pw.classList.remove('active');
         input.removeEventListener('input', renderReqs);
         _g.run.flags.bossFightActive = false;
+        snapStats();
         _g.run.stats.hope = DATA.clamp((_g.run.stats.hope||0) - 10, 0, 100);
-        _g.run.log.push({day:_g.run.day, text:'🔐 Time ran out on the boss fight. Password reset: lost. Energy: also lost.'});
+        pushLog(_g.run.day, '🔐 Time ran out on the boss fight. Password reset: lost. Energy: also lost.');
       }
     }, 1000);
     _g.run._bossTimer = timer;
@@ -1807,11 +1821,13 @@ const Engine = (() => {
     document.getElementById('captcha-submit').onclick = () => {
       overlay.classList.remove('active');
       if (selected.length >= 3) {
+        snapStats();
         _g.run.stats.robotSuspicion = DATA.clamp((_g.run.stats.robotSuspicion||0) - 3, 0, 100);
-        _g.run.log.push({day:_g.run.day, text:'🤖 Passed the Captcha for Employment. You are "human enough." Robot Suspicion -3.'});
+        pushLog(_g.run.day, '🤖 Passed the Captcha for Employment. You are "human enough." Robot Suspicion -3.');
       } else {
+        snapStats();
         _g.run.stats.hope = DATA.clamp((_g.run.stats.hope||0) - 3, 0, 100);
-        _g.run.log.push({day:_g.run.day, text:'🤖 Failed the Captcha. "Please select all squares with transferable skills." You selected 0. How ironic.'});
+        pushLog(_g.run.day, '🤖 Failed the Captcha. "Please select all squares with transferable skills." You selected 0. How ironic.');
       }
     };
 
@@ -1854,8 +1870,9 @@ const Engine = (() => {
           held = false;
           holdBtn.style.display = 'none';
           actionsEl.style.display = 'flex';
-          _g.run.log.push({day:_g.run.day, text:'🎥 Completed the one-way video interview. You sounded professional. You were crying.'});
+          snapStats();
           _g.run.stats.hope = DATA.clamp((_g.run.stats.hope||0) - 3, 0, 100);
+          pushLog(_g.run.day, '🎥 Completed the one-way video interview. You sounded professional. You were crying.');
         }
       }, 100);
     };
@@ -1893,8 +1910,9 @@ const Engine = (() => {
 
     document.getElementById('pa-submit').onclick = () => {
       overlay.classList.remove('active');
+      snapStats();
       _g.run.stats.hope = DATA.clamp((_g.run.stats.hope||0) - 3, 0, 100);
-      _g.run.log.push({day:_g.run.day, text:'📝 Personality Assessment complete. Result: "Borderline Culture Fit." As expected.'});
+      pushLog(_g.run.day, '📝 Personality Assessment complete. Result: "Borderline Culture Fit." As expected.');
     };
 
     overlay.classList.add('active');
@@ -1907,7 +1925,7 @@ const Engine = (() => {
     const lead = g.run.activeLeads.find(l => l.id === leadId);
     if (!lead || g.run.energy < 1) return null;
     g.run.energy--;
-    const beforeStats = JSON.parse(JSON.stringify(g.run.stats));
+    snapStats();
 
     /* Track follow-up count and stack ghost chance */
     lead._followUpCount = (lead._followUpCount || 0) + 1;
@@ -1918,7 +1936,7 @@ const Engine = (() => {
       lead.stageIdx++;
       const names = ['Recruiter Screen','Video Interview','Take-Home','Panel Interview','Final Interview'];
       const stageName = names[Math.min(lead.stageIdx-1, names.length-1)] || "We're still reviewing";
-      g.run.log.push({day:g.run.day, text:`Followed up with ${lead.company}. They responded: "${stageName}"!`});
+      pushLog(g.run.day, `Followed up with ${lead.company}. They responded: "${stageName}"!`);
       return { title:'📧 Good Response!', response:`Followed up with ${lead.company}. They responded: "${stageName}"!`, stats:[] };
     } else {
       const oldHope = g.run.stats.hope || 0;
@@ -1929,10 +1947,8 @@ const Engine = (() => {
       } else {
         response = `Followed up with ${lead.company}. They saw your message. Then ghosted again.`;
       }
-      g.run.log.push({day:g.run.day, text:`Followed up with ${lead.company}. They saw your message. Then ghosted again.`});
-      const deltas = [];
-      if (g.run.stats.hope !== oldHope) deltas.push({ key:'hope', display:'Hope', icon:'💡', before: oldHope, after: g.run.stats.hope, delta: g.run.stats.hope - oldHope });
-      return { title:'📭 Ghosted Again', response, stats:deltas };
+      pushLog(g.run.day, `Followed up with ${lead.company}. They saw your message. Then ghosted again.`);
+      return { title:'📭 Ghosted Again', response, stats:computeStatDeltas({hope:oldHope}, g.run.stats) };
     }
   }
 
@@ -1957,6 +1973,51 @@ const Engine = (() => {
       _meta.lifetime.cryptidRuns = 0;
     }
     saveMeta();
+  }
+
+  /* Snap current stats for delta computation on next pushLog */
+  let _snapStats = null;
+  function snapStats() {
+    const s = {};
+    for (const k of Object.keys(_g.run.stats)) {
+      s[k] = Array.isArray(_g.run.stats[k]) ? [..._g.run.stats[k]] : _g.run.stats[k];
+    }
+    _snapStats = s;
+  }
+  function pushLog(day, text) {
+    const deltas = computeStatDeltas(_snapStats || {}, _g.run.stats);
+    _g.run.log.push({ day, text, deltas: deltas.length ? deltas : null });
+    _snapStats = null;
+  }
+  /* Compute stat deltas between before and after snapshots */
+  function computeStatDeltas(before, after) {
+    const deltas = [];
+    const statMeta = {
+      rent: { icon:'💰', label:'Rent', display:'Rent Money' },
+      hope: { icon:'💡', label:'Hope', display:'Hope' },
+      credibility: { icon:'🎯', label:'Cred', display:'Credibility' },
+      clout: { icon:'⭐', label:'Clout', display:'Clout' },
+      atsFavor: { icon:'🤖', label:'Bot Aura', display:'Bot Aura' },
+      robotSuspicion: { icon:'👁️', label:'Robot', display:'Robot Suspicion' },
+      humanContact: { icon:'🤝', label:'Human', display:'Human Contact' },
+      energy: { icon:'☕', label:'Energy', display:'Energy' },
+      scamEvidence: { icon:'🚩', label:'Scam', display:'Scam Evidence' },
+      ghostEvidence: { icon:'👻', label:'Ghost', display:'Ghost Evidence' },
+      scamsFell: { icon:'🛡️', label:'Scams', display:'Scams Felled' },
+    };
+    for (const key of Object.keys(statMeta)) {
+      const beforeVal = before[key] !== undefined ? before[key] : 0;
+      const afterVal = after[key] !== undefined ? after[key] : 0;
+      if (Array.isArray(beforeVal)) {
+        const diff = afterVal.length - beforeVal.length;
+        if (diff !== 0) {
+          deltas.push({ key, display: statMeta[key].display, icon: statMeta[key].icon, before: beforeVal.length, after: afterVal.length, delta: diff });
+        }
+      } else if (beforeVal !== afterVal) {
+        deltas.push({ key, display: statMeta[key].display, icon: statMeta[key].icon, before: beforeVal, after: afterVal, delta: afterVal - beforeVal });
+      }
+    }
+    return deltas;
   }
 
   return {
@@ -1984,6 +2045,7 @@ const Engine = (() => {
     weightedPool, drawFeed, createLead, applyCard, resolveLeads, advanceDay,
     checkLosses, checkWins, track, checkAchievements, saveHighScore,
     startBossFight, startCaptcha, startVideoInterview, startPA, followUpLead,
+    snapStats, pushLog, computeStatDeltas,
     clamp: DATA.clamp,
     showToast,
   };
@@ -2214,7 +2276,7 @@ const UI = (() => {
       const danger = (st.key === 'robotSuspicion') ? val > 75 : (st.key === 'rent' || st.key === 'hope') ? val < 25 : false;
       const hasFail = st.fail && failureStats.includes(st.key);
 
-      return `<div class="stat-item" aria-label="${st.label}: ${val}">
+      return `<div class="stat-item" data-stat="${st.key}" aria-label="${st.label}: ${val}">
         <span class="stat-icon">${st.icon}</span>
         <svg class="stat-gauge" viewBox="0 0 36 22" aria-hidden="true">
           <path class="track-arc" d="M3 17 A15 10 0 0 1 33 17"/>
@@ -2233,7 +2295,7 @@ const UI = (() => {
           border:1.5px solid ${i < g.run.energy ? '#C8A951' : 'rgba(27,42,78,.25)'};
           margin:0 1px;transition:background .2s"></span>`
       ).join('');
-      energyEl.innerHTML = `<span class="energy-icon">⚡</span> ${pips}`;
+      energyEl.innerHTML = `<span class="energy-icon">☕</span> ${pips}`;
     }
   }
 
@@ -2262,19 +2324,21 @@ const UI = (() => {
       const catColors = {job:'var(--navy)',recruiter:'var(--teal)',post:'var(--gold)',network:'#7a9a6a',resume:'#8a6a9a',investigate:'var(--red)',rest:'#6aaa8a',event:'#aa6a6a'};
       const catColor = catColors[card.category] || 'var(--navy)';
       const extraClass = card.id === 'salary-cryptid' ? ' salary-cryptid' : '';
-      const investigateBtn = (['job','recruiter'].includes(card.category) && card.redFlags > 0 && !card._investigated && g.run.energy >= 1)
-        ? `<div class="card-investigate"><button class="card-btn discard" data-idx="${idx}" data-btn="_investigateInline" aria-label="Investigate this listing">🔍 Investigate</button></div>`
-        : '';
+      /* Buttons include native buttons + inline investigate if applicable */
+      const allBtns = card.buttons.slice();
+      const canInvestigate = (['job','recruiter'].includes(card.category) && card.redFlags > 0 && !card._investigated && g.run.energy >= 1);
+      if (canInvestigate) {
+        allBtns.push({effect:'_investigateInline',label:'🔍 Investigate',cost:{energy:1},isDiscard:true});
+      }
       return `<div class="feed-card card-${card.category}${extraClass}">
         <div class="card-header">
           <span class="card-title">${card.title}</span>
           <span class="card-category-badge" style="background:${catColor}22;color:${catColor};border:1px solid ${catColor}44">${card.category}</span>
-          <span class="card-cost">⚡ ${postCost}</span>
+          <span class="card-cost">☕ ${postCost}</span>
         </div>
         <div class="card-flavor">${card.flavor}</div>
-        ${investigateBtn}
         ${ghostReveal}
-        <div class="card-buttons">${card.buttons.map((btn, bi) => {
+        <div class="card-buttons">${allBtns.map((btn, bi) => {
           const btnCost = (card.category === 'investigate' && g.run.background === 'ghost-vigilante') && (btn.effect === 'investigate' || btn.effect === 'reverseImg' || btn.effect === 'glassbore' || btn.effect === 'askSalary' || btn.effect === 'reportScam') ? 0 : (btn.cost?.energy != null ? btn.cost.energy : 1);
           const canBtn = g.run.energy >= btnCost;
           /* Ghost Vigilante can't easy apply */
@@ -2282,7 +2346,7 @@ const UI = (() => {
           const blocked = g.run.background === 'ghost-vigilante' && isEasy;
           /* Discard effects look dismissable; energy-cost = primary; no-cost = secondary */
           const DISCARD_EFFECTS = ['discard','ignore','decline','cancel','nothing','recruitBlock'];
-          const isDiscard = DISCARD_EFFECTS.includes(btn.effect);
+          const isDiscard = DISCARD_EFFECTS.includes(btn.effect) || btn.isDiscard;
           const btnClass = isDiscard ? 'discard' : (btnCost > 0 ? 'primary' : 'secondary');
           return `<button class="card-btn ${btnClass}" data-idx="${idx}" data-btn="${btn.effect}" ${(!canBtn||blocked)?'disabled':''} aria-label="${btn.label}" title="${btn.label}">${btn.label}${blocked?' (🔒 Locked)':''}</button>`;
         }).join('')}</div>
@@ -2299,14 +2363,15 @@ const UI = (() => {
 
         /* Inline investigate button */
         if (effect === '_investigateInline') {
-          if (g.run.energy < 1) return;
-          g.run.energy--;
-          card._investigated = true;
-          toast('🔍 You read between the lines.', 'info');
-          renderFeed();
-          renderStatBar();
-          return;
-        }
+           if (g.run.energy < 1) return;
+           g.run.energy--;
+           card._investigated = true;
+           E.showToast('🔍 You read between the lines.', 'info');
+           renderFeed();
+           renderStatBar();
+           checkDayEnd();
+           return;
+         }
 
         /* Find the matching button's effect */
         const btnData = card.buttons.find(b => b.effect === effect);
@@ -2341,7 +2406,7 @@ const UI = (() => {
           checkDayEnd();
 
           /* Show result popup only when stats actually changed (not discard/ignore) */
-          const deltas = computeStatDeltas(beforeStats, afterStats);
+          const deltas = E.computeStatDeltas(beforeStats, afterStats);
           if (deltas.length > 0) {
             const response = generateResponse(btnData, card, deltas);
             showResultModal(btnData.label, response, deltas);
@@ -2349,38 +2414,6 @@ const UI = (() => {
         }
       };
     });
-  }
-
-  /* Compute stat deltas between before and after snapshots */
-  function computeStatDeltas(before, after) {
-    const deltas = [];
-    const statMeta = {
-      rent: { icon:'💰', label:'Rent', display:'Rent Money' },
-      hope: { icon:'💡', label:'Hope', display:'Hope' },
-          
-      credibility: { icon:'🎯', label:'Cred', display:'Credibility' },
-      clout: { icon:'⭐', label:'Clout', display:'Clout' },
-      atsFavor: { icon:'🤖', label:'Bot Aura', display:'Bot Aura' },
-      robotSuspicion: { icon:'👁️', label:'Robot', display:'Robot Suspicion' },
-      humanContact: { icon:'🤝', label:'Human', display:'Human Contact' },
-      energy: { icon:'⚡', label:'Energy', display:'Energy' },
-      scamEvidence: { icon:'🚩', label:'Scam', display:'Scam Evidence' },
-      ghostEvidence: { icon:'👻', label:'Ghost', display:'Ghost Evidence' },
-      scamsFell: { icon:'🛡️', label:'Scams', display:'Scams Felled' },
-    };
-    for (const key of Object.keys(statMeta)) {
-      const beforeVal = before[key] !== undefined ? before[key] : 0;
-      const afterVal = after[key] !== undefined ? after[key] : 0;
-      if (Array.isArray(beforeVal)) {
-        const diff = afterVal.length - beforeVal.length;
-        if (diff !== 0) {
-          deltas.push({ key, display: statMeta[key].display, icon: statMeta[key].icon, before: beforeVal.length, after: afterVal.length, delta: diff });
-        }
-      } else if (beforeVal !== afterVal) {
-        deltas.push({ key, display: statMeta[key].display, icon: statMeta[key].icon, before: beforeVal, after: afterVal, delta: afterVal - beforeVal });
-      }
-    }
-    return deltas;
   }
 
   /* Generate a clever response based on the action and stat changes */
@@ -2969,6 +3002,23 @@ profileViewed: [
 
   /* Show stat-delta toasts instead of result modal */
   function showResultModal(title, response, deltas) {
+    /* Floating deltas above stat bar items */
+    if (deltas.length) {
+      deltas.forEach((d, i) => {
+        const sign = d.delta > 0 ? '+' : '';
+        const cls = d.delta > 0 ? 'up' : 'down';
+        const item = document.querySelector(`.stat-item[data-stat="${d.key}"]`);
+        if (item) {
+          const fl = document.createElement('div');
+          fl.className = `stat-float ${cls}`;
+          fl.textContent = `${sign}${d.delta}`;
+          fl.style.animationDelay = `${i * 90}ms`;
+          item.appendChild(fl);
+          setTimeout(() => fl.remove(), 2600 + i * 90);
+        }
+      });
+    }
+    /* Side chips for full context */
     const container = document.getElementById('stat-delta-toast');
     if (container && deltas.length) {
       deltas.forEach((d, i) => {
@@ -2979,10 +3029,10 @@ profileViewed: [
         chip.style.animationDelay = `${i * 90}ms`;
         chip.textContent = `${d.icon} ${sign}${d.delta} ${d.display}`;
         container.appendChild(chip);
-        setTimeout(() => chip.remove(), 1300 + i * 90);
+        setTimeout(() => chip.remove(), 2400 + i * 90);
       });
     }
-    if (response) toast(response, 'info');
+    if (response) E.showToast(response, 'info');
   }
 
   function showFollowUpModal(result) {
@@ -3039,7 +3089,7 @@ profileViewed: [
         <span class="lead-badge ${stageClass}">${stageNames[stageIdx] || 'Unknown'}</span>
         ${vibeHTML}
         <div class="lead-days-since" style="${daysClass}">${days}d ago</div>
-        ${days >= 3 ? `<button class="lead-followup-btn" data-lead="${lead.id}" ${g.run.energy<1?'disabled':''} aria-label="Follow up with ${lead.company}">Follow Up (⚡1)</button>` : ''}
+        ${days >= 3 ? `<button class="lead-followup-btn" data-lead="${lead.id}" ${g.run.energy<1?'disabled':''} aria-label="Follow up with ${lead.company}">Follow Up (☕1)</button>` : ''}
       </div>`;
     }).join('');
 
@@ -3064,6 +3114,7 @@ profileViewed: [
     const log = document.getElementById('run-log');
     const entries = (g.run.log || []).slice(-5).reverse();
     log.replaceChildren();
+    const meta = {rent:'💰',hope:'💡',credibility:'🎯',clout:'⭐',atsFavor:'🤖',robotSuspicion:'👁️',humanContact:'🤝',energy:'☕',scamEvidence:'🚩',ghostEvidence:'👻',scamsFell:'🛡️',buzzwords:'🔤'};
     entries.forEach(e => {
       const div = document.createElement('div');
       div.className = 'run-log-entry';
@@ -3072,6 +3123,16 @@ profileViewed: [
       daySpan.textContent = 'D' + e.day;
       div.appendChild(daySpan);
       div.appendChild(document.createTextNode(e.text));
+      if (e.deltas && e.deltas.length) {
+        const deltaSpan = document.createElement('span');
+        deltaSpan.className = 'log-deltas';
+        deltaSpan.style.cssText = 'color:var(--accent);font-size:.7rem;margin-left:.3rem;white-space:nowrap;';
+        deltaSpan.textContent = ' ' + e.deltas.map(d => {
+          const sign = d.delta > 0 ? '+' : '';
+          return `${meta[d.key]||'📊'}${sign}${d.delta}`;
+        }).join(' ');
+        div.appendChild(deltaSpan);
+      }
       log.appendChild(div);
     });
   }
@@ -3197,7 +3258,7 @@ profileViewed: [
         if (typeof s[key] === 'number' && key !== 'maxEnergy' && prevStats2[key] !== s[key]) {
           const diff = s[key] - (prevStats2[key] || 0);
           if (diff !== 0) {
-            const icons = {rent:'💰',hope:'💡',credibility:'🎯',clout:'⭐',atsFavor:'🤖',robotSuspicion:'👁️',humanContact:'🤝',energy:'⚡',scamEvidence:'🚩',ghostEvidence:'👻',scamsFell:'🛡️'};
+            const icons = {rent:'💰',hope:'💡',credibility:'🎯',clout:'⭐',atsFavor:'🤖',robotSuspicion:'👁️',humanContact:'🤝',     energy:'☕',scamEvidence:'🚩',ghostEvidence:'👻',scamsFell:'🛡️'};
             const names = {rent:'Rent Money',hope:'Hope',credibility:'Credibility',clout:'Clout',atsFavor:'Bot Aura',robotSuspicion:'Robot Suspicion',humanContact:'Human Contact',energy:'Energy',scamEvidence:'Scam Evidence',ghostEvidence:'Ghost Evidence',scamsFell:'Scams Felled'};
             changesHTML.push(`<span class="stat-change ${diff>0?'up':'down'}">${icons[key]||''} ${names[key]||key}: ${diff>0?'+':''}${diff}</span>`);
           }
@@ -3311,10 +3372,10 @@ profileViewed: [
     document.getElementById('btn-share').onclick = () => {
       if (navigator.clipboard) {
         navigator.clipboard.writeText(shareText).then(() => {
-          toast('Cringe copied to clipboard! Share it with your remaining friends.', 'info');
-        }).catch(() => toast('Could not copy to clipboard.', 'info'));
+          E.showToast('Cringe copied to clipboard! Share it with your remaining friends.', 'info');
+        }).catch(() => E.showToast('Could not copy to clipboard.', 'info'));
       } else {
-        toast('Clipboard not available on this browser.', 'info');
+        E.showToast('Clipboard not available on this browser.', 'info');
       }
     };
 
