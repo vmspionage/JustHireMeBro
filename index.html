@@ -323,10 +323,10 @@ body{font-family:var(--font-ui);background:var(--bg);color:var(--text);min-heigh
 
 /* MOBILE */
 @media(max-width:768px){
-  .game-layout{grid-template-columns:1fr}
-  .leads-panel{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:150;background:var(--bg);flex-direction:column;padding:1rem}
-   .right-rail{display:none}
-  .feed-area{padding:.5rem}
+  .game-layout{grid-template-columns:1fr;grid-template-rows:auto 1fr auto;overflow:hidden}
+  .leads-panel{display:flex;position:static;z-index:auto;background:transparent;border-right:none;border-bottom:1px solid var(--card-border);max-height:20vh;overflow-y:auto;padding:.4rem .5rem}
+   .right-rail{display:flex;position:static;z-index:auto;background:transparent;border-left:none;border-top:1px solid var(--card-border);max-height:20vh;overflow-y:auto;padding:.4rem .5rem}
+  .feed-area{padding:.5rem;overflow-y:auto}
   .card-btn{font-size:.7rem;padding:.35rem .5rem}
   .card-title{font-size:.9rem}
   .stat-bar{font-size:.7rem}.stat-item{padding:.15rem .3rem}
@@ -2140,17 +2140,6 @@ const UI = (() => {
     try { renderRunLog(); } catch(e) { console.warn('renderRunLog failed:', e); }
     try { renderNewsTicker(); } catch(e) { console.warn('renderNewsTicker failed:', e); }
     try { updateScanline(); } catch(e) { console.warn('updateScanline failed:', e); }
-
-    /* Leads toggle button */
-    const leadsToggle = document.getElementById('leads-toggle-btn');
-    if (leadsToggle && window.innerWidth <= 768) {
-      leadsToggle.classList.toggle('active', document.getElementById('leads-panel').classList.contains('active'));
-      leadsToggle.onclick = () => {
-        const panel = document.getElementById('leads-panel');
-        panel.classList.toggle('active');
-        leadsToggle.classList.toggle('active');
-      };
-    }
 
     /* Keyboard shortcut for end day */
     document.addEventListener('keydown', handleKey);
