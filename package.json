@@ -1,0 +1,24 @@
+{
+  "name": "justhiremebro",
+  "version": "1.0.0",
+  "description": "> A satirical job-hunting game.",
+  "main": "tests.spec.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vmspionage/JustHireMeBro.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/vmspionage/JustHireMeBro/issues"
+  },
+  "homepage": "https://github.com/vmspionage/JustHireMeBro#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.59.1"
+  }
+}
