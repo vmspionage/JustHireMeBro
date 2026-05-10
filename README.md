@@ -4,6 +4,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Status](https://img.shields.io/badge/status-v1.0.0-green)]()
+[![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](https://vmspionage.github.io/JustHireMeBro/)
 
 ## What is it?
 
@@ -17,8 +18,8 @@ Every run is different. Cards are drawn from weighted pools covering job posting
 - **7 playable origins** — each with unique starting stats and passive perks
 - **Day-by-day card game loop** — manage energy, money, hope, credibility, and burnout across a ticking clock
 - **Micro-events** — boss fights, CAPTCHAs, video interviews, personality assessments, and more
-- **32 achievements** — for the completionists (and the deeply troubled)
-- **18 endings** — 9 victory paths and 9 loss paths, each with satirical HR-style review letters
+- **30 achievements** — for the completionists (and the deeply troubled)
+- **19 endings** — 9 victory paths and 10 loss paths, each with satirical HR-style review letters
 - **Fully offline** — zero external dependencies, zero network requests, works with a file:// URL
 
 ## Stats
