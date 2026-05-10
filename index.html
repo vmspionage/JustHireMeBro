@@ -361,7 +361,7 @@ body{font-family:var(--font-ui);background:var(--bg);color:var(--text);min-heigh
     <button class="title-btn secondary" id="btn-highscores" aria-label="High Scores">📊 High Scores</button>
     <button class="title-btn secondary" id="btn-credits" aria-label="Credits">🎮 Credits</button>
   </div>
-  <div class="title-meta">v1.0 — No data collected. No cookies. Like your career.</div>
+  <div class="title-meta">v1.0 — Fully offline. Collects nothing. Returns nothing. Like your applications.</div>
 </div>
 
 <!-- BACKGROUND SELECT -->
@@ -778,7 +778,7 @@ const DATA = (() => {
     {id:'salary-crypt',name:'Salary Range Cryptid',desc:'Find a recruiter who states salary upfront.',icon:'🦄',hidden:false},
     {id:'net-kpis',name:'Networking Is Just Friendship With KPIs',desc:'Win via referral.',icon:'🤝',hidden:false},
     {id:'prompt-eng',name:'Prompt Engineer by Accident',desc:'Win the AI ending.',icon:'🤖',hidden:false},
-    {id:'final-v7',name:'Final_Final_v7',desc:'Reach 4+ "final" interviews on a single lead.',icon:'♾️',hidden:false},
+    {id:'final-v7',name:'Final Round Forever',desc:'Reach 4+ "final" interviews on a single lead.',icon:'♾️',hidden:false},
     {id:'repost-antiq',name:'Reposted Since Antiquity',desc:'Expose a job marked "reposted 50+ times."',icon:'👻',hidden:false},
     {id:'one-click',name:'One Click, No Witnesses',desc:'Submit 20 Easy Apply applications.',icon:'🖱️',hidden:false},
     {id:'ghostbuster',name:'Ghostbuster',desc:'Expose 10 ghost jobs in one run.',icon:'👻',hidden:false},
@@ -806,7 +806,7 @@ const DATA = (() => {
   /* ENDINGS */
   const ENDINGS={
     'just-hired':{name:'Just Hired, Bro',type:'victory',icon:'🎉',review:'After a 30-day evaluation, the candidate demonstrated exceptional alignment with the modern hiring funnel. Strengths: resilience in the face of {autoRejections} automated rejections. Outcome: **Just Hired, Bro**.'},
-    'human-referral':{name:'Human Referral Any%',type:'victory',icon:'🤝',review:'The candidate bypassed the robot pipeline through the ancient art of "knowing someone." HR is not ready.'},
+    'human-referral':{name:'Human Referral Network',type:'victory',icon:'🤝',review:'The candidate bypassed the robot pipeline through the ancient art of "knowing someone." HR is not ready.'},
     'ghost-vig-end':{name:'Ghost Job Vigilante',type:'victory',icon:'🕵️',review:'After exposing {ghostEvidence} ghost listings, the candidate has become a menace to fake-job-posters. Linkfluence has issued a cease-and-desist.'},
     'scam-scammers':{name:'Scam the Scammers',type:'victory',icon:'🛡️',review:'After reporting {scamEvidence} scams, the candidate is a one-person FTC for the job market.'},
     'prompt-eng-end':{name:'Prompt Engineer by Accident',type:'victory',icon:'🤖',review:'By adding "AI" to your résumé so many times, Synergenix hired you to automate hiring. You are now the thing you fought.'},
@@ -853,12 +853,40 @@ const Engine = (() => {
   let _g, _meta, _rng;
   const STORAGE_KEY = 'juhirebro_v1';
 
+  /**
+   * Initialize or migrate saved game data. Handles schema version migration
+   * to prevent silent data loss when new achievements or lifetime fields
+   * are added in future updates.
+   */
   function initMeta() {
     try {
       const d = JSON.parse(localStorage.getItem(STORAGE_KEY));
-      if (d && d.v === 1) return d;
+      if (d && d.v !== undefined) return migrateMeta(d);
     } catch(e) {}
     return {v:1, achievements:{}, unlockedBg:['recent-grad','mid-career','tech-refugee','bootcamp','career-goblin'], highScores:[], lifetime:{ghostsExposed:0,scamsReported:0,runs:0,wins:0,cryptidRuns:0}};
+  }
+
+  /**
+   * Migrate saved data to the latest schema version.
+   * Merges new achievement IDs, lifetime fields, and unlocked backgrounds
+   * into existing saves without destroying old data.
+   * @param {object} d - The saved data object.
+   * @returns {object} Migrated data object with incremented version.
+   */
+  function migrateMeta(d) {
+    // Version 1 → 2: Add new achievement IDs, lifetime fields
+    if (d.v === 1) {
+      // Merge new lifetime fields with defaults
+      d.lifetime = Object.assign({
+        ghostsExposed: 0,
+        scamsReported: 0,
+        runs: 0,
+        wins: 0,
+        cryptidRuns: 0
+      }, d.lifetime || {});
+      d.v = 2;
+    }
+    return d;
   }
   function saveMeta() {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(_meta)); } catch(e) { showNotice('Saving disabled. Your achievements will not persist. Like your career.'); }
@@ -1680,6 +1708,7 @@ const Engine = (() => {
 
       if (allDone) {
         pw.classList.remove('active');
+        input.removeEventListener('input', renderReqs);
         _g.run.flags.bossFightActive = false;
         _g.run.flags.bossFightWon = true;
         _g.run.flags.bossFightWonFirstTry = failures === 0;
@@ -1690,6 +1719,7 @@ const Engine = (() => {
         failEl.textContent = `Failures: ${failures}/3`;
         if (failures >= 3) {
           pw.classList.remove('active');
+          input.removeEventListener('input', renderReqs);
           _g.run.flags.bossFightActive = false;
           _g.run.stats.burnout = DATA.clamp((_g.run.stats.burnout||0) + 10, 0, 100);
           _g.run.log.push({day:_g.run.day, text:'🔐 Boss Fight failed 3 times. You wasted Energy on password resets. Burnout +10.'});
@@ -1703,6 +1733,7 @@ const Engine = (() => {
 
     document.getElementById('pw-giveup').onclick = () => {
       pw.classList.remove('active');
+      input.removeEventListener('input', renderReqs);
       _g.run.flags.bossFightActive = false;
       _g.run.log.push({day:_g.run.day, text:'🔐 Gave up on the password reset. Some battles you just can\'t win.'});
     };
@@ -1719,6 +1750,7 @@ const Engine = (() => {
       if (timeLeft <= 0) {
         clearInterval(timer);
         pw.classList.remove('active');
+        input.removeEventListener('input', renderReqs);
         _g.run.flags.bossFightActive = false;
         _g.run.stats.burnout = DATA.clamp((_g.run.stats.burnout||0) + 10, 0, 100);
         _g.run.log.push({day:_g.run.day, text:'🔐 Time ran out on the boss fight. Password reset: lost. Energy: also lost.'});
@@ -2100,14 +2132,14 @@ const UI = (() => {
       E.showCountdown('Last day. Submit one more application. Post one more thing. The clock is ticking, bro.');
     }
 
-    /* Update UI */
-    renderStatBar();
-    renderDayHeader();
-    renderFeed();
-    renderLeads();
-    renderRunLog();
-    renderNewsTicker();
-    updateScanline();
+    /* Update UI (error-boundary: individual render failures don't crash the game) */
+    try { renderStatBar(); } catch(e) { console.warn('renderStatBar failed:', e); }
+    try { renderDayHeader(); } catch(e) { console.warn('renderDayHeader failed:', e); }
+    try { renderFeed(); } catch(e) { console.warn('renderFeed failed:', e); }
+    try { renderLeads(); } catch(e) { console.warn('renderLeads failed:', e); }
+    try { renderRunLog(); } catch(e) { console.warn('renderRunLog failed:', e); }
+    try { renderNewsTicker(); } catch(e) { console.warn('renderNewsTicker failed:', e); }
+    try { updateScanline(); } catch(e) { console.warn('updateScanline failed:', e); }
 
     /* Leads toggle button */
     const leadsToggle = document.getElementById('leads-toggle-btn');
@@ -2986,7 +3018,17 @@ profileViewed: [
     const g = E.state;
     const log = document.getElementById('run-log');
     const entries = (g.run.log || []).slice(-5).reverse();
-    log.innerHTML = entries.map(e => `<div class="run-log-entry"><span class="log-day">D${e.day}</span> ${e.text}</div>`).join('');
+    log.replaceChildren();
+    entries.forEach(e => {
+      const div = document.createElement('div');
+      div.className = 'run-log-entry';
+      const daySpan = document.createElement('span');
+      daySpan.className = 'log-day';
+      daySpan.textContent = 'D' + e.day;
+      div.appendChild(daySpan);
+      div.appendChild(document.createTextNode(e.text));
+      log.appendChild(div);
+    });
   }
 
   function renderNewsTicker() {
@@ -3057,8 +3099,8 @@ profileViewed: [
       return;
     }
 
-    /* Show end-of-day modal */
-    showEODModal(g, results);
+    /* Show end-of-day modal (error-boundary: EOD render failures don't crash the game) */
+    try { showEODModal(g, results); } catch(e) { console.warn('showEODModal failed:', e); }
   }
 
   function showEODModal(g, results) {
@@ -3099,33 +3141,39 @@ profileViewed: [
       'The day passed without incident. The screen remains unapplied to.',
       'Peaceful. The void was merciful today.',
     ];
-    recap.textContent = parts.length ? `${parts.join(', ')}. ${DATA.pick(closingLines)}` : DATA.pick(zeroDayLines);
+    try { recap.textContent = parts.length ? `${parts.join(', ')}. ${DATA.pick(closingLines)}` : DATA.pick(zeroDayLines); } catch(e) { console.warn('EOD recap failed:', e); }
 
     /* Stat changes */
     const s = g.run.stats;
     const prevStats2 = g.run._prevStats || {};
     const changesHTML = [];
-    for (const key of Object.keys(s)) {
-      if (typeof s[key] === 'number' && key !== 'maxEnergy' && prevStats2[key] !== s[key]) {
-        const diff = s[key] - (prevStats2[key] || 0);
-        if (diff !== 0) {
-          const icons = {rent:'💰',hope:'💡',burnout:'🔥',credibility:'🎯',clout:'⭐',atsFavor:'🤖',robotSuspicion:'👁️',humanContact:'🤝',energy:'⚡',scamEvidence:'🚩',ghostEvidence:'👻',scamsFell:'🛡️'};
-          const names = {rent:'Rent Money',hope:'Hope',burnout:'Burnout',credibility:'Credibility',clout:'Clout',atsFavor:'Bot Aura',robotSuspicion:'Robot Suspicion',humanContact:'Human Contact',energy:'Energy',scamEvidence:'Scam Evidence',ghostEvidence:'Ghost Evidence',scamsFell:'Scams Felled'};
-          changesHTML.push(`<span class="stat-change ${diff>0?'up':'down'}">${icons[key]||''} ${names[key]||key}: ${diff>0?'+':''}${diff}</span>`);
+    try {
+      for (const key of Object.keys(s)) {
+        if (typeof s[key] === 'number' && key !== 'maxEnergy' && prevStats2[key] !== s[key]) {
+          const diff = s[key] - (prevStats2[key] || 0);
+          if (diff !== 0) {
+            const icons = {rent:'💰',hope:'💡',burnout:'🔥',credibility:'🎯',clout:'⭐',atsFavor:'🤖',robotSuspicion:'👁️',humanContact:'🤝',energy:'⚡',scamEvidence:'🚩',ghostEvidence:'👻',scamsFell:'🛡️'};
+            const names = {rent:'Rent Money',hope:'Hope',burnout:'Burnout',credibility:'Credibility',clout:'Clout',atsFavor:'Bot Aura',robotSuspicion:'Robot Suspicion',humanContact:'Human Contact',energy:'Energy',scamEvidence:'Scam Evidence',ghostEvidence:'Ghost Evidence',scamsFell:'Scams Felled'};
+            changesHTML.push(`<span class="stat-change ${diff>0?'up':'down'}">${icons[key]||''} ${names[key]||key}: ${diff>0?'+':''}${diff}</span>`);
+          }
         }
       }
-    }
-    changes.innerHTML = changesHTML.join('');
+      if (changes) changes.innerHTML = changesHTML.join('');
+    } catch(e) { console.warn('EOD stat changes failed:', e); }
     g.run._prevStats = {...s};
     g.run._prevFlags = {...g.run.flags};
 
     /* Lead results */
-    if (results.offers && results.offers.length > 0) {
-      leadRes.innerHTML = results.offers.map(o => `<div style="text-align:center;padding:.5rem;color:var(--teal);font-weight:700">🎉 ${o.company} — ${o.role} — ${o.pay}</div>`).join('');
-    }
+    try {
+      if (results.offers && results.offers.length > 0 && leadRes) {
+        leadRes.innerHTML = results.offers.map(o => `<div style="text-align:center;padding:.5rem;color:var(--teal);font-weight:700">🎉 ${o.company} — ${o.role} — ${o.pay}</div>`).join('');
+      }
+    } catch(e) { console.warn('EOD lead results failed:', e); }
 
-    modal.classList.add('active');
-    setTimeout(() => document.getElementById('eod-continue').focus(), 100);
+    try {
+      modal.classList.add('active');
+      setTimeout(() => document.getElementById('eod-continue')?.focus(), 100);
+    } catch(e) { console.warn('EOD modal activation failed:', e); }
 
     document.getElementById('eod-continue').onclick = () => {
       modal.classList.remove('active');
@@ -3143,8 +3191,9 @@ profileViewed: [
   }
 
   function showEndScreen(ending, isVictory) {
-    window._titleInterval && clearInterval(window._titleInterval);
-    showScreen('end-screen');
+    try {
+      window._titleInterval && clearInterval(window._titleInterval);
+      showScreen('end-screen');
 
     const title = document.getElementById('end-title');
     const typeLabel = document.getElementById('end-type-label');
@@ -3225,41 +3274,46 @@ profileViewed: [
     document.getElementById('btn-ach-end').onclick = () => {
       showAchievements();
     };
+    } catch(e) { console.warn('showEndScreen failed:', e); }
   }
 
   function showAchievements() {
-    showScreen('achievements-screen');
-    const grid = document.getElementById('ach-grid');
-    const count = document.getElementById('ach-count');
-    const unlocked = Object.keys(E.meta.achievements || {}).filter(k => E.meta.achievements[k]);
-    count.textContent = `${unlocked.length} / ${DATA.ACHIEVEMENTS.length} unlocked`;
+    try {
+      showScreen('achievements-screen');
+      const grid = document.getElementById('ach-grid');
+      const count = document.getElementById('ach-count');
+      const unlocked = Object.keys(E.meta.achievements || {}).filter(k => E.meta.achievements[k]);
+      count.textContent = `${unlocked.length} / ${DATA.ACHIEVEMENTS.length} unlocked`;
 
-    grid.innerHTML = DATA.ACHIEVEMENTS.map(ach => {
-      const isUnlocked = unlocked.includes(ach.id);
-      return `<div class="ach-item ${isUnlocked?'unlocked':'locked'}" role="img" aria-label="${isUnlocked?ach.name:'Locked achievement'}" tabindex="0">
-        <span class="ach-icon">${isUnlocked?'🏆':'🔒'}</span>
-        <span class="ach-name">${isUnlocked ? ach.name : (ach.hidden ? '???' : 'Locked')}</span>
-        <span class="ach-desc">${isUnlocked ? ach.desc : (ach.hidden ? 'Keep playing to discover...' : 'Hint: ' + ach.desc.split('.')[0] + '.')}</span>
-      </div>`;
-    }).join('');
+      if (grid) grid.innerHTML = DATA.ACHIEVEMENTS.map(ach => {
+        const isUnlocked = unlocked.includes(ach.id);
+        return `<div class="ach-item ${isUnlocked?'unlocked':'locked'}" role="img" aria-label="${isUnlocked?ach.name:'Locked achievement'}" tabindex="0">
+          <span class="ach-icon">${isUnlocked?'🏆':'🔒'}</span>
+          <span class="ach-name">${isUnlocked ? ach.name : (ach.hidden ? '???' : 'Locked')}</span>
+          <span class="ach-desc">${isUnlocked ? ach.desc : (ach.hidden ? 'Keep playing to discover...' : 'Hint: ' + ach.desc.split('.')[0] + '.')}</span>
+        </div>`;
+      }).join('');
 
-    document.getElementById('btn-ach-back').onclick = () => showTitle();
+      document.getElementById('btn-ach-back').onclick = () => showTitle();
+    } catch(e) { console.warn('showAchievements failed:', e); }
   }
 
   function showHowTo() { showScreen('howto-screen'); }
   function showCredits() { showScreen('credits-screen'); }
   function showHighScores() {
-    showScreen('highscores-screen');
-    const list = document.getElementById('highscores-list');
-    const scores = (E.meta.highScores || []).slice(0, 10);
-    if (scores.length === 0) {
-      list.innerHTML = '<div style="text-align:center;color:var(--text-muted)">No runs yet. The void awaits.</div>';
-    } else {
-      list.innerHTML = scores.map((s, i) =>
-        `<div style="padding:.3rem 0;border-bottom:1px solid var(--card-border)"><strong>#${i+1}</strong> Day ${s.day} — ${s.ending} — Score: ${s.score} <span style="color:var(--text-muted);font-size:.8rem">(${s.bg})</span></div>`
-      ).join('');
-    }
-    document.getElementById('btn-hs-back').onclick = () => showTitle();
+    try {
+      showScreen('highscores-screen');
+      const list = document.getElementById('highscores-list');
+      const scores = (E.meta.highScores || []).slice(0, 10);
+      if (scores.length === 0) {
+        if (list) list.innerHTML = '<div style="text-align:center;color:var(--text-muted)">No runs yet. The void awaits.</div>';
+      } else {
+        if (list) list.innerHTML = scores.map((s, i) =>
+          `<div style="padding:.3rem 0;border-bottom:1px solid var(--card-border)"><strong>#${i+1}</strong> Day ${s.day} — ${s.ending} — Score: ${s.score} <span style="color:var(--text-muted);font-size:.8rem">(${s.bg})</span></div>`
+        ).join('');
+      }
+      document.getElementById('btn-hs-back').onclick = () => showTitle();
+    } catch(e) { console.warn('showHighScores failed:', e); }
   }
 
   function updateScanline() {
@@ -3284,7 +3338,10 @@ profileViewed: [
   }
 
   /* Title screen buttons */
+  let _titleButtonsAttached = false;
   function initTitleButtons() {
+    if (_titleButtonsAttached) return;
+    _titleButtonsAttached = true;
     document.getElementById('btn-start')?.addEventListener('click', showBgSelect);
     document.getElementById('btn-howto')?.addEventListener('click', showHowTo);
     document.getElementById('btn-achievements')?.addEventListener('click', showAchievements);
