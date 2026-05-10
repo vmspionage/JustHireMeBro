@@ -168,6 +168,8 @@ body{font-family:var(--font-ui);background:var(--bg);color:var(--text);min-heigh
 .logo-text{font-family:var(--font-display);font-size:1.1rem;font-weight:700;color:var(--navy);letter-spacing:-.02em}
 .logo-subtitle{font-size:.6rem;color:var(--text-muted);font-style:italic}
 .day-header .news-headline{flex:1;text-align:center;font-style:italic;color:var(--text-muted);font-size:.8rem;padding:0 1rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.leads-toggle-btn{background:var(--navy);color:#fff;border:none;padding:.3rem .6rem;border-radius:3px;font-size:.75rem;cursor:pointer;white-space:nowrap;display:none}
+.leads-toggle-btn.active{background:var(--teal)}
 .panel-day-info{text-align:center;padding:.75rem .25rem;margin-bottom:.5rem;border-bottom:1px solid var(--card-border);background:linear-gradient(135deg,rgba(10,102,194,.06),rgba(0,198,173,.04))}
 .panel-day-num{display:block;font-family:var(--font-display);font-weight:700;color:var(--navy);font-size:1.05rem;margin-bottom:.2rem;letter-spacing:-.02em}
 .panel-energy{display:inline-flex;align-items:center;gap:.3rem;font-family:var(--font-mono);font-size:1.5rem;font-weight:800;color:var(--navy);background:rgba(10,102,194,.08);padding:.25rem .7rem;border-radius:20px}
@@ -206,6 +208,8 @@ body{font-family:var(--font-ui);background:var(--bg);color:var(--text);min-heigh
 .feed-card.card-investigate{border-left:3px solid var(--red)}
 .feed-card.card-rest{border-left:3px solid #6aaa8a}
 .feed-card.card-event{border-left:3px solid #aa6a6a}
+.feed-card.salary-cryptid{border:2px solid var(--gold);animation:goldGlow 2s ease-in-out}
+@keyframes goldGlow{0%{box-shadow:0 0 5px rgba(212,175,55,.3)}50%{box-shadow:0 0 20px rgba(212,175,55,.8),0 0 40px rgba(212,175,55,.4)}100%{box-shadow:0 2px 8px rgba(27,42,78,.1)}}
 .card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem;margin-bottom:.4rem}
 .card-category-badge{font-family:var(--font-mono);font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:.15rem .5rem;border-radius:3px;white-space:nowrap;flex-shrink:0}
 .card-title{font-family:var(--font-display);font-size:1rem;font-weight:700;color:var(--navy);flex:1;margin-right:.5rem}
@@ -379,6 +383,7 @@ body{font-family:var(--font-ui);background:var(--bg);color:var(--text);min-heigh
           <span class="logo-subtitle">a Just Hire Me Bro game</span>
         </div>
       </div>
+      <button class="leads-toggle-btn" id="leads-toggle-btn" aria-label="Toggle leads panel">📋 Leads <span id="leads-count">(0)</span></button>
     </div>
     <div class="day-header-center">
       <span class="news-headline" id="news-display"></span>
@@ -442,6 +447,16 @@ body{font-family:var(--font-ui);background:var(--bg);color:var(--text);min-heigh
       <div id="followup-stat-changes" class="result-stat-changes"></div>
     </div>
     <div class="modal-actions"><button class="title-btn" id="followup-continue" aria-label="Got it">Got it</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="countdown-modal">
+  <div class="modal modal-countdown">
+    <div class="modal-title" id="countdown-title">⏰ Time Check</div>
+    <div class="modal-body">
+      <div id="countdown-text" class="result-response"></div>
+    </div>
+    <div class="modal-actions"><button class="title-btn" id="countdown-continue" aria-label="Continue">Continue</button></div>
   </div>
 </div>
 
@@ -602,7 +617,7 @@ const DATA = (() => {
     "Today on Linkfluence: someone discovered empathy and turned it into a carousel.",
     "A CEO has announced that sleep is a legacy dependency.",
     "Recruiters are circling back by moving forward.",
-    "The Bot Aura has rejected itself for insufficient keyword alignment.",
+    "The Parser has rejected itself for insufficient keyword alignment.",
     "A startup is hiring a founding intern to disrupt compensation.",
     "The market demands AI skills. The robot rejects your AI résumé.",
     "A job post has been reposted so many times it gained sentience.",
@@ -644,7 +659,7 @@ const DATA = (() => {
       mk({id:'confidential',title:'Confidential Company, Confidential Salary, Confidential Duties',category:'job',flavor:'Even the job description signed an NDA.',cost:{energy:1},redFlags:5,ghostChance:.6,scamChance:.3,weight:.7,effects:[{type:'lead',real:.15,ats:30,gm:.1,sm:.2}],buttons:[{label:'Apply Into NDA Void',cost:{energy:1},effect:'apply'},{label:'Investigate',cost:{energy:1},effect:'investigate'},{label:'Report Scam',cost:{energy:0},effect:'reportScam'},{label:'Ignore',cost:{energy:0},effect:'discard'}],pay:'Confidential'}),
       mk({id:'remote-first',title:'Remote-First, Office-Mandatory',category:'job',flavor:'Fully remote culture. Must be onsite five days a week. Commute is unpaid mindfulness.',cost:{energy:1},redFlags:2,ghostChance:.3,weight:1.3,effects:[{type:'lead',real:.45,ats:35,gm:-.05,sm:.05}],buttons:[{label:'Easy Apply',cost:{energy:1},effect:'apply'},{label:'Negotiate Remote',cost:{energy:1},effect:'negotiateRemote'},{label:'Ignore',cost:{energy:0},effect:'discard'}],pay:'$90k–$120k + "mindful" commute'}),
       mk({id:'easy-abyss',title:'One-Click Easy Apply Abyss',category:'job',flavor:'One click. Zero witnesses. The void receives your résumé like a pearl into the sea.',cost:{energy:0},redFlags:1,ghostChance:.95,weight:2,effects:[{type:'lead',real:.01,ats:5,gm:.4,sm:.1}],buttons:[{label:'Click Into Void',cost:{energy:0},effect:'applyEasy'},{label:'Back Away',cost:{energy:0},effect:'discard'}],pay:'Your dignity'}),
-      mk({id:'portal-labyrinth',title:'Company Portal Labyrinth',category:'job',flavor:'Create account, verify email, upload résumé, retype résumé, answer 47 dropdowns including 'how did you hear about us' and three different versions of your address, wait.',cost:{energy:2},redFlags:2,ghostChance:.3,weight:.9,effects:[{type:'lead',real:.55,ats:25,gm:-.1,sm:.05,burnout:.1}],buttons:[{label:'Enter the Labyrinth',cost:{energy:2},effect:'applyPortal'},{label:'Back Away',cost:{energy:0},effect:'discard'}],pay:'$80k–$110k (after the ordeal)'}),
+      mk({id:'portal-labyrinth',title:'Company Portal Labyrinth',category:'job',flavor:'Create account, verify email, upload résumé, retype résumé, answer 47 dropdowns including \'how did you hear about us\' and three different versions of your address, wait.',cost:{energy:2},redFlags:2,ghostChance:.3,weight:.9,effects:[{type:'lead',real:.55,ats:25,gm:-.1,sm:.05,burnout:.1}],buttons:[{label:'Enter the Labyrinth',cost:{energy:2},effect:'applyPortal'},{label:'Back Away',cost:{energy:0},effect:'discard'}],pay:'$80k–$110k (after the ordeal)'}),
       mk({id:'stealth-startup',title:'Stealth Startup Seeking Founding Intern',category:'job',flavor:'Compensation: equity, exposure, and a hoodie.',cost:{energy:1},redFlags:3,ghostChance:.7,weight:.6,effects:[{type:'lead',real:.15,ats:10,gm:.2,sm:.15,founder:1}],buttons:[{label:'Join the Startup',cost:{energy:1},effect:'apply'},{label:'Investigate',cost:{energy:1},effect:'investigate'},{label:'Ignore',cost:{energy:0},effect:'discard'}],pay:'Vibes + equity (worth $0–$2M)'}),
       mk({id:'evergreen',title:'Evergreen Talent Pipeline',category:'job',flavor:'There is no job. Only pipeline.',cost:{energy:1},redFlags:5,ghostChance:1,weight:.5,effects:[{type:'lead',real:0,ats:50,gm:.5,sm:0}],buttons:[{label:'Enter the Pipeline',cost:{energy:1},effect:'applyPipeline'},{label:'Expose Ghost Job',cost:{energy:0},effect:'exposeGhost'},{label:'Ignore',cost:{energy:0},effect:'discard'}],pay:'"Exposure"'}),
       mk({id:'actually-normal',title:'Actually Normal Job, Posted by a Person',category:'job',flavor:'Salary range listed. PTO described. The hiring manager has a face. This is illegal.',cost:{energy:1},redFlags:0,ghostChance:.1,weight:.3,effects:[{type:'lead',real:.85,ats:30,gm:-.2,sm:0,offer:.2}],buttons:[{label:'Apply (Carefully)',cost:{energy:1},effect:'applyCareful'},{label:'Investigate',cost:{energy:0},effect:'investigate'},{label:'Ignore',cost:{energy:0},effect:'discard'}],pay:'$95k–$125k + real PTO'}),
@@ -659,7 +674,7 @@ const DATA = (() => {
       mk({id:'hvac-company',title:'A Real, Boring, Mid-Sized B2B Company',category:'job',flavor:'They make accounting software for HVAC contractors. The benefits are genuinely good. The dream.',cost:{energy:1},redFlags:0,ghostChance:.1,weight:.3,effects:[{type:'lead',real:.9,ats:20,gm:-.3,sm:0,offer:.15}],buttons:[{label:'Apply (This is the one)',cost:{energy:1},effect:'applyCareful'},{label:'Investigate',cost:{energy:0},effect:'investigate'},{label:'Ignore',cost:{energy:0},effect:'discard'}],pay:'$70k–$95k + dental + 401k'}),
       mk({id:'unicorn',title:'THE UNICORN JOB',category:'job',flavor:'Perfect role. Perfect salary. Requires: Network ≥ 30, Bot Aura ≥ 60, Credibility ≥ 60.',cost:{energy:1},redFlags:0,ghostChance:.05,weight:.05,conditions:[{stat:'atsFavor',min:60},{stat:'credibility',min:60},{stat:'humanContact',min:30}],effects:[{type:'lead',real:.95,ats:10,gm:-.4,sm:0,offer:.3}],buttons:[{label:'Apply (You Earned This)',cost:{energy:1},effect:'applyCareful'},{label:'Investigate',cost:{energy:0},effect:'investigate'},{label:'Ignore',cost:{energy:0},effect:'discard'}],pay:'$140k–$180k + equity + PTO + standing desk'}),
       mk({id:'boss-fight',title:'Workday Password Reset',category:'job',flavor:'"Your new password must contain a capital letter, a number, a symbol, and the tears of a junior developer."',cost:{energy:1},isBoss:true,weight:.3,effects:[{type:'bossFight'}],buttons:[{label:'Face the Boss',cost:{energy:1},effect:'bossFight'},{label:'Back Away',cost:{energy:0},effect:'discard'}],pay:'Your sanity'}),
-      mk({id:'easy-apply-10',title:'Easy Apply to 10 Jobs',category:'job',flavor:'One button. Zero thought. Your résumé is now in 10 Bot Aura systems weeping simultaneously.',cost:{energy:1},redFlags:0,ghostChance:.8,weight:1.5,effects:[{type:'bulkApply',count:10}],buttons:[{label:'Mass Apply',cost:{energy:1},effect:'bulkApply'},{label:'Stop Before Ruin',cost:{energy:0},effect:'discard'}],pay:'Your dignity × 10'}),
+      mk({id:'easy-apply-10',title:'Easy Apply to 10 Jobs',category:'job',flavor:'One button. Zero thought. Your résumé is now in 10 ATS systems weeping simultaneously.',cost:{energy:1},redFlags:0,ghostChance:.8,weight:1.5,effects:[{type:'bulkApply',count:10}],buttons:[{label:'Mass Apply',cost:{energy:1},effect:'bulkApply'},{label:'Stop Before Ruin',cost:{energy:0},effect:'discard'}],pay:'Your dignity × 10'}),
       mk({id:'glassdoor-portal',title:'Company Website Portal',category:'job',flavor:'The application form has 47 mandatory fields. Three require essay responses. All are "optional."',cost:{energy:2},redFlags:2,ghostChance:.35,weight:.7,effects:[{type:'lead',real:.5,ats:20,gm:-.05,sm:.05,burnout:.1}],buttons:[{label:'Face the Labyrinth',cost:{energy:2},effect:'applyPortal'},{label:'Back Away',cost:{energy:0},effect:'discard'}],pay:'$75k–$105k'}),
     ],
     recruiter:[
@@ -676,7 +691,7 @@ const DATA = (() => {
     ],
     post:[
       mk({id:'thrilled',title:'"Thrilled to Announce..."',category:'post',flavor:'"I\'m thrilled to announce that I\'m actively, desperately, looking for a job!"',cost:{energy:1},redFlags:0,weight:1.2,effects:[{type:'post',clout:8,cred:-2}],buttons:[{label:'Post This',cost:{energy:1},effect:'postThis'},{label:'Delete',cost:{energy:0},effect:'discard'}]}),
-      mk({id:'humbled',title:'"Humbled to Be Rejected — Here\'s What I Learned"',category:'post',flavor:'"The rejection taught me that rejection exists. Thank you, Bot Aura-bot #47."',cost:{energy:1},redFlags:0,weight:1,effects:[{type:'post',clout:12,cred:5,viral:.15}],buttons:[{label:'Post (Sincere)',cost:{energy:1},effect:'postSincere'},{label:'Post (Cringe)',cost:{energy:1},effect:'postCringe'},{label:'Delete',cost:{energy:0},effect:'discard'}]}),
+      mk({id:'humbled',title:'"Humbled to Be Rejected — Here\'s What I Learned"',category:'post',flavor:'"The rejection taught me that rejection exists. Thank you, ATS-bot #47."',cost:{energy:1},redFlags:0,weight:1,effects:[{type:'post',clout:12,cred:5,viral:.15}],buttons:[{label:'Post (Sincere) ✨',cost:{energy:1},effect:'postSincere'},{label:'Post (Cringe) 📉',cost:{energy:1},effect:'postCringe'},{label:'Delete',cost:{energy:0},effect:'discard'}]}),
       mk({id:'interviewed-toddler',title:'"I Interviewed My Toddler. Here\'s What It Taught Me About B2B SaaS."',category:'post',flavor:'"My 2-year-old said no 47 times. This is how your funnel feels."',cost:{energy:1},redFlags:0,weight:.6,effects:[{type:'post',clout:25,cred:3,viral:.4}],buttons:[{label:'Post (Viral Lottery)',cost:{energy:1},effect:'postViral'},{label:'Too Cringe',cost:{energy:0},effect:'discard'}]}),
       mk({id:'comment-resume',title:'"Comment RESUME for My Free Template"',category:'post',flavor:'The oldest trick in the book. Engagement bait at its finest.',cost:{energy:1},redFlags:1,weight:1.3,effects:[{type:'post',clout:10,cred:-5,buzz:.3}],buttons:[{label:'Post Engagement Bait',cost:{energy:1},effect:'postBait'},{label:'Too Cringe',cost:{energy:0},effect:'discard'}]}),
       mk({id:'agree-post',title:'"Agree?"',category:'post',flavor:'A single-word post under a photo of a laptop at sunset.',cost:{energy:0},redFlags:1,weight:1.5,effects:[{type:'post',clout:5,cred:-8,viral:.1,agree:true}],buttons:[{label:'Post "Agree?"',cost:{energy:1},effect:'postAgree'},{label:'Delete',cost:{energy:0},effect:'discard'}]}),
@@ -697,14 +712,14 @@ const DATA = (() => {
       mk({id:'mentor',title:'Mentor Coffee',category:'network',flavor:'"I\'ve been where you are. Let me tell you about my journey."',cost:{energy:1},redFlags:0,weight:.6,effects:[{type:'net',cred:5,hope:5}],buttons:[{label:'Meet',cost:{energy:1},effect:'mentorMeet'},{label:'Too Much Effort',cost:{energy:0},effect:'discard'}]}),
     ],
     resume:[
-      mk({id:'keyword-stuff',title:'Keyword Stuff Résumé',category:'resume',flavor:'Added "synergy," "AI-powered," "disruptive," and "thought leadership." The Bot Aura weeps with joy. The humans flee.',cost:{energy:1},redFlags:2,weight:1.2,effects:[{type:'atsFavor',mod:8},{type:'robotSuspicion',mod:5},{type:'credMod',mod:-2,ifBelow:5}],buttons:[{label:'Keyword Stuff',cost:{energy:1},effect:'keywordStuff'},{label:'Be Honest',cost:{energy:0},effect:'discard'}]}),
+      mk({id:'keyword-stuff',title:'Keyword Stuff Résumé',category:'resume',flavor:'Added "synergy," "AI-powered," "disruptive," and "thought leadership." The ATS weeps with joy. The humans flee.',cost:{energy:1},redFlags:2,weight:1.2,effects:[{type:'atsFavor',mod:8},{type:'robotSuspicion',mod:5},{type:'credMod',mod:-2,ifBelow:5}],buttons:[{label:'Keyword Stuff',cost:{energy:1},effect:'keywordStuff'},{label:'Be Honest',cost:{energy:0},effect:'discard'}]}),
       mk({id:'rewrite-bullets',title:'Rewrite Bullets as Impact Metrics',category:'resume',flavor:'"Increased synergy by 40% YoY by leveraging stakeholders."',cost:{energy:1},redFlags:0,weight:1,effects:[{type:'atsFavor',mod:5},{type:'credMod',mod:5}],buttons:[{label:'Rewrite',cost:{energy:1},effect:'rewriteBullets'},{label:'Too Boring',cost:{energy:0},effect:'discard'}]}),
       mk({id:'add-ai',title:'Add "AI" to Everything',category:'resume',flavor:'"Java Developer" → "AI-Powered Java Developer." "Filing Clerk" → "AI-Enhanced Document Strategist."',cost:{energy:1},redFlags:1,weight:1.5,effects:[{type:'buzzwordAdd'},{type:'atsFavor',mod:3},{type:'robotSuspicion',mod:8}],buttons:[{label:'AI-ify',cost:{energy:1},effect:'addAI'},{label:'Keep It Real',cost:{energy:0},effect:'discard'}]}),
       mk({id:'certificate',title:'Take Free Certificate',category:'resume',flavor:'"AI for Business Leaders: A Beginner\'s Guide to Nothing." Certificate awarded instantly.',cost:{energy:1},redFlags:0,weight:1,effects:[{type:'atsFavor',mod:4},{type:'cloutMod',mod:3}],buttons:[{label:'Complete Certificate',cost:{energy:1},effect:'certComplete'},{label:'Not Worth It',cost:{energy:0},effect:'discard'}]}),
       mk({id:'portfolio',title:'Build Portfolio Project',category:'resume',flavor:'A real project. Real code. Real credibility.',cost:{energy:2},redFlags:0,weight:.8,effects:[{type:'credMod',mod:8},{type:'atsFavor',mod:5},{type:'offerChance',mod:.05}],buttons:[{label:'Build It',cost:{energy:2},effect:'buildPortfolio'},{label:'Too Time-Consuming',cost:{energy:0},effect:'discard'}]}),
-      mk({id:'plain-text',title:'Plain-Text Résumé Cleanup',category:'resume',flavor:'Removed all fancy formatting that the Bot Aura hates. Looks like a crime report.',cost:{energy:1},redFlags:0,weight:.8,effects:[{type:'robotSuspicion',mod:-5},{type:'atsFavor',mod:3}],buttons:[{label:'Clean Up',cost:{energy:1},effect:'plainText'},{label:'Keep Fancy Format',cost:{energy:0},effect:'discard'}]}),
+      mk({id:'plain-text',title:'Plain-Text Résumé Cleanup',category:'resume',flavor:'Removed all fancy formatting that the ATS hates. Looks like a crime report.',cost:{energy:1},redFlags:0,weight:.8,effects:[{type:'robotSuspicion',mod:-5},{type:'atsFavor',mod:3}],buttons:[{label:'Clean Up',cost:{energy:1},effect:'plainText'},{label:'Keep Fancy Format',cost:{energy:0},effect:'discard'}]}),
       mk({id:'cover-letter',title:'Customize Cover Letter',category:'resume',flavor:'A genuine, personalized cover letter. Not written by an AI. How quaint.',cost:{energy:1},redFlags:0,weight:.7,effects:[{type:'offerChance',mod:.1}],buttons:[{label:'Write Cover Letter',cost:{energy:1},effect:'writeCover'},{label:'AI-Generated',cost:{energy:0},effect:'aiCover'},{label:'Skip',cost:{energy:0},effect:'discard'}]}),
-      mk({id:'lie-years',title:'Lie About Years of Experience',category:'resume',flavor:'You have 2 years. You put 8. The Bot Aura is pleased. The background check will not be.',cost:{energy:0},redFlags:4,weight:.6,effects:[{type:'atsFavor',mod:10},{type:'robotSuspicion',mod:8}],buttons:[{label:'Lie (8 Years)',cost:{energy:1},effect:'lieYears'},{label:'Tell Truth (2 Years)',cost:{energy:0},effect:'discard'},{label:'Ignore',cost:{energy:0},effect:'discard'}]}),
+      mk({id:'lie-years',title:'Lie About Years of Experience',category:'resume',flavor:'You have 2 years. You put 8. The ATS is pleased. The background check will not be.',cost:{energy:0},redFlags:4,weight:.6,effects:[{type:'atsFavor',mod:10},{type:'robotSuspicion',mod:8}],buttons:[{label:'Lie (8 Years)',cost:{energy:1},effect:'lieYears'},{label:'Tell Truth (2 Years)',cost:{energy:0},effect:'discard'},{label:'Ignore',cost:{energy:0},effect:'discard'}]}),
     ],
     gig:[
       mk({id:'fiverr-gig',title:'Fiverr Gig: "I Will Write Your LinkedIn About"',category:'gig',flavor:'$5 for 50 words of corporate nonsense. The algorithm loves you.',cost:{energy:0},weight:.9,effects:[{type:'rentMod',mod:15}],buttons:[{label:'Do the Gig',cost:{energy:0},effect:'fiverrGig'},{label:'My Dignity > $5',cost:{energy:0},effect:'discard'}]}),
@@ -750,44 +765,42 @@ const DATA = (() => {
     {id:'tech-refugee',name:'Tech Refugee',icon:'🏚️',vibe:'Eyes have seen things.',perk:'+30 Rent (severance), Open-to-Work Halo',penalty:'+10 Burnout, recruiter spam doubled',stats:{hope:50,burnout:10,credibility:50,rent:130,clout:0,atsFavor:10,robotSuspicion:0,humanContact:5,energy:3,maxEnergy:3}},
     {id:'bootcamp',name:'Bootcamp Survivor',icon:'💻',vibe:'Confident in JavaScript.',perk:'+15 Bot Aura, +1 Energy day 1',penalty:'+15 Robot Suspicion, AI detection risk doubled',stats:{hope:50,burnout:0,credibility:50,rent:100,clout:0,atsFavor:25,robotSuspicion:15,humanContact:5,energy:4,maxEnergy:4}},
     {id:'career-goblin',name:'Career Goblin',icon:'👺',vibe:'The everyman experience.',perk:'Balanced stats, +1 extra feed card/day',penalty:'Nothing',stats:{hope:50,burnout:0,credibility:50,rent:100,clout:0,atsFavor:10,robotSuspicion:0,humanContact:5,energy:3,maxEnergy:3}},
-    {id:'reformed-influencer',name:'Reformed Influencer',icon:'📱',vibe:'Chastened. Still posts.',perk:'Posts cost 1 less Energy',penalty:'-10 Credibility',locked:true,lockHint:'Unlock: Hit 200 Clout in a run',stats:{hope:50,burnout:0,credibility:40,rent:100,clout:0,atsFavor:10,robotSuspicion:0,humanContact:5,energy:3,maxEnergy:3}},
+    {id:'reformed-influencer',name:'Reformed Influencer',icon:'📱',vibe:'Chastened. Still posts.',perk:'First post each day is free',penalty:'-10 Credibility',locked:true,lockHint:'Unlock: Hit 200 Clout in a run',stats:{hope:50,burnout:0,credibility:40,rent:100,clout:0,atsFavor:10,robotSuspicion:0,humanContact:5,energy:3,maxEnergy:3}},
     {id:'ghost-vigilante',name:'Ghost Job Vigilante',icon:'🔍',vibe:'Sees through walls.',perk:'Investigate cards cost 0 Energy',penalty:'Cannot use Easy Apply',locked:true,lockHint:'Unlock: Expose 25 ghost jobs across runs',stats:{hope:50,burnout:0,credibility:50,rent:100,clout:0,atsFavor:10,robotSuspicion:0,humanContact:5,energy:3,maxEnergy:3}},
   ];
 
-  /* ACHIEVEMENTS (32) */
+ /* ACHIEVEMENTS (32) */
   const ACHIEVEMENTS=[
-    {id:'win-job',name:'Just Hire Me, Bro',desc:'Win with an actual job.',hidden:false},
-    {id:'robot-said-no',name:'The Robot Said No',desc:'Get auto-rejected 10 times in one run.',hidden:false},
-    {id:'resume-bh',name:'Résumé Black Hole Researcher',desc:'Have 15 leads ghost in one run.',hidden:false},
-    {id:'open-scams',name:'Open to Work, Open to Scams',desc:'Receive 10 scam DMs in one run.',hidden:false},
-    {id:'salary-crypt',name:'Salary Range Cryptid',desc:'Find a recruiter who states salary upfront.',hidden:false},
-    {id:'net-kpis',name:'Networking Is Just Friendship With KPIs',desc:'Win via referral.',hidden:false},
-    {id:'prompt-eng',name:'Prompt Engineer by Accident',desc:'Win the AI ending.',hidden:false},
-    {id:'final-v7',name:'Final_Final_v7',desc:'Reach 4+ "final" interviews on a single lead.',hidden:false},
-    {id:'repost-antiq',name:'Reposted Since Antiquity',desc:'Expose a job marked "reposted 50+ times."',hidden:false},
-    {id:'one-click',name:'One Click, No Witnesses',desc:'Submit 20 Easy Apply applications.',hidden:false},
-    {id:'ghostbuster',name:'Ghostbuster',desc:'Expose 10 ghost jobs in one run.',hidden:false},
-    {id:'ghost-vig',name:'Ghost Job Vigilante',desc:'Expose 25 ghost jobs across all runs.',hidden:false},
-    {id:'kindly-champ',name:'Kindly Champion',desc:'Correctly report 5 scam recruiters.',hidden:false},
-    {id:'workday-warr',name:'Workday Warrior',desc:'Survive 10 company portal applications.',hidden:false},
-    {id:'parser-ate',name:'The Parser Ate My Homework',desc:'Lose 30+ Bot Aura to a single event.',hidden:false},
-    {id:'humbled-hon',name:'Humbled and Honored',desc:'Gain 100 Clout in one day.',hidden:false},
-    {id:'agree-ach',name:'Agree?',desc:'Get a one-word "Agree?" post to go viral.',hidden:false},
-    {id:'touch-grass-s',name:'Touch Grass Speedrun',desc:'Win without ever exceeding 50 Burnout.',hidden:false},
-    {id:'quiet-win',name:'The Quiet Win',desc:'Achieve "The Quiet Win" ending.',hidden:false},
-    {id:'founder-mode',name:'Founder Mode Activated',desc:'Collect 15 buzzwords.',hidden:false},
-    {id:'reformed-inf',name:'Reformed Influencer',desc:'Hit 200 Clout.',hidden:false},
-    {id:'circle-back',name:'Circle Back Champion',desc:'Have 8 active leads at once.',hidden:false},
-    {id:'no-takehomes',name:'No Take-Homes',desc:'Win without completing a take-home.',hidden:false},
-    {id:'pure-human',name:'Pure Human',desc:'Win with Robot Suspicion ≤ 10 throughout.',hidden:false},
-    {id:'pure-robot',name:'Pure Robot',desc:'Win with Bot Aura ≥ 90 and Robot Susp ≥ 70.',hidden:false},
-    {id:'recruiter-bingo',name:'Recruiter Bingo',desc:'Trigger 5 distinct recruiter cards in one run.',hidden:false},
-    {id:'30-days',name:'The 30 Days Are a Lifetime',desc:'Reach day 30 in any state.',hidden:false},
-    {id:'first-round',name:'First-Round Knockout',desc:'Get an offer before day 10.',hidden:false},
-    {id:'speedrun-app',name:'Speedrun Apply%',desc:'Submit 50 applications before day 5.',hidden:false},
-    {id:'touch-crypt',name:'Touch the Cryptid',desc:'Encounter the Salary Cryptid 3 runs in a row.',hidden:false},
-    {id:'true-boss',name:'The True Boss',desc:'Defeat the Workday Boss Fight on first try.',hidden:true},
-    {id:'agi-pilled',name:'AGI Pilled',desc:'Get hired by an AI to fire other AIs.',hidden:true},
+    {id:'win-job',name:'Just Hire Me, Bro',desc:'Win with an actual job.',icon:'💼',hidden:false},
+    {id:'robot-said-no',name:'The Robot Said No',desc:'Get auto-rejected 10 times in one run.',icon:'🤖',hidden:false},
+    {id:'resume-bh',name:'Résumé Black Hole Researcher',desc:'Have 15 leads ghost in one run.',icon:'🕳️',hidden:false},
+    {id:'open-scams',name:'Open to Work, Open to Scams',desc:'Receive 10 scam DMs in one run.',icon:'🚩',hidden:false},
+    {id:'salary-crypt',name:'Salary Range Cryptid',desc:'Find a recruiter who states salary upfront.',icon:'🦄',hidden:false},
+    {id:'net-kpis',name:'Networking Is Just Friendship With KPIs',desc:'Win via referral.',icon:'🤝',hidden:false},
+    {id:'prompt-eng',name:'Prompt Engineer by Accident',desc:'Win the AI ending.',icon:'🤖',hidden:false},
+    {id:'final-v7',name:'Final_Final_v7',desc:'Reach 4+ "final" interviews on a single lead.',icon:'♾️',hidden:false},
+    {id:'repost-antiq',name:'Reposted Since Antiquity',desc:'Expose a job marked "reposted 50+ times."',icon:'👻',hidden:false},
+    {id:'one-click',name:'One Click, No Witnesses',desc:'Submit 20 Easy Apply applications.',icon:'🖱️',hidden:false},
+    {id:'ghostbuster',name:'Ghostbuster',desc:'Expose 10 ghost jobs in one run.',icon:'👻',hidden:false},
+    {id:'ghost-vig',name:'Ghost Job Vigilante',desc:'Expose 25 ghost jobs across all runs.',icon:'🕵️',hidden:false},
+    {id:'kindly-champ',name:'Kindly Champion',desc:'Correctly report 5 scam recruiters.',icon:'🛡️',hidden:false},
+    {id:'workday-warr',name:'Workday Warrior',desc:'Survive 10 company portal applications.',icon:'⚔️',hidden:false},
+    {id:'parser-ate',name:'The Parser Ate My Homework',desc:'Lose 30+ Bot Aura to a single event.',icon:'📄',hidden:false},
+    {id:'humbled-hon',name:'Humbled and Honored',desc:'Gain 100 Clout in one day.',icon:'⭐',hidden:false},
+    {id:'agree-ach',name:'Agree?',desc:'Get a one-word "Agree?" post to go viral.',icon:'💬',hidden:false},
+    {id:'touch-grass-s',name:'Touch Grass Speedrun',desc:'Win without ever exceeding 50 Burnout.',icon:'🌿',hidden:false},
+    {id:'quiet-win',name:'The Quiet Win',desc:'Achieve "The Quiet Win" ending.',icon:'🌅',hidden:false},
+    {id:'founder-mode',name:'Founder Mode Activated',desc:'Collect 15 buzzwords.',icon:'🦅',hidden:false},
+    {id:'reformed-inf',name:'Reformed Influencer',desc:'Hit 200 Clout.',icon:'📱',hidden:false},
+    {id:'circle-back',name:'Circle Back Champion',desc:'Have 8 active leads at once.',icon:'🔄',hidden:false},
+    {id:'no-takehomes',name:'No Take-Homes',desc:'Win without completing a take-home.',icon:'✋',hidden:false},
+    {id:'pure-human',name:'Pure Human',desc:'Win with Robot Suspicion ≤ 10 throughout.',icon:'🧬',hidden:false},
+    {id:'pure-robot',name:'Pure Robot',desc:'Win with Bot Aura ≥ 90 and Robot Susp ≥ 70.',icon:'🤖',hidden:false},
+    {id:'recruiter-bingo',name:'Recruiter Bingo',desc:'Trigger 5 distinct recruiter cards in one run.',icon:'🎰',hidden:false},
+    {id:'30-days',name:'The 30 Days Are a Lifetime',desc:'Reach day 30 in any state.',icon:'📅',hidden:false},
+    {id:'first-round',name:'First-Round Knockout',desc:'Get an offer on or before day 10.',icon:'⚡',hidden:false},
+    {id:'speedrun-app',name:'Speedrunner',desc:'Submit 50+ applications in 5 days or fewer.',icon:'🏃',hidden:false},
+    {id:'touch-crypt',name:'Touch Cryptid',desc:'Encounter a Salary Range Cryptid in 3+ runs.',icon:'🦄',hidden:false},
   ];
 
   /* ENDINGS */
@@ -806,10 +819,11 @@ const DATA = (() => {
     'burnout-end':{name:'Burnout% Speedrun',type:'loss',icon:'🔥',review:'Your Burnout hit 100. Your body has filed a formal complaint. Rest is now a "legacy dependency."'},
     'rent-end':{name:'Rent Has Entered the Chat',type:'loss',icon:'💸',review:'Your Rent Money hit 0. The landlord has entered the chat. They are not asking nicely.'},
     'final-round-end':{name:'Final Round Forever',type:'loss',icon:'♾️',review:'Trapped in interview loops past day 30. You are now in "Final_Final_v7" status. You have forgotten your own name.'},
+    'times-up-end':{name:'Time\'s Up, Bro',type:'loss',icon:'⏰',review:'Day 31 hit with no leads in the final stages. The job market moved on. You remain in applied limbo.'},
     'kindly-end':{name:'Kindly Do the Needful',type:'loss',icon:'🎭',review:'You fell for {scams} scams. The scammers now have your SSN, your check deposit, and your dignity.'},
     'ai-detected':{name:'AI Detected AI',type:'loss',icon:'🤖',review:'Your Robot Suspicion hit 100. An AI determined you are an AI. The bureaucracy of machines is endless.'},
     'culture-fit':{name:'Culture Fit Not Found',type:'loss',icon:'🧩',review:'Your Credibility hit 0. You are now "not a culture fit" in every system on Earth.'},
-    'ats-ate-end':{name:'The Bot Aura Ate Your Résumé',type:'loss',icon:'📄',review:'A catastrophic Bot Aura loss has left your résumé as digital soup. Your career is now a .txt file titled "HELP."'},
+    'ats-ate-end':{name:'The Parser Ate Your Résumé',type:'loss',icon:'📄',review:'A catastrophic Parser loss has left your résumé as digital soup. Your career is now a .txt file titled "HELP."'},
   };
 
   /* MICRO-EVENT DATA */
@@ -850,6 +864,15 @@ const Engine = (() => {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(_meta)); } catch(e) { showNotice('Saving disabled. Your achievements will not persist. Like your career.'); }
   }
   function showNotice(msg) { const n=document.createElement('div');n.style.cssText='position:fixed;top:1rem;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--navy);padding:.75rem 1.5rem;border-radius:var(--radius);z-index:999;font-size:.85rem;max-width:90vw;text-align:center';n.textContent=msg;document.body.appendChild(n);setTimeout(()=>n.remove(),5000); }
+  function showToast(msg, type) {
+    const c = document.getElementById('toast-container');
+    if (!c) return;
+    const t = document.createElement('div');
+    t.className = 'toast' + (type ? ' ' + type : '');
+    t.textContent = msg;
+    c.appendChild(t);
+    setTimeout(() => t.remove(), 3000);
+  }
 
   /* Card pool helpers */
   function weightedPool(pool, state) {
@@ -1041,7 +1064,7 @@ const Engine = (() => {
       g.run.stats.atsFavor = DATA.clamp((g.run.stats.atsFavor || 0) + 3, 0, 100);
       g.run.stats.robotSuspicion = DATA.clamp((g.run.stats.robotSuspicion || 0) + 5, 0, 100);
       g.run.stats.credibility = DATA.clamp((g.run.stats.credibility || 0) - 2, 0, 100);
-      g.run.log.push({day:g.run.day, text:'Added "AI" to everything. The Bot Aura is pleased. Humans are not.'});
+      g.run.log.push({day:g.run.day, text:'Added "AI" to everything. The ATS is pleased. Humans are not.'});
     } else if (effect.effect === 'applyPortal') {
       track('portalApps', 1);
       g.run.stats.burnout = DATA.clamp((g.run.stats.burnout || 0) + 3, 0, 100);
@@ -1223,7 +1246,7 @@ const Engine = (() => {
     g.run.flags.referralUsed = true;
     g.run.stats.humanContact = DATA.clamp((g.run.stats.humanContact||0) + 3, 0, 999);
     g.run.stats.hope = DATA.clamp((g.run.stats.hope||0) + 5, 0, 100);
-    g.run.log.push({day:g.run.day, text:'Used a referral! Your friend\'s cousin\'s friend works there. The Bot Aura has been bypassed.'});
+    g.run.log.push({day:g.run.day, text:'Used a referral! Your friend\'s cousin\'s friend works there. The ATS has been bypassed.'});
   }
 
   function processResume(card) {
@@ -1232,7 +1255,7 @@ const Engine = (() => {
       g.run.stats.atsFavor = DATA.clamp((g.run.stats.atsFavor||0) + 8, 0, 100);
       g.run.stats.robotSuspicion = DATA.clamp((g.run.stats.robotSuspicion||0) + 5, 0, 100);
       if ((g.run.stats.credibility||0) < 5) g.run.stats.credibility = DATA.clamp((g.run.stats.credibility||0) - 5, 0, 100);
-      g.run.log.push({day:g.run.day, text:'Keyword-stuffed your résumé. The Bot Aura loves it. Your soul weeps.'});
+      g.run.log.push({day:g.run.day, text:'Keyword-stuffed your résumé. The ATS loves it. Your soul weeps.'});
     } else if (card.id === 'rewrite-bullets') {
       g.run.stats.atsFavor = DATA.clamp((g.run.stats.atsFavor||0) + 5, 0, 100);
       g.run.stats.credibility = DATA.clamp((g.run.stats.credibility||0) + 5, 0, 100);
@@ -1244,7 +1267,7 @@ const Engine = (() => {
       g.run.stats.atsFavor = DATA.clamp((g.run.stats.atsFavor||0) + 3, 0, 100);
       g.run.stats.robotSuspicion = DATA.clamp((g.run.stats.robotSuspicion||0) + 8, 0, 100);
       g.run.stats.credibility = DATA.clamp((g.run.stats.credibility||0) - 2, 0, 100);
-      g.run.log.push({day:g.run.day, text:'Added "AI" to everything. The Bot Aura is pleased. Humans flee.'});
+      g.run.log.push({day:g.run.day, text:'Added "AI" to everything. The ATS is pleased. Humans flee.'});
     } else if (card.id === 'certificate') {
       g.run.stats.atsFavor = DATA.clamp((g.run.stats.atsFavor||0) + 4, 0, 100);
       g.run.stats.clout = DATA.clamp((g.run.stats.clout||0) + 3, 0, 999);
@@ -1256,17 +1279,17 @@ const Engine = (() => {
     } else if (card.id === 'plain-text') {
       g.run.stats.robotSuspicion = DATA.clamp((g.run.stats.robotSuspicion||0) - 5, 0, 100);
       g.run.stats.atsFavor = DATA.clamp((g.run.stats.atsFavor||0) + 3, 0, 100);
-      g.run.log.push({day:g.run.day, text:'Cleaned up résumé to plain text. Looks like a crime report. Bot Aura happy.'});
+      g.run.log.push({day:g.run.day, text:'Cleaned up résumé to plain text. Looks like a crime report. ATS happy.'});
     } else if (card.id === 'cover-letter') {
       g.run.stats.credibility = DATA.clamp((g.run.stats.credibility||0) + 3, 0, 100);
       g.run.log.push({day:g.run.day, text:'Wrote a genuine cover letter. Not AI-generated. How brave.'});
     } else if (card.id === 'aiCover') {
       g.run.stats.robotSuspicion = DATA.clamp((g.run.stats.robotSuspicion||0) + 5, 0, 100);
-      g.run.log.push({day:g.run.day, text:'Used AI to write a cover letter about being authentic. The irony is lost on the Bot Aura.'});
+      g.run.log.push({day:g.run.day, text:'Used AI to write a cover letter about being authentic. The irony is lost on the ATS.'});
     } else if (card.id === 'lie-years') {
       g.run.stats.atsFavor = DATA.clamp((g.run.stats.atsFavor||0) + 10, 0, 100);
       g.run.stats.robotSuspicion = DATA.clamp((g.run.stats.robotSuspicion||0) + 8, 0, 100);
-      g.run.log.push({day:g.run.day, text:'Liied about experience. The Bot Aura is happy. The background check is not.'});
+      g.run.log.push({day:g.run.day, text:'Lied about experience. The ATS is happy. The background check is not.'});
     }
   }
 
@@ -1418,7 +1441,8 @@ const Engine = (() => {
 
     /* Check day 30 */
     if (g.run.day > 30) {
-      return { type:'loss', ending:'final-round-end' };
+      const hasFinalLeads = (g.run.activeLeads||[]).some(l => l.stageIdx >= 6);
+      return { type:'loss', ending: hasFinalLeads ? 'final-round-end' : 'times-up-end' };
     }
 
     return null;
@@ -1554,9 +1578,9 @@ const Engine = (() => {
       newUnlocks.push({id:'true-boss', name:'The True Boss', desc:'Defeat the Workday Boss Fight on first try.', hidden:true});
       unlockAchievement('true-boss');
     }
-    if (!_meta.achievements['agi-pilled'] && g.run.won === 'prompt-eng-end') {
+    if (!_meta.achievements['agi-pilled'] && g.run.won === 'prompt-eng-end' && (g.run.stats.robotSuspicion||0) >= 80) {
       _meta.achievements['agi-pilled'] = true;
-      newUnlocks.push({id:'agi-pilled', name:'AGI Pilled', desc:'Get hired by an AI to fire other AIs.', hidden:true});
+      newUnlocks.push({id:'agi-pilled', name:'AGI Pilled', desc:'Win the prompt-eng ending with Robot Susp ≥ 80.', hidden:true});
       unlockAchievement('agi-pilled');
     }
 
@@ -1836,7 +1860,11 @@ const Engine = (() => {
     g.run.energy--;
     const beforeStats = JSON.parse(JSON.stringify(g.run.stats));
 
-    if (_rng() < 0.4) {
+    /* Track follow-up count and stack ghost chance */
+    lead._followUpCount = (lead._followUpCount || 0) + 1;
+    const ghostChance = Math.min(0.9, 0.4 + (lead._followUpCount - 1) * 0.1);
+
+    if (_rng() < 1 - ghostChance) {
       lead.daysSinceUpdate = 0;
       lead.stageIdx++;
       const names = ['Recruiter Screen','Video Interview','Take-Home','Panel Interview','Final Interview'];
@@ -1844,10 +1872,18 @@ const Engine = (() => {
       g.run.log.push({day:g.run.day, text:`Followed up with ${lead.company}. They responded: "${stageName}"!`});
       return { title:'📧 Good Response!', response:`Followed up with ${lead.company}. They responded: "${stageName}"!`, stats:[] };
     } else {
-      g.run.stats.hope = DATA.clamp((g.run.stats.hope||0) - 3, 0, 100);
+      const oldHope = g.run.stats.hope || 0;
+      g.run.stats.hope = DATA.clamp(oldHope - 3, 0, 100);
+      let response;
+      if (lead._followUpCount > 3) {
+        response = `You've followed up ${lead._followUpCount} times. They're actively avoiding you now.`;
+      } else {
+        response = `Followed up with ${lead.company}. They saw your message. Then ghosted again.`;
+      }
       g.run.log.push({day:g.run.day, text:`Followed up with ${lead.company}. They saw your message. Then ghosted again.`});
-      const deltas = computeStatDeltas(beforeStats, g.run.stats);
-      return { title:'📭 Ghosted Again', response:`Followed up with ${lead.company}. They saw your message. Then ghosted again.`, stats:deltas };
+      const deltas = [];
+      if (g.run.stats.hope !== oldHope) deltas.push({ key:'hope', display:'Hope', icon:'💡', before: oldHope, after: g.run.stats.hope, delta: g.run.stats.hope - oldHope });
+      return { title:'📭 Ghosted Again', response, stats:deltas };
     }
   }
 
@@ -1899,7 +1935,7 @@ const Engine = (() => {
     weightedPool, drawFeed, createLead, applyCard, resolveLeads, advanceDay,
     checkLosses, checkWins, track, checkAchievements, saveHighScore,
     startBossFight, startCaptcha, startVideoInterview, startPA, followUpLead,
-    toast, toastAchievement, launchConfetti, clamp: DATA.clamp,
+    clamp: DATA.clamp,
   };
 })();
 /* ============================================================
@@ -1912,7 +1948,7 @@ const UI = (() => {
     'Checking if recruiters are nearby...',
     'Scanning for ghost jobs...',
     'Compiling rejection letters...',
-    'Loading Bot Aura compatibility...',
+    'Loading ATS compatibility...',
     'Initializing doomscroll protocol...',
     'Your résumé is being parsed...',
     'A recruiter viewed your profile (probably just a bot)...',
@@ -2031,6 +2067,7 @@ const UI = (() => {
 
     /* Daily tracking */
     g.run._dailyClout = 0;
+    g.run._postsMadeToday = 0;
 
     /* Show game */
     showScreen('game-screen');
@@ -2046,12 +2083,21 @@ const UI = (() => {
 
     /* Capture stats at day start for EOD delta tracking */
     g.run._prevStats = {...g.run.stats};
-
-    /* Reset daily tracking */
+    g.run._prevFlags = {...g.run.flags};
     g.run._dailyClout = 0;
+    g.run._postsMadeToday = 0;
 
     /* Draw feed */
     E.drawFeed();
+
+    /* 30-day countdown tension modals */
+    if (g.run.day === 25) {
+      E.showCountdown('5 days left. If you\'re still in the "applied" stage, start following up. The market doesn\'t wait.');
+    } else if (g.run.day === 28) {
+      E.showCountdown('3 days left. You have 60 hours to change your life. Or at least your LinkedIn bio.');
+    } else if (g.run.day === 30) {
+      E.showCountdown('Last day. Submit one more application. Post one more thing. The clock is ticking, bro.');
+    }
 
     /* Update UI */
     renderStatBar();
@@ -2061,6 +2107,17 @@ const UI = (() => {
     renderRunLog();
     renderNewsTicker();
     updateScanline();
+
+    /* Leads toggle button */
+    const leadsToggle = document.getElementById('leads-toggle-btn');
+    if (leadsToggle && window.innerWidth <= 768) {
+      leadsToggle.classList.toggle('active', document.getElementById('leads-panel').classList.contains('active'));
+      leadsToggle.onclick = () => {
+        const panel = document.getElementById('leads-panel');
+        panel.classList.toggle('active');
+        leadsToggle.classList.toggle('active');
+      };
+    }
 
     /* Keyboard shortcut for end day */
     document.addEventListener('keydown', handleKey);
@@ -2085,7 +2142,7 @@ const UI = (() => {
     const failureStats = ['rent','hope','burnout','credibility','atsFavor','robotSuspicion','humanContact'];
     const stats = [
       {icon:'💰', key:'rent', max:999, label:'Rent', funny:'Rent Money — because the void charges $1,200/month.', fail:'⚠️ Hits 0 = Game Over (Evicted!)'},
-      {icon:'💡', key:'hope', max:100, label:'Hope', funny:'Hope — the first thing the Bot Aura deletes.', fail:'⚠️ Hits 0 = Game Over (Gave up.)'},
+      {icon:'💡', key:'hope', max:100, label:'Hope', funny:'Hope — the first thing the ATS deletes.', fail:'⚠️ Hits 0 = Game Over (Gave up.)'},
       {icon:'🔥', key:'burnout', max:100, label:'Burnout', funny:'Burnout — your new personality trait.', fail:'⚠️ Hits 100 = Game Over (Crash.)'},
       {icon:'🎯', key:'credibility', max:100, label:'Cred', funny:'Credibility — how much the robots trust you.', fail:'⚠️ Hits 0 = Game Over (Doxxed.)'},
       {icon:'⭐', key:'clout', max:999, label:'Clout', funny:'Clout — the only metric that matters on Linkfluence.'},
@@ -2127,11 +2184,13 @@ const UI = (() => {
       const ghostReveal = card.isGhostReveal ? `<div class="card-redflags"><span class="rf-label">Red Flags:</span> ${'🚩'.repeat(card.redFlags)} <span style="margin-left:.5rem;color:var(--text-muted)">(${card.ghostChance*100}% ghost)</span></div>` : '';
 
       /* Apply background modifier to post energy cost */
-      const postCost = card.category === 'post' && g.run.background === 'reformed-influencer' ? Math.max(0, (card.cost?.energy||1) - 1) : (card.cost?.energy || 1);
+      const isReformedInf = card.category === 'post' && g.run.background === 'reformed-influencer';
+      const postCost = isReformedInf && (g.run._postsMadeToday||0) === 0 ? 0 : (card.cost?.energy || 1);
 
       const catColors = {job:'var(--navy)',recruiter:'var(--teal)',post:'var(--gold)',network:'#7a9a6a',resume:'#8a6a9a',investigate:'var(--red)',rest:'#6aaa8a',event:'#aa6a6a'};
       const catColor = catColors[card.category] || 'var(--navy)';
-      return `<div class="feed-card card-${card.category}">
+      const extraClass = card.id === 'salary-cryptid' ? ' salary-cryptid' : '';
+      return `<div class="feed-card card-${card.category}${extraClass}">
         <div class="card-header">
           <span class="card-title">${card.title}</span>
           <span class="card-category-badge" style="background:${catColor}22;color:${catColor};border:1px solid ${catColor}44">${card.category}</span>
@@ -2170,6 +2229,16 @@ const UI = (() => {
 
           /* Apply the card action */
           E.applyCard(card, btnData);
+
+          /* Show toast feedback for discard/ignore */
+          if (effect === 'discard' || effect === 'ignore' || effect === 'decline' || effect === 'cancel') {
+            E.showToast('Ignored. The void approves.', 'info');
+          }
+
+          /* Track posts made today for Reformed Influencer perk */
+          if (card.category === 'post') {
+            g.run._postsMadeToday = (g.run._postsMadeToday||0) + 1;
+          }
 
           /* Capture after stats */
           const afterStats = JSON.parse(JSON.stringify(g.run.stats));
@@ -2232,88 +2301,88 @@ const UI = (() => {
 
     const responses = {
       apply: [
-        'Your résumé entered the void. It will be seen by someone. Maybe.',
-        'Application submitted! The Bot Aura has absorbed your dreams into its training data.',
+        'Résumé entered the void. Will be seen by someone. Maybe.',
+        'Application submitted! The ATS has absorbed your dreams into its training data.',
         'You applied. Somewhere, a recruiter feels a faint disturbance in the force.',
-        'Job applied to. Your hope went up slightly. Your rent did not.',
+        'Job applied to. Hope went up slightly. Rent did not.',
       ],
       applyCareful: [
         'Applied with meticulous attention to detail. Your Bot Aura score took a hit though.',
-        'Careful application submitted. Credibility gained, Bot Aura favor lost. The eternal balance.',
-        'You read the entire job description. Most applicants didn\'t. You still got rejected.',
-        'Applied carefully. Every field filled. Every question answered. The Bot Aura marked it "underqualified."',
+        'Careful application submitted. Credibility gained, Bot Aura lost. Eternal balance.',
+        'Read the entire job description. Most applicants didn\'t. Still got rejected.',
+        'Applied carefully. Every field filled. ATS marked it "underqualified" anyway.',
       ],
       applyEasy: [
-        'Easy Apply clicked! Your robot suspicion ticked up. The machines are watching.',
+        'Easy Apply clicked! Robot suspicion ticked up. Machines are watching.',
         'One-click application submitted. The void accepted your submission. Probably.',
         'Easy Apply: the digital equivalent of throwing your résumé into a shredder and hoping it reassembles.',
-        'Clicked "Easy Apply." Nothing about this application was easy. Except the clicking.',
+        'Clicked "Easy Apply." Nothing about it was easy. Except the clicking.',
       ],
       applyDesperate: [
-        'Desperate application submitted. Your robot suspicion jumped. They know.',
+        'Desperate application submitted. Robot suspicion jumped. They know.',
         'You applied so fast even you didn\'t read the requirements. Classic.',
-        'Applied with the energy of someone who hasn\'t slept in 47 hours. The Bot Aura can smell the desperation.',
-        'You hit submit before reading the salary range. Future-you will be proud. Present-you is not.',
-        'Desperate mode: activated. Your application quality dropped. Your energy expenditure tripled. Math checks out.',
+        'Applied with the energy of someone who hasn\'t slept in 47 hours. The ATS can smell the desperation.',
+        'Hit submit before reading the salary range. Future-you will be proud. Present-you is not.',
+        'Desperate mode: quality dropped. Energy expenditure tripled. Math checks out.',
       ],
       applyTokens: [
-        'Buzzword injection successful. Your clout increased. Your soul decreased.',
+        'Buzzword injection successful. Clout increased. Soul decreased.',
         'Applied with maximum buzzword density. The algorithm loves you now.',
         'You stuffed "synergy," "disruption," and "leveraging AI" into the application. HR called it "cringe."',
-        'Buzzword bingo complete. You\'ve used every buzzword since 2016. The Bot Aura is confused. Clout: +1.',
+        'Buzzword bingo complete. Used every buzzword since 2016. ATS confused. Clout: +1.',
       ],
       applyPortal: [
-        'Workday portal entered. Your burnout increased. You may never leave.',
+        'Workday portal entered. Burnout increased. You may never leave.',
         'Portal application submitted. You traded energy for the slim chance of a reply.',
-        'You filled out 14 fields on the company portal. Field 15 said "upload your birth certificate." You left.',
-        'Workday portal: where applications go to die. You submitted yours into the abyss. The abyss submitted you to a background check.',
+        'Filled out 14 fields on the company portal. Field 15: "upload your birth certificate." You left.',
+        'Workday portal: where applications go to die. The abyss submitted you to a background check.',
       ],
       addAI: [
-        '"AI-powered" added to everything. The Bot Aura is pleased. Humans are skeptical.',
+        '"AI-powered" added to everything. ATS pleased. Humans skeptical.',
         'You injected "AI" into your profile. Credibility dropped, robot suspicion rose.',
-        'Added "AI" to 3 projects. Now they\'re all "AI-powered." They were just spreadsheets.',
-        'You labeled your resume summary "AI-optimized." The AI rejected it. For being too human.',
+        'Added "AI" to 3 projects. Now all "AI-powered." Were just spreadsheets.',
+        'Labeled resume "AI-optimized." The AI rejected it. For being too human.',
       ],
       addNetworking: [
         'Network expanded. Human contact increased. You\'re becoming more... social.',
-        'You reached out to someone. They may or may not respond. That\'s networking.',
-        'You sent a connection request. They accepted. You have nothing to say to them now.',
+        'Reached out to someone. They may or may not respond. That\'s networking.',
+        'Sent a connection request. They accepted. Nothing to say to them now.',
         'Networking: the art of pretending to care about someone\'s job so they might care about yours.',
       ],
       addClout: [
-        'Clout gained! Your LinkedIn presence grows. The algorithm rewards you.',
-        'You posted something clever. Or at least something. Clout increased.',
-        'Clout accumulated. Your LinkedIn profile now has 3 more followers. 2 are bots.',
-        'You engaged with content. The algorithm noticed. Your clout went up. Your rent didn\'t.',
+        'Clout gained! LinkedIn presence grows. Algorithm rewards you.',
+        'Posted something clever. Or at least something. Clout increased.',
+        'Clout accumulated. LinkedIn profile has 3 more followers. 2 are bots.',
+        'Engaged with content. Algorithm noticed. Clout went up. Rent didn\'t.',
       ],
       addBuzzwords: [
         'Buzzwords added to your profile. You\'re one step away from being a LinkedIn influencer.',
         'Your profile now has more buzzwords than substance. Classic.',
         'You added "thought leader," "go-getter," and "results-oriented." Your manager added "underperformer."',
-        'Buzzword injection complete. Your profile now reads like a Fortune 500 press release. Nobody believes it.',
+        'Buzzword injection complete. Your profile reads like a Fortune 500 press release. Nobody believes it.',
       ],
       rest: [
         'You rested. Energy restored. The job hunt continues tomorrow, as it always does.',
-        'A brief respite from the doomscroll. Your energy recovered. Your rent did not.',
-        'You took a break. Your rent increased while you were gone. Classic.',
-        'Rest completed. You felt human again. For about 6 hours. Then the applications resumed.',
+        'Brief respite from the doomscroll. Energy recovered. Rent did not.',
+        'Took a break. Rent increased while you were gone. Classic.',
+        'Rest completed. Felt human again. For about 6 hours. Then applications resumed.',
       ],
       post: [
         'Posted on Linkfluence. The void stares back, and you stared first.',
         'Your post is now live. 3 likes, 2 of which are from your mom.',
-        'Linkfluence post published. It will be algorithmically buried within hours. Posted anyway.',
-        'You posted your thoughts on Linkfluence. The algorithm showed it to 12 people. 3 were ads.',
+        'Linkfluence post published. Will be algorithmically buried within hours. Posted anyway.',
+        'Posted on Linkfluence. Algorithm showed it to 12 people. 3 were ads.',
       ],
       postViral: [
-        'VIRAL! Your post blew up. Clout went through the roof. Act naturally.',
-        'Your content went viral. The clout machine rewards you. The algorithm is pleased.',
-        'Your post hit 10K views. 8K were bots. 1K were people looking for "cringe compilation."',
-        'VIRAL MOMENT. Your post about "hustle culture" was shared by 47 accounts. 46 were yours.',
+        'VIRAL! Post blew up. Clout went through the roof. Act naturally.',
+        'Content went viral. Clout machine rewards you. Algorithm pleased.',
+        'Your post hit 10K views. 8K were bots. The rest were cringe compilation seekers.',
+        'VIRAL MOMENT. Post about "hustle culture" shared by 47 accounts. 46 were yours.',
       ],
       investigate: [
-        'You investigated. Found more red flags. Your hope went up though. Strange.',
+        'Investigated. Found more red flags. Hope went up though. Strange.',
         'Investigation complete. More red flags found than expected. Hope restored slightly.',
-        'You Googled the company. Found Glassdoor reviews from 2019. The company still hasn\'t replied.',
+        'Googled the company. Found Glassdoor reviews from 2019. Company still hasn\'t replied.',
         'Investigation revealed: the "company" is a LLC registered to a PO Box in Delaware. You applied anyway.',
       ],
       reportScam: [
@@ -2325,94 +2394,94 @@ const UI = (() => {
       scam: [
         'You scammed the scammer. Karma has entered the chat. Clout increased.',
         'Reverse psychology deployed. The scammer scammed. You gained clout.',
-        'You sent the scammer a fake invoice. They paid you. You felt guilty. Then you spent the money.',
-        'Scammed the scammer. You sold them a "premium job board" that was just a Google Doc. Worth it.',
+        'Sent the scammer a fake invoice. They paid you. Felt guilty. Spent the money.',
+        'Scammed the scammer. Sold them a "premium job board" that was just a Google Doc. Worth it.',
       ],
       captcha: [
-        'Captcha complete. You are not a robot. The machine has doubts.',
+        'Captcha complete. Not a robot. The machine has doubts.',
         'You identified all the traffic lights. Human status temporarily verified.',
-        'Captcha: "Select all images with crosswalks." You selected 12 images. The crosswalks were not crosswalks. They were benches.',
-        'Captcha challenge completed. You proved you\'re human. The job application still rejected you. For being too human.',
+        'Captcha: "Select all images with crosswalks." Selected 12 images. Crosswalks were not crosswalks. Benches.',
+        'Captcha challenge completed. Proved you\'re human. Job application still rejected you. For being too human.',
       ],
       bossFight: [
-        'Boss fight won! You defeated the recruiter from hell. Your career just leveled up.',
-        'Boss fight victorious! The final interview is behind you. Offer incoming!',
-        'Boss fight: "Tell me about a time you failed." You talked for 45 minutes. They nodded. You won. Barely.',
+        'Boss fight won! Defeated the recruiter from hell. Career just leveled up.',
+        'Boss fight victorious! Final interview is behind you. Offer incoming!',
+        'Boss fight: "Tell me about a time you failed." Talked 45 minutes. They nodded. Barely won.',
         'Boss battle complete. You survived the behavioral questions. Your soul survived less.',
       ],
       cancel: [
-        'You declined. Safe choice. Sometimes the best application is the one you don\'t submit.',
-        'Cancelled. You walked away from the job posting. The posting didn\'t even notice. Fair.',
+        'Declined. Safe choice. Sometimes the best application is the one you don\'t submit.',
+        'Cancelled. Walked away from the job posting. Posting didn\'t even notice. Fair.',
         'Declined and deleted. Your inbox is 0.7% less painful. Progress.',
-        'You chose peace over a job. The Bot Aura will not forgive you. Or maybe it\'s already forgotten.',
+        'Chose peace over a job. ATS will not forgive you. Or maybe it\'s already forgotten.',
       ],
       ignore: [
-        'Ignored. Your in-box grows quieter. Peace, of a sort.',
-        'You ignored the job posting. It will find someone else. Probably someone who cares.',
-        'Ignored. The job posting didn\'t deserve your energy. Or your email address.',
+        'Ignored. In-box grows quieter. Peace, of a sort.',
+        'Ignored the job posting. It will find someone else. Probably someone who cares.',
+        'Ignored. Job posting didn\'t deserve your energy. Or your email address.',
         'Swiped past. This job posting will haunt your dreams. Or at least your inbox.',
-        'Ignored. You chose mental health over a job posting that asks for "ninja" skills. Your therapist approves.',
+        'Ignored. Chose mental health over a job posting asking for "ninja" skills. Therapist approves.',
       ],
       decline: [
         'Declined. Not for everyone. That\'s okay — neither are you.',
-        'You hit decline. The company received your rejection. They will forget it by tomorrow.',
+        'Hit decline. Company received your rejection. Will forget it by tomorrow.',
         'Declined. Your career trajectory remains: sideways. Comforting, in a way.',
-        'Nope. Not today. The job market doesn\'t care. You don\'t care back. Mutual.',
-        'You declined. The opportunity moves on. Like your student loans.',
+        'Nope. Not today. Job market doesn\'t care. You don\'t care back. Mutual.',
+        'Declined. Opportunity moves on. Like your student loans.',
       ],
       exposeGhost: [
         'Ghost job exposed! Your karma increased. The job market is one star smaller.',
-        'You exposed a ghost job. The recruiter\'s reputation just tanked. Well played.',
-        'Ghost job revealed: posted 47 days ago, 10,000 applications, 0 interviews. The ghost was human.',
-        'You exposed the ghost job. It was posted by a company that doesn\'t exist. Or does. Who knows anymore?',
+        'Exposed a ghost job. Recruiter\'s reputation tanked. Well played.',
+        'Ghost job revealed: posted 47 days ago, 10K applications, 0 interviews. Ghost was human.',
+        'Exposed the ghost job. Posted by a company that doesn\'t exist. Or does. Who knows anymore?',
       ],
       reverseImg: [
-        'Reverse image search deployed! Found the stock photo source. Well played.',
-        'You reverse-searched their office photo. They\'re working from a WeWork. Exposed.',
-        'You reverse-searched their "team photo." It was from a Shutterstock catalog. $2.99 per image.',
+        'Reverse image search deployed! Found stock photo source. Well played.',
+        'Reverse-searched their office photo. Working from a WeWork. Exposed.',
+        'Reverse-searched their "team photo." From a Shutterstock catalog. $2.99 per image.',
         'Reverse image search revealed: their "modern office" is a 300 sq ft room with a beanbag and a whiteboard.',
       ],
       glassbore: [
-        'Glassbore opened. Company reviews reveal... the usual. At least now you know.',
-        'You dug into Glassbore. The reviews are brutal but accurate. Knowledge is power.',
-        'Glassbore: 3.2 stars. 47 reviews. "Great culture" from the CEO. "Terrible management" from everyone else.',
-        'You read Glassbore reviews. They all mention "work-life balance." None mention what that means. Suspicious.',
+        'Glassbore opened. Reviews reveal... the usual. At least now you know.',
+        'Glassbore reviews: brutal but accurate. Knowledge is power.',
+        'Glassbore: 3.2 stars. "Great culture" from the CEO. "Terrible management" from everyone else.',
+        'Glassbore reviews: all mention "work-life balance." None explain what that means. Suspicious.',
       ],
       askSalary: [
         'You asked about salary. The recruiter ghosted. Fair.',
         'Salary transparency requested. The silence was deafening. Classic.',
         'You asked "what\'s the budget for this role?" They replied "we\'re open to negotiation." Translation: minimum wage.',
-        'Salary question asked. The recruiter sent a PDF with a single number: $30,000. You replied "interesting."',
+        'Salary question asked. Recruiter sent a PDF with a single number: $30,000. Replied "interesting."',
       ],
       followUp: [
-        'Follow-up sent. The recruiter saw your message. Then ghosted again.',
-        'You followed up professionally. They saw it. They just don\'t care.',
-        'You followed up with "just checking in!" The recruiter replied "checking in" to their spam folder.',
-        'Follow-up email sent. 3 days later: read receipt confirmed. 3 weeks later: still no reply. You\'re good.',
+        'Follow-up sent. Recruiter saw your message. Ghosted again.',
+        'Followed up professionally. They saw it. Just don\'t care.',
+        'Followed up with "just checking in!" Recruiter replied "checking in" to their spam folder.',
+        'Follow-up sent. Read receipt confirmed. Three weeks later: still no reply.',
       ],
       referral: [
-        'Referral secured! A real human passed along your résumé. This means something.',
-        'Someone referred you. The human referral network is stronger than the Bot Aura.',
-        'You got a referral. The referrer said "let me know if you hear anything." You heard nothing.',
-        'Referral submitted. The hiring manager saw it. Then forgot. Then remembered. Then forgot again.',
+        'Referral secured! Real human passed along your résumé. This means something.',
+        'Someone referred you. The human referral network is stronger than the ATS.',
+        'Got a referral. Referrer said "let me know if you hear anything." Heard nothing.',
+        'Referral submitted. The hiring manager saw it, forgot, then forgot again.',
       ],
       videoInterview: [
-        'Video interview complete. You looked into the camera, not the screen. Pro tip.',
-        'Video interview done. You remembered to smile. They probably didn\'t.',
+        'Video interview complete. Looked into the camera, not the screen. Pro tip.',
+        'Video interview done. Remembered to smile. They probably didn\'t.',
         'Video interview: you answered questions while your cat walked across your keyboard. They noticed.',
-        'Recorded video interview submitted. You practiced in front of the mirror. The mirror didn\'t hire you either.',
+        'Video interview submitted. You practiced in the mirror. The mirror didn\'t hire you either.',
       ],
       personalityAssessment: [
         'Personality assessment complete. Result: "Borderline Culture Fit." As expected.',
         'You took the personality test. "You score high on "eats lunch at desk"."',
-        'Personality test: "I enjoy working in teams." You selected "Strongly Disagree." They selected you anyway.',
-        'Assessment complete. Your results: "Highly independent." Your manager: "independent" means "doesn\'t need meetings."',
+        'Personality test: "I enjoy working in teams." Selected "Strongly Disagree." They selected you anyway.',
+        'Assessment result: "Highly independent." Your manager interprets that as "doesn\'t need meetings."',
       ],
       offer: [
-        'OFFER! Your life just changed. This is the moment you\'ve been waiting for.',
-        'OFFER LETTER RECEIVED! The job hunt ends here. You did it, bro.',
-        'OFFER RECEIVED. The salary is low. The title is fancy. You take it anyway.',
-        'The offer letter arrived. 401k match: 4%. Vacation days: 10. You accept before reading the non-compete.',
+        'OFFER! Life just changed. This is the moment you\'ve been waiting for.',
+        'OFFER LETTER RECEIVED! Job hunt ends here. You did it, bro.',
+        'OFFER RECEIVED. Salary is low. Title is fancy. You take it anyway.',
+        'Offer arrived: 401k match 4%, 10 vacation days. You accept before reading the non-compete.',
       ],
       applyPipeline: [
         'Evergreen posting submitted. It\'s always open, which means it\'s never hired anyone.',
@@ -2423,47 +2492,47 @@ const UI = (() => {
       ],
       // Recruiter responses
       recruitReply: [
-        'You replied to the recruiter. They replied "let\'s hop on a call." You have a meeting.',
-        'Recruiter replied. The call was scheduled for "ASAP." You rescheduled to "someday."',
-        'You replied to the recruiter. They replied with a calendar invite for "tomorrow at 3am EST." You declined.',
-        'Recruiter replied: "We\'re excited to move forward!" Translation: "We have 500 other candidates."',
+        'Replied to the recruiter. They replied "let\'s hop on a call." You have a meeting.',
+        'Recruiter replied. Call was scheduled for "ASAP." You rescheduled to "someday."',
+        'Replied to the recruiter. They replied with a calendar invite for "tomorrow at 3am EST." Declined.',
+        'Recruiter: "excited to move forward!" Translation: "500 other candidates."',
       ],
 recruitCall: [
-        'Recruiter call complete. They asked about your "side hustle." You lied.',
+        'Recruiter call complete. Asked about your "side hustle." You lied.',
         'Phone interview finished. They said "we\'ll be in touch." You know what that means.',
-        'Recruiter call: "Where do you see yourself in 5 years?" You said "in a better job." They said "ambitious."',
-        'Called the recruiter. They put you on hold. 47 minutes later: "Sorry, technical difficulties." No technical difficulties.',
+        'Recruiter call: "Where in 5 years?" You said "in a better job." They said "ambitious."',
+        'Called the recruiter. 47-minute hold later: "technical difficulties." There were none.',
       ],
 recruitBlock: [
         'You blocked the recruiter. They sent 12 more messages from different numbers.',
-        'Blocked. The recruiter found you on Glassbore. They\'re relentless.',
-        'You blocked the recruiter. They replied from "noreply@linkfluence.com." You can\'t block that.',
-        'Recruiter blocked. They sent a connection request. You declined. They sent a DM. You blocked again.',
+        'Blocked. Recruiter found you on Glassbore. Relentless.',
+        'Blocked the recruiter. They replied from "noreply@linkfluence.com." Can\'t block that.',
+        'Recruiter blocked. They sent a connection request. You blocked again.',
       ],
 sendDM: [
-        'You sent a DM. The recruiter read it. Then left you on read. Classic.',
-        'Direct message sent. Your professionalism was met with silence. Expected.',
-        'DM sent to the hiring manager. They liked it. That\'s the highest level of engagement they\'ll give.',
-        'You DM\'d the recruiter. They replied "thanks for reaching out!" Then never replied again. The cycle continues.',
+        'Sent a DM. Recruiter read it. Left you on read. Classic.',
+        'Direct message sent. Professionalism met with silence. Expected.',
+        'DM sent to the hiring manager. They liked it. Maximum engagement achieved.',
+        'You DM\'d the recruiter. They replied "thanks for reaching out!" Then silence.',
       ],
 sendSSN: [
-        'You sent your SSN. You should not have done that. Your identity is now compromised.',
-        'SSN submitted. The company now has your Social Security Number. Pray they use it responsibly.',
+        'Sent your SSN. Should not have done that. Identity is now compromised.',
+        'SSN submitted. Company now has your Social Security Number. Pray they use it responsibly.',
         'You sent your SSN to a company with a 2.1-star Glassbore rating. Future-you is not proud.',
-        'SSN submitted. The hiring manager forwarded it to their "personal" email. You are now on a list.',
+        'SSN submitted. The hiring manager forwarded it to their personal email. You are now on a list.',
       ],
 acceptCheck: [
-        'You accepted the check. It bounced. The recruiter sent another check. It also bounced.',
-        'Check deposited. The amount was "$0.00 and 3 years of experience." You deposited it anyway.',
-        'You accepted the "offer." It was a PDF. You printed it. You framed it. It was not real.',
-        'Check accepted. The bank said "insufficient funds." The recruiter said "we\'re a startup." Both were correct.',
+        'Accepted the check. It bounced. Recruiter sent another check. Also bounced.',
+        'Check deposited. Amount was "$0.00 and 3 years of experience." Deposited it anyway.',
+        'Accepted the "offer." It was a PDF. Printed it. Framed it. Not real.',
+        'Check accepted. Bank said "insufficient funds." Recruiter: "we\'re a startup." Both correct.',
       ],
       // Apply variants
 applyTH: [
-        'You applied for the take-home assignment. It was 40 hours of work. For $50.',
-        'Take-home task submitted. It was a test. You failed it. Or you passed. Nobody told you.',
-        'Take-home assignment: "Build us a clone of Slack in 48 hours." You built a todo list. They wanted Slack.',
-        'You did the unpaid take-home test. It was a real project. They hired someone else. They used your code.',
+        'Applied for the take-home assignment. 40 hours of work. For $50.',
+        'Take-home task submitted. It was a test. Failed it. Or passed. Nobody told you.',
+        'Take-home assignment: "Build us a clone of Slack in 48 hours." Built a todo list. They wanted Slack.',
+        'Did the unpaid take-home test. Real project. Hired someone else. Used your code.',
       ],
 askCity: [
         'You asked about relocation. They said "remote." You packed your bags anyway.',
@@ -2491,15 +2560,15 @@ negotiateRemote: [
       ],
 bulkApply: [
         'You applied to 50 jobs in one hour. Your burnout increased. Your hope did not.',
-        'Bulk application sent. The Bot Aura rejected them all. At least you tried.',
+        'Bulk application sent. The ATS rejected them all. At least you tried.',
         'You applied to 100 jobs. 99 were "easy apply." 1 was a 20-page form. You filled out the form. It was a scam.',
         'Bulk applied. Your résumé was sent to 47 companies. 46 of them didn\'t reply. The 47th asked for a reference.',
       ],
 keywordStuff: [
-        'You stuffed keywords into your résumé. The Bot Aura approved. The hiring manager rejected.',
-        'Keyword injection successful. Your résumé now reads like a Wikipedia article. The Bot Aura loves it.',
-        'You added "Python," "JavaScript," and "AI" to your résumé. You know none of them. The Bot Aura doesn\'t care.',
-        'Keyword stuffing: your résumé now has "synergy" 14 times. The Bot Aura marked it "top 1% candidate." The hiring manager disagrees.',
+        'You stuffed keywords into your résumé. The ATS approved. The hiring manager rejected.',
+        'Keyword injection successful. Your résumé now reads like a Wikipedia article. The ATS loves it.',
+        'You added "Python," "JavaScript," and "AI" to your résumé. You know none of them. The ATS doesn\'t care.',
+        'Keyword stuffing: your résumé now has "synergy" 14 times. The ATS marked it "top 1% candidate." The hiring manager disagrees.',
       ],
       // Post responses
 postAgree: [
@@ -2509,137 +2578,137 @@ postAgree: [
         'Agreed with the post. The algorithm rewarded you with more posts you agree with. The echo chamber deepens.',
       ],
 postBait: [
-        'You baited the comments. 47 replies, 3 of which were from bots. Engagement: maximized.',
+        'Baited the comments. 47 replies, 3 from bots. Engagement: maximized.',
         'Controversial post published. The comments section is a battlefield. You lost.',
-        'You posted "remote work is killing productivity." The comments section erupted. You muted it.',
-        'Bait post: "Hustle culture is overrated." 200 likes, 50 comments calling you lazy. The algorithm knows.',
+        'Posted "remote work is killing productivity." Comments erupted. You muted it.',
+        'Bait post: "Hustle culture is overrated." 200 likes, 50 comments calling you lazy. Algorithm knows.',
       ],
 postCarousel: [
-        'You posted a carousel. 10 slides of "5 tips for career growth." Slide 10 was "follow me."',
+        'Posted a carousel. 10 slides of "5 tips for career growth." Slide 10: "follow me."',
         'Carousel published. The algorithm showed it to your mom. She liked it. You felt proud.',
-        'Carousel post: "7 skills every developer needs." Slide 5 was "LinkedIn networking." You wrote it.',
-        'You created a carousel. It has 12 slides. Nobody reads past slide 3. You put the important stuff on slide 1.',
+        'Carousel: "7 skills every developer needs." Slide 5: "LinkedIn networking." You wrote it.',
+        'You created a 12-slide carousel. Nobody reads past slide 3. You put everything on slide 1.',
       ],
 postCringe: [
         'You posted something cringe. 3 people liked it. 2 were bots. 1 was your ex.',
-        'Cringe content published. The algorithm buried it. Your friends shared it anyway.',
-        'You posted a "humble brag." The comments section was silent. Your inbox was not.',
-        'Cringe post: "I\'m just so grateful for this opportunity!" You have 3 opportunities. All unpaid.',
+        'Cringe content published. Algorithm buried it. Friends shared it anyway.',
+        'Posted a "humble brag." Comments were silent. Inbox was not.',
+        'Cringe post: "I\'m grateful for this opportunity!" You have 3. All unpaid.',
       ],
 postGood: [
-        'Good post published. It got 15 likes. Your mom gave 3 of them.',
-        'Post went well. The algorithm showed it to 50 people. 5 liked it. Progress.',
-        'You posted something genuine. 47 people engaged. 46 were recruiters. One was your cousin.',
-        'Good post: you shared a real story. The algorithm boosted it. Your rent did not.',
+        'Good post published. Got 15 likes. Mom gave 3 of them.',
+        'Post went well. Algorithm showed it to 50. 5 liked it. Progress.',
+        'Posted something genuine. 47 engaged. 46 recruiters. One cousin.',
+        'Good post: shared a real story. Algorithm boosted it. Rent did not.',
       ],
 postSincere: [
-        'You posted something sincere. It got 200 likes. You felt seen. For 3 minutes.',
-        'Sincere post published. The algorithm showed it to your network. They commented "agreed!" You felt validated.',
-        'You posted a vulnerable story about job hunting. 500 reactions. 0 job offers. The algorithm doesn\'t care about vulnerability.',
+        'Posted something sincere. 200 likes. Felt seen. For 3 minutes.',
+        'Sincere post published. Algorithm showed it to network. They commented "agreed!" Felt validated.',
+        'You posted a vulnerable story about job hunting. 500 reactions, 0 offers. The algorithm doesn\'t care.',
         'Sincere post: "I\'m struggling to find a job." The comments said "stay positive!" You posted again the next day.',
       ],
 postSlowBurn: [
-        'Your post slowly gained traction. 3 days later: 100 likes. You forgot you posted it.',
-        'Slow burn post: it didn\'t blow up. But it got 47 views. From people who matter. Or should.',
+        'Post slowly gained traction. 3 days later: 100 likes. You forgot you posted it.',
+        'Slow burn post: didn\'t blow up. Got 47 views. From people who matter. Or should.',
         'You posted 2 weeks ago. Today it got 500 views. The algorithm found you. You are not ready.',
-        'Slow burn: your post gained 10 views per day for 3 weeks. Then 1,000 in an hour. The algorithm is fickle.',
+        'Slow burn: 10 views/day for 3 weeks. Then 1,000 in an hour. Algorithm is fickle.',
       ],
 postThis: [
-        'You posted this. The algorithm showed it to 12 people. 3 liked it. Your mom was one.',
-        'Post published. The void stared back. The void liked it. The void is your bot account.',
+        'Posted this. Algorithm showed it to 12. 3 liked it. Mom was one.',
+        'Post published. The void stared back, then liked it. The void is your bot account.',
         'You posted something random. The algorithm boosted it. Your network is confused. You are too.',
-        'Post published. The algorithm showed it to 50 people. 2 liked it. One was a scam bot. Progress?',
+        'Post published. Algorithm showed it to 50. 2 liked it. One was a scam bot. Progress?',
       ],
       // Network responses
 networkGo: [
-        'You went to a networking event. You collected 12 business cards. You forgot all 12 names.',
-        'Networking event attended. You talked to 5 people. 3 were recruiters. 2 were also job seekers.',
-        'You attended a "networking mixer." Everyone was on their phone. You were too. Bonding.',
+        'Networking event: collected 12 business cards. Forgot all 12 names.',
+        'Networking event: talked to 5 people, 3 recruiters, 2 job seekers.',
+        'Attended a "networking mixer." Everyone on their phone. You were too. Bonding.',
         'Networking event: you exchanged LinkedIn QR codes with 8 people. None of them followed you back.',
       ],
 congrats: [
-        'You congratulated a connection. They liked your comment. The algorithm showed it to 50 people.',
-        'Congratulatory message sent. The connection replied "thanks!" You felt good for 10 minutes.',
-        'You congratulated someone on their new job. They hired you. Or maybe they just said "thanks." You\'re hoping.',
+        'Congratulated a connection. They liked your comment. Algorithm showed it to 50 people.',
+        'Congratulatory message sent. Connection replied "thanks!" Felt good for 10 minutes.',
+        'Congratulated someone on their new job. They hired you. Or just said "thanks." Hoping.',
         'Congratulated a former colleague. They posted about their new role. You clicked "Apply." They saw it. Awkward.',
       ],
 endorse: [
-        'You endorsed a skill. The person endorsed you back. The algorithm rewarded both of you with clout.',
-        'Endorsement given. The recipient felt validated. You felt like a good person. For 5 minutes.',
-        'You endorsed someone in "Leadership." They endorsed you in "Synergy." The algorithm is confused.',
-        'Endorsement exchange: you endorsed "Python," they endorsed "Excel." Neither of you is a developer.',
+        'Endorsed a skill. They endorsed you back. Algorithm rewarded both with clout.',
+        'Endorsement given. Recipient felt validated. Felt like a good person. For 5 minutes.',
+        'Endorsed someone in "Leadership." They endorsed you in "Synergy." Algorithm confused.',
+        'Endorsement exchange: endorsed "Python," they endorsed "Excel." Neither is a developer.',
       ],
 useReferral: [
         'You used a referral. The hiring manager saw your name. They looked at your résumé. It was still rejected.',
         'Referral submitted. The recruiter said "I\'ll pass this along." They did not.',
-        'You used a referral. The hiring manager saw your name. They looked at your résumé. It was still rejected. The referral didn\'t help.',
-        'Referral: your friend said "I\'ll put in a good word." They didn\'t. You found out 3 weeks later. From a job post.',
+        'Used a referral. Hiring manager saw your name, looked at your résumé. Still rejected. Referral didn\'t help.',
+        'Referral: friend said "I\'ll put in a good word." Didn\'t. Found out 3 weeks later. From a job post.',
       ],
 slideIn: [
-        'You slid into their DMs. They slid into their inbox. You were not in it.',
+        'Slid into their DMs. They slid into their inbox. You were not in it.',
         'Direct message sent. The recruiter read it. Then slid into their next conversation. You were not remembered.',
-        'You slid into the hiring manager\'s DMs. They replied "interesting." You replied "let\'s talk!" They never did.',
-        'Slide into DMs: you sent a connection request with a note. They accepted. The note was "I\'m looking for opportunities." They replied "check our careers page."',
+        'Slid into hiring manager\'s DMs. They replied "interesting." You replied "let\'s talk!" Never did.',
+        'Slide into DMs: sent a connection request with a note. They accepted. You: "looking for opportunities." They: "check careers page."',
       ],
       // Resume responses
       rewriteBullets: [
         'You rewrote your résumé bullets as "impact metrics." It now reads like a war crime confession.',
-        'Bullet points transformed into quantified achievements. Your experience is now "optimized for Bot Aura."',
-        'You rewrote your résumé. "Managed team" became "Led cross-functional synergy initiatives." HR called it "cringe."',
-        'Résumé bullets rewritten. "Worked on project" became "Spearheaded paradigm-shifting deliverables." The Bot Aura approved. You lied.',
+        'Bullet points transformed into quantified achievements. Your experience is now "optimized for the ATS."',
+        'Résumé rewritten. "Managed team" became "Led cross-functional synergy initiatives." HR called it "cringe."',
+        'Resumé bullets rewritten. "Worked on project" became "Spearheaded paradigm-shifting deliverables." Bot Aura approved. You lied.',
       ],
       writeCover: [
-        'You wrote a cover letter. The job posting said "cover letters are optional." You wrote 3 paragraphs anyway.',
-        'Cover letter composed. You poured your soul into it. The company uses a Bot Aura that strips all soul.',
-        'Cover letter written. The job posting said "no cover letters." You sent it anyway. They replied "as stated, no cover letters."',
+        'Wrote a cover letter. The posting said "optional." You wrote 3 paragraphs anyway.',
+        'Cover letter composed. Poured your soul into it. Bot Aura strips all soul.',
+        'Cover letter written. Posting said "no cover letters." You sent it. They replied "as stated, no cover letters."',
         'You wrote a cover letter. It was 4 paragraphs. The Bot Aura read it as "applicant: unknown." You added "to whom it may concern."',
       ],
       plainText: [
-        'You sent your résumé as plain text. The HR director cried. Some things should stay PDF.',
+        'Sent résumé as plain text. HR director cried. Some things should stay PDF.',
         'Plain-text résumé sent. The formatting is gone but your desperation remains intact.',
         'You sent your résumé as plain text. The Bot Aura parsed it as "applicant: error." You resent it as a Word doc.',
-        'Plain-text résumé: you thought it was "minimalist." The recruiter thought it was "broken." Both were correct.',
+        'Plain-text résumé: you called it "minimalist." Recruiter called it "broken." Both correct.',
       ],
       // Investigate responses
       aiCover: [
-        'You discovered the job posting was written by AI. The AI is now applying to your résumé. The circle closes.',
-        'AI-generated job description detected. The AI writer is now unemployed. Karmic justice.',
-        'You analyzed the job posting. It was AI-generated. The AI used "synergy" 7 times. You applied anyway.',
-        'AI job description: the posting had more buzzwords than your résumé. You felt competitive. You applied.',
+        'Discovered the job posting was written by AI. AI is now applying to your résumé. The circle closes.',
+        'AI-generated job description detected. AI writer is now unemployed. Karmic justice.',
+        'Analyzed the job posting. AI-generated. AI used "synergy" 7 times. Applied anyway.',
+        'AI job description: more buzzwords than your résumé. You felt competitive. Applied anyway.',
       ],
       algChange: [
-        'You noticed the algorithm changed your feed. It now shows you "entry-level VP" roles. Progress.',
-        'Algorithm updated. Your feed now reflects your true self: a desperate applicant for 500 jobs.',
+        'Algorithm changed your feed. Now shows "entry-level VP" roles. Progress.',
+        'Algorithm updated. Feed now reflects your true self: desperate applicant for 500 jobs.',
         'Linkfluence algorithm changed. Your feed now shows jobs requiring 15 years of experience for "entry-level." You applied.',
-        'Algorithm update: your feed now shows jobs in cities you don\'t live in. Salary range: "negotiable." You\'re suspicious.',
+        'Algorithm update: jobs in cities you don\'t live in. Salary: "negotiable." You\'re suspicious.',
       ],
       lieYears: [
-        'You lied about years of experience. The interviewer asked a follow-up. You are sweating.',
-        'Lie entered: "8 years." Reality: 8 months. The interview will be awkward. You brought resume props.',
+        'Lied about experience. Interviewer asked a follow-up. You are sweating.',
+        'Lie entered: "8 years." Reality: 8 months. The interview will be awkward. You brought props.',
         'You claimed "10 years experience." You graduated last year. The interviewer nodded. You sweated more.',
-        'Lie about experience: you said "senior level." They asked about system design. You said "I\'m a team player."',
+        'Lied about experience: you claimed "senior level." They asked about system design. You pivoted to "team player."',
       ],
       certComplete: [
         'You completed a "certificate course" that took 3 weeks and cost $49.99. You are now "certified."',
-        'Certificate earned. LinkedIn notified your 500+ connections. You feel accomplished and slightly foolish.',
+        'Certificate earned. LinkedIn notified 500+ connections. Felt accomplished and slightly foolish.',
         'Certificate completed. It was a 2-hour Udemy course. You added it to your résumé. Your manager added "suspicious."',
-        'You earned a certificate. It was from a "university" that doesn\'t exist. The Bot Aura didn\'t notice. Your future employer might.',
+        'Certificate earned from a "university" that doesn\'t exist. The Bot Aura didn\'t notice. Your employer might.',
       ],
       // Event/micro-event responses
       captchaEvent: [
-        'Captcha: "Select all squares with bicycles." You selected 47 squares. The machine is unimpressed.',
-        'Captcha challenge completed. You proved you\'re not a robot. The job application still rejected you.',
-        'Captcha: "Select all images with traffic lights." You selected 12. 8 were wrong. You failed. The job application continued.',
-        'Captcha challenge: "Prove you\'re human." You clicked 15 images of buses. The Bot Aura said "close enough." You cried.',
+        'Captcha: "Select all squares with bicycles." Selected 47 squares. Machine unimpressed.',
+        'Captcha completed. Proved you\'re not a robot. Job application still rejected you.',
+        'Captcha: "Select all traffic lights." Selected 12. 8 wrong. Failed. Job application continued.',
+        'Captcha: "Prove you\'re human." Clicked 15 images of buses. Bot Aura: "close enough." You cried.',
       ],
       bossFight: [
         'Boss fight: The Final Interview. You defeated it with "synergy" and a PowerPoint. The offer is coming.',
-        'Boss fight won! You survived the panel interview. 5 interviewers, 3 questions, 1 offer. You are victorious.',
+        'Boss fight won! Survived the panel interview. 5 interviewers, 3 questions, 1 offer. Victorious.',
       ],
       paEvent: [
-        'Personality assessment completed. Result: "May panic in group settings." HR noted this.',
-        'Assessment submitted. The algorithm classified you as "culture fit: borderline." You expected better.',
-        'PA results: "High independence, low agreeableness." HR said "we need a team player." You said "I\'m independent."',
+        'Personality assessment completed. Result: "May panic in group settings." HR noted.',
+        'Assessment submitted. Algorithm classified you as "culture fit: borderline." You expected better.',
+        'PA results: "High independence, low agreeableness." HR: "we need a team player." You: "I\'m independent."',
         'Personality assessment: you scored "high stress tolerance." They said "good, we\'ll give you 60-hour weeks."',
       ],
       // Rest/gig responses
@@ -2652,122 +2721,116 @@ sleep: [
 therapy: [
         'You went to therapy. The therapist said "you need a job." You said "I know." The session was over.',
         'Therapy session complete. The therapist recommended "self-care." You recommended "a salary."',
-        'Therapy: you talked about job hunting for 50 minutes. The therapist said "let\'s talk about your childhood." You said "my childhood was fine."',
-        'Therapy session: the therapist said "you have control." You said "I have rent." They said "boundaries." You said "boundaries don\'t pay rent."',
+        'Therapy: talked about job hunting 50 minutes. Therapist asked about childhood. You said "fine."',
+        'Therapy: therapist said "you have control." You said "I have rent." They said "boundaries." You said "boundaries don\'t pay rent."',
       ],
       cookMeal: [
-        'You cooked a meal. The recipe was on a 30-minute video that took 2 hours. The food was mediocre. The journey was real.',
+        'Cooked a meal. Recipe was on a 30-min video that took 2 hours. Food was mediocre. Journey was real.',
         'Meal prepared. It\'s just cereal again but you ate it with intention. That counts.',
       ],
-eatCereal: [
-        'You ate cereal for dinner. It was 11pm. Your mother would be proud. Your landlord would not.',
-        'Cereal consumed. The job hunt requires fuel. You chose the fuel that comes in a box with a cartoon mascot.',
-        'Cereal for dinner: you ate it at 2am. The box said "serve with milk." You drank from the carton. Regretted it.',
-        'You ate cereal. It was the third cereal this week. Your fridge has 47 cereal boxes. Your rent is unpaid.',
+      eatCereal: [
+        'Ate cereal for dinner. 11pm. Mother would be proud. Landlord would not.',
+        'Cereal consumed. Job hunt requires fuel. Chose the fuel in a box with a cartoon mascot.',
+        'Cereal for dinner: ate it at 2am. Box said "serve with milk." Drank from carton. Regretted it.',
+        'Ate cereal. Third cereal this week. Fridge has 47 cereal boxes. Rent is unpaid.',
       ],
       orderFood: [
-        'You ordered food delivery. The driver said "I\'ll be there in 5 minutes." It\'s been 47.',
-        'Food ordered. The delivery app now shows the driver\'s location. They are circling the block. They are always circling.',
-        'Food delivery: the app said "15 minutes." It took 47. You ate it cold. It was still better than cereal.',
-        'You ordered food. The driver called: "I\'m at the wrong address." You said "I\'m at the right address." The driver cried.',
-      ],
-      cookMeal: [
-        'You attempted to cook. The recipe required "sauté." You do not own a sauté pan. You ordered pizza.',
-        'Cooking attempted. The smoke alarm is your new roommate. The pizza arrived before the dish was ready.',
-        'You tried to cook. The recipe said "30 minutes." You spent 2 hours chopping. You ate cereal.',
-        'Cooking attempt: you followed a YouTube tutorial. The chef said "season to taste." You season with salt. It was fine.',
+        'Ordered food delivery. Driver said "I\'ll be there in 5 minutes." It\'s been 47.',
+        'Food ordered. Driver is circling the block. They are always circling.',
+        'Food delivery: app said "15 minutes." Took 47. Ate it cold. Still better than cereal.',
+        'Food ordered. Driver: "I\'m at the wrong address." You: "I\'m at the right one." The driver cried.',
       ],
       // Gig responses
       fiverrGig: [
-        'Fiverr gig completed. $15 earned. You wrote a LinkedIn "About" section for someone who has no LinkedIn.',
-        'Fiverr gig done. Your soul: devalued. Your bank account: marginally improved. The math of survival.',
-        'Fiverr gig: you wrote a resume for $10. The client said "thanks." You said "you\'re welcome." You both knew it was terrible.',
-        'Fiverr gig completed. You wrote a cover letter for $8. The client used it. They got the job. You got $8.',
+        'Fiverr gig completed. $15 earned. Wrote a LinkedIn "About" section for someone with no LinkedIn.',
+        'Fiverr gig done. Soul: devalued. Bank account: marginally improved. Math of survival.',
+        'Fiverr gig: wrote a resume for $10. Client said "thanks." You both knew it was terrible.',
+        'Fiverr gig completed. Wrote a cover letter for $8. Client used it. Got the job. You got $8.',
       ],
       uberGig: [
-        'Rideshare shift complete. Made $20. The passenger cried. You did not. You have been desensitized.',
-        'Uber shift finished. You drove a stranger across town. They tipped $1. The algorithm took $7.',
-        'Uber shift: you drove someone to the airport. They said "thanks for the ride." You said "thanks for the $3."',
-        'Rideshare gig: you picked up a passenger. They asked "are you hungry?" You said "yes." They didn\'t tip.',
+        'Rideshare shift: made $20. Passenger cried. You didn\'t. Desensitized.',
+        'Uber shift finished. Drove a stranger across town. They tipped $1. Algorithm took $7.',
+        'Uber shift: drove someone to the airport. They said "thanks for the ride." You: "thanks for the $3."',
+        'Rideshare gig: picked up a passenger. They asked "are you hungry?" You said "yes." Didn\'t tip.',
       ],
       userTest: [
-        'User testing completed. $10 earned. You thought out loud while clicking the wrong button. They wanted to hear that.',
-        'User test done. You felt seen for 10 minutes. Then they asked about your "thought process." You lied.',
+        'User testing completed. $10 earned. Thought out loud while clicking the wrong button. They wanted to hear that.',
+        'User test done. Felt seen for 10 minutes. Then they asked about "thought process." You lied.',
         'User test: you clicked through a prototype. The researcher said "what were you thinking?" You said "I was thinking about rent."',
-        'User testing completed. $15 earned. You told them the app was "confusing." They said "thanks, we\'ll improve it." They won\'t.',
+        'User test: $15 earned. Told them the app was "confusing." They said "we\'ll improve it." They won\'t.',
       ],
       dataEntry: [
-        'Data entry marathon complete. 10,000 rows. A script will replace you by Tuesday.',
-        'Data entry done. You are now a human API. The pay is $12 and the existential dread is free.',
-        'Data entry: you typed 500 rows into a spreadsheet. A Python script could have done it in 3 seconds. You were paid $8.',
-        'Data entry gig: you entered names and addresses into a database. You realized you were the database. For $10/hour.',
+        'Data entry marathon complete. 10,000 rows. Script will replace you by Tuesday.',
+        'Data entry done. Now a human API. Pay is $12. Existential dread is free.',
+        'Data entry: typed 500 rows into a spreadsheet. A Python script could do it in 3 seconds. You were paid $8.',
+        'Data entry gig: entered names and addresses into a database. Realized you were the database. For $10/hour.',
       ],
       consulting: [
-        'Consulting call complete. $50 earned. You advised someone on "digital transformation." They use Windows 7.',
-        'Consulting gig done. You sold "synergy" to a person who asked what a "cloud" was. The future is now.',
-        'Consulting call: you told a startup to "hire a CTO." They said "we can\'t afford it." You said "then you can\'t afford me." They paid you anyway.',
-        'Consulting gig: you advised a company on "agile methodology." They use spreadsheets. You advised them on "buy better spreadsheets."',
+        'Consulting call complete. $50 earned. Advised someone on "digital transformation." They use Windows 7.',
+        'Consulting gig done. Sold "synergy" to someone who asked what a "cloud" was. The future is now.',
+        'Consulting: told a startup to "hire a CTO." They said "can\'t afford it." You said "then can\'t afford me." They paid anyway.',
+        'Consulting: advised a company on "agile methodology." They use spreadsheets. Advised "buy better spreadsheets."',
       ],
       buildPortfolio: [
-        'Portfolio built. 3 projects, 2 of which were for school. The credibility gains are real.',
-        'You built a portfolio project. It\'s in GitHub. It has 0 stars. You have 100% more credibility.',
-        'Portfolio updated. You added a "todo app" built in React. It has 3 issues. They are all yours.',
-        'You built a portfolio piece. It\'s a weather app. It uses an API. The API costs money. You used the free tier.',
+        'Portfolio built. 3 projects, 2 for school. Credibility gains are real.',
+        'Built a portfolio project. In GitHub. 0 stars. 100% more credibility.',
+        'Portfolio updated. Added a "todo app" built in React. 3 issues. All yours.',
+        'Built a portfolio weather app. Uses an API. The API costs money. You used the free tier.',
       ],
       ceoFamily: [
         'CEO announced "family culture." You are now part of a family that doesn\'t pay you.',
-        '"We\'re a family!" said the CEO. Your family doesn\'t make you work 80-hour weeks. This is not a family.',
-        'CEO said "we\'re a family." You asked for family therapy. They said "we\'re a startup." You asked for a raise.',
-        '"Family culture" announced. Your "family" doesn\'t include healthcare. Or PTO. Or a living wage.',
+        '"We\'re a family!" said the CEO. Your family doesn\'t make you work 80-hour weeks.',
+        'CEO: "we\'re a family." You asked for therapy. They said "startup." You asked for a raise.',
+        '"Family culture" announced. Your "family" excludes healthcare, PTO, and a living wage.',
       ],
       // Other responses
       deleteApp: [
-        'You deleted a job application. Freedom. The company will never know what they missed.',
-        'Application withdrawn. The Bot Aura will show "applicant declined." You declined nothing. You were declined.',
-        'You deleted the application. The company sent a thank you email. You deleted that too.',
-        'Application deleted. The Bot Aura marked it "applicant withdrew." You withdrew nothing. You were withdrawing from reality.',
+        'Deleted a job application. Freedom. Company will never know what they missed.',
+        'Application withdrawn. Bot Aura: "applicant declined." You declined nothing. You were declined.',
+        'Deleted the application. Company sent a thank you email. Deleted that too.',
+        'Application deleted. Bot Aura: "applicant withdrew." You withdrew nothing. You were withdrawing from reality.',
       ],
 doomscroll: [
-        'Doomscrolling for 2 hours. You learned about a job in a field you don\'t want in a city you don\'t live in.',
-        'Doomscroll complete. Your hope decreased. Your rent increased. The algorithm rewarded you with more doom.',
-        'You doomscrolled for 3 hours. You applied to 47 jobs. All were scams. You felt productive.',
-        'Doomscroll: you read 50 job postings. 49 were "entry-level" requiring 10 years. You cried. You scrolled more.',
+        'Doomscrolled 2 hours. Learned about a job in a field you don\'t want in a city you don\'t live in.',
+        'Doomscroll complete. Hope decreased. Rent increased. Algorithm rewarded you with more doom.',
+        'Doomscrolled 3 hours. Applied to 47 jobs. All scams. You felt productive.',
+        'Doomscroll: 50 job postings. 49 required 10 years for "entry-level." You cried. Scrolled more.',
       ],
 touchGrass: [
-        'You went outside. The grass was green. The job market was gray. Both remained unchanged.',
-        'Touch grass completed. The sun was shining. Your inbox was not. You went back inside.',
-        'You went for a walk. You saw a bird. It had a job. You did not. The bird didn\'t apply either.',
+        'Went outside. Grass was green. Job market was gray. Both remained unchanged.',
+        'Touch grass completed. Sun was shining. Inbox was not. Went back inside.',
+        'Went for a walk. Saw a bird with a job. The bird didn\'t apply either.',
         'Touch grass: you sat on a bench for 20 minutes. A pigeon ate your sandwich. You felt connected to nature.',
       ],
 slackHang: [
-        'Slack hang complete. 47 meetings scheduled. 0 jobs offered. The calendar is full. The inbox is emptier.',
-        'Virtual hangout finished. You talked to 12 people. 3 were recruiters. 2 were also job seekers. You exchanged LinkedIn QR codes.',
-        'Slack hang: you attended a "virtual coffee chat." The other person had a job. You wanted one. They didn\'t.',
-        'Slack hangout: you met someone "in your field." They were in the same field. They were unemployed too. Bonding.',
+        'Slack hang: 47 meetings scheduled, 0 jobs offered. Calendar full. Inbox emptier.',
+        'Virtual hangout: talked to 12 people, 3 recruiters, 2 job seekers. Exchanged QR codes.',
+        'Slack hang: attended a "virtual coffee chat." Other person had a job. You wanted one. They didn\'t.',
+        'Slack hangout: met someone "in your field." Same field. Unemployed too. Bonding.',
       ],
 mentorMeet: [
-        'Mentor meeting complete. They said "just be yourself." You were yourself. They said "be more confident."',
-        'Mentor session finished. They gave you advice. You took notes. You did none of it. You felt guilty.',
-        'Mentor meeting: they said "network more." You said "I try." They said "try harder." You tried. You cried.',
-        'Mentor session: they said "follow your passion." You said "I need rent." They said "passion pays." You said "rent doesn\'t."',
+        'Mentor meeting complete. They said "just be yourself." You were. They said "be more confident."',
+        'Mentor session finished. Gave advice. You took notes. Did none of it. Felt guilty.',
+        'Mentor meeting: "network more." You: "I try." They: "try harder." You tried. Cried.',
+        'Mentor session: "follow your passion." You: "I need rent." They: "passion pays." You: "rent doesn\'t."',
       ],
 hiringPTO: [
-        'The hiring manager took PTO. Your application is stuck. The recruiter is stuck. The cycle continues.',
-        'Hiring manager on vacation. Your application is in limbo. The recruiter said "they\'ll be back next week."',
-        'Hiring manager took PTO. Your application sat for 3 weeks. They replied "welcome back!" You replied "I found another job."',
-        'PTO announced. The recruiter said "we\'ll resume interviews when they return." They returned. They quit.',
+        'Hiring manager took PTO. Application stuck. Recruiter stuck. Cycle continues.',
+        'Hiring manager on vacation. Application in limbo. Recruiter: "back next week."',
+        'Hiring manager took PTO. Application sat 3 weeks. They: "welcome back!" You: "found another job."',
+        'PTO announced. Recruiter: "resume interviews when they return." Returned. Quit.',
       ],
 layoffWave: [
-        'Layoff wave hits. Your friend lost their job. They update their LinkedIn. You update yours. Both get no replies.',
-        'Layoffs announced. The company lost 10% of its staff. You lost your hope. The recruiter lost their job too.',
-        'Layoff wave: your "friend" at the company was laid off. They sent a LinkedIn post. You commented "stay strong!" They didn\'t reply.',
-        'Layoffs hit. The company said "it was a tough decision." The decision was tough. The money was easy.',
+        'Layoff wave hits. Friend lost their job. Update LinkedIn. You update yours. Both get no replies.',
+        'Layoffs announced. Company lost 10% of staff. Lost hope. Recruiter lost their job too.',
+        'Layoff wave: "friend" at the company laid off. Sent a LinkedIn post. Commented "stay strong!" No reply.',
+        'Layoffs hit. Company: "tough decision." Decision was tough. Money was easy.',
       ],
 massLayoffs: [
-        'Mass layoffs announced. The company lost 500 employees. You lost your referral. The cycle continues.',
-        'Layoffs: 1,000 people lost their jobs. You lost your hope. The recruiter lost their job too. The cycle continues.',
-        'Mass layoffs: your "network" lost 50 people. Your LinkedIn feed is now a memorial. You update your résumé.',
-        'Mass layoffs hit. The CEO said "we\'re optimizing." You said "we\'re starving." The CEO didn\'t reply.',
+        'Mass layoffs announced. Company lost 500 employees. Lost your referral. Cycle continues.',
+        'Layoffs: 1,000 lost jobs. Lost hope. Recruiter lost job too. Cycle continues.',
+        'Mass layoffs: "network" lost 50 people. LinkedIn feed is now a memorial. Update résumé.',
+        'Mass layoffs hit. CEO: "we\'re optimizing." You: "we\'re starving." CEO didn\'t reply.',
       ],
 friendHired: [
         'Your friend got hired. They posted about it. You liked the post. You cried in the shower.',
@@ -2782,33 +2845,33 @@ profileViewed: [
         'Profile viewed. The recruiter spent 12 seconds on your profile. Then moved on. 12 seconds was more attention than your ex gave you.',
       ],
       finalInterview: [
-        'Final interview complete. The panel was 7 people, each asking a different question. You answered all. You are exhausted.',
-        'Final round finished. They asked about "where you see yourself in 5 years." You said "not here." They laughed. You did not.',
-        'Final interview: 45 minutes. 3 technical questions. 2 behavioral questions. 1 "what color are you?" You said "white." They said "no, your favorite color."',
-        'Final round: they asked "what\'s your weakness?" You said "I work too hard." They said "we all do." You said "no, I really do."',
+        'Final interview complete. Panel was 7 people, each asking different questions. Answered all. Exhausted.',
+        'Final round finished. Asked "where in 5 years?" You: "not here." They laughed. You did not.',
+        'Final interview: 45 minutes, 3 technical questions, 2 behavioral. They asked "what color are you?" You said "white." Wrong color.',
+        'Final round: they asked "what\'s your weakness?" You said "I work too hard." They said "we all do." You insisted.',
       ],
       rolePaused: [
         'Role paused. "We\'ve received an overwhelming response." You received an overwhelming rejection.',
-        'Position paused. The hiring manager moved to a startup. The startup has no budget. The cycle continues.',
-        'Role paused. The recruiter said "we\'re pausing hiring." You said "when will you resume?" They said "Q3." It\'s Q4.',
-        'Position paused. The company said "we\'ll repost in 6 months." It was reposted in 6 weeks. With a lower salary.',
+        'Position paused. Hiring manager moved to a startup. Startup has no budget. Cycle continues.',
+        'Role paused. Recruiter: "pausing hiring." You: "when will you resume?" They: "Q3." It\'s Q4.',
+        'Position paused. Company said "repost in 6 months." Reposted in 6 weeks. Lower salary.',
       ],
       vibesShift: [
-        'The vibes shifted. The recruiter\'s enthusiasm dropped. The salary range narrowed. You felt it.',
-        'Vibes shift detected. The conversation went from "we\'re a family" to "let\'s circle back." You know how this ends.',
-        'Vibes shift: the recruiter went from "excited" to "let me check with HR." You knew what "check with HR" means.',
-        'Vibes shifted. The recruiter said "interesting" with a flat tone. You said "thank you." They said "we\'ll be in touch." They won\'t.',
+        'Vibes shifted. Recruiter\'s enthusiasm dropped. Salary range narrowed. You felt it.',
+        'Vibes shift detected. Conversation went from "we\'re a family" to "let\'s circle back." You know how this ends.',
+        'Vibes shift: recruiter went from "excited" to "let me check with HR." You knew what "check with HR" means.',
+        'Vibes shifted. Recruiter said "interesting" flatly. You said "thank you." They said "we\'ll be in touch." They won\'t.',
       ],
       ignore: [
-        'Ignored. Your in-box grows quieter. Peace, of a sort.',
-        'Swiped left. The job will be forgotten by both you and the algorithm.',
+        'Ignored. In-box grows quieter. Peace, of a sort.',
+        'Swiped left. Job will be forgotten by both you and the algorithm.',
       ],
       discard: [
-        'Discarded. The void accepts your rejection. It is grateful. The void is always grateful.',
+        'Discarded. Void accepts your rejection. Grateful. Void is always grateful.',
         'Ignored. You chose peace over a job posting that asks for 10 years of experience in a tool released Tuesday.',
-        'Discarded. The job posting was deleted. Your inbox is 0.3% less painful. Progress.',
-        'You discarded the opportunity. The company will never know what they missed. Or care.',
-        'Discarded. You chose yourself over a job posting that said "fast-paced." You are not fast. You are tired.',
+        'Discarded. Your inbox is 0.3% less painful. Progress.',
+        'Discarded the opportunity. Company will never know what they missed. Or care.',
+        'Discarded. Chose yourself over a job posting that said "fast-paced." Not fast. Tired.',
       ],
     };
 
@@ -2863,6 +2926,14 @@ profileViewed: [
     const g = E.state;
     const list = document.getElementById('leads-list');
     const leads = g.run.activeLeads || [];
+
+    /* Update leads toggle button count */
+    const toggleBtn = document.getElementById('leads-toggle-btn');
+    const leadsCountEl = document.getElementById('leads-count');
+    if (toggleBtn && leadsCountEl) {
+      leadsCountEl.textContent = `(${leads.length})`;
+      toggleBtn.style.display = window.innerWidth <= 768 ? 'block' : 'none';
+    }
 
     if (leads.length === 0) {
       list.innerHTML = '<div style="font-size:.75rem;color:var(--text-muted);padding:.5rem">No active leads. Your pipeline is as empty as your inbox.</div>';
@@ -2935,9 +3006,12 @@ profileViewed: [
     const g = E.state;
     document.removeEventListener('keydown', handleKey);
 
-    /* Ensure _prevStats is set for EOD stat changes */
+    /* Ensure _prevStats and _prevFlags are set for EOD stat changes */
     if (!g.run._prevStats) {
       g.run._prevStats = {...g.run.stats};
+    }
+    if (!g.run._prevFlags) {
+      g.run._prevFlags = {...g.run.flags};
     }
 
     /* Resolve leads */
@@ -2951,7 +3025,7 @@ profileViewed: [
       g.run.flags.offerDay = g.run.day;
       g.run.flags.maxClout = Math.max(g.run.flags.maxClout || 0, g.run.stats.clout || 0);
       /* Confetti! */
-      E.launchConfetti();
+      launchConfetti();
     }
 
     /* Track max robot suspicion */
@@ -2992,33 +3066,47 @@ profileViewed: [
     const changes = document.getElementById('eod-stat-changes');
     const leadRes = document.getElementById('eod-lead-results');
 
-    /* Procedural recap */
-    const apps = g.run.flags.applicationsSubmitted || 0;
-    const ghosts = g.run.flags.leadsGhostedRun || 0;
-    const humans = (g.run.stats.humanContact || 0);
-    const robots = (g.run.stats.robotSuspicion || 0);
-    const names = DATA.NAMES;
-    const comp = DATA.pick(DATA.COMPS, Math);
-    const hists = DATA.HISTS;
+  /* Procedural recap built from actual run flags */
+    const prevS = g.run._prevStats || {};
+    const prevF = g.run._prevFlags || {};
+    const parts = [];
+    const newApps = (g.run.flags.applicationsSubmitted||0) - (prevF.applicationsSubmitted||0);
+    if (newApps > 0) parts.push(`Applied to ${newApps} job${newApps>1?'s':''}`);
+    if ((g.run.flags.leadsGhosted||0) > 0) {
+      parts.push(`ghosted by ${g.run.flags.leadsGhosted} compan${g.run.flags.leadsGhosted>1?'ies':'y'}`);
+    }
+    if ((g.run.stats.scamEvidence||0) - (prevS.scamEvidence||0) > 0) {
+      parts.push(`received scam DMs`);
+    }
+    if (g.run.flags.repostsExposed) parts.push(`exposed a repost scam`);
+    if (g.run.flags.bossFightActive && g.run.flags.bossFightWon) parts.push(`beat the recruiter boss fight`);
+    if ((g.run.stats.clout||0) - (prevS.clout||0) >= 50) parts.push(`went semi-viral on Linkfluence`);
 
-    const recaps = [
-      `You applied to ${apps} jobs, spoke to ${humans} humans, offended ${robots} robots, and were ghosted by ${comp}, a company that may not exist.`,
-      `Today you became a thought leader after posting "synergy" under a photo of a laptop. ${DATA.pick(DATA.NAMES)} from ${DATA.genComp()} wants to know if you're open to work.`,
-      `Your résumé entered the Bot Aura as a PDF and emerged as soup. ${DATA.pick(DATA.NAMES)} sent you a message: "Great fit! Send resume." Then ghosted.`,
-      `You were rejected for lacking ${Math.floor(Math.random()*20)+10} years of experience in tomorrow's AI tool. ${DATA.pick(DATA.NAMES)} says "circle back."`,
-      `A recruiter named ${DATA.pick(DATA.NAMES)} ghosted you after asking you to schedule a call. You achieved employment progress through the ancient art of ${apps > 5 ? 'desperation' : 'hoping'}.`,
-      `You investigated ${comp}'s listing. It has been open since the ${DATA.pick(hists)}.`,
+    const closingLines = [
+      'The void is patient. You are not.',
+      'Tomorrow is another day of applying to jobs that don\'t exist.',
+      'The algorithm will remember. The algorithm always remembers.',
+      'Your landlord will forget. Your landlord always forgets about you.',
+      'The job market doesn\'t care. You don\'t care back. Mutual.',
+      'You survived. That\'s the victory for today.',
+      'Time to touch grass. Or at least pretend to.',
     ];
-
-    recap.textContent = DATA.pick(recaps, Math);
+    const zeroDayLines = [
+      'A quiet day. The jobs are quiet too. A perfect match.',
+      'Nothing happened. In this job market, that\'s a win.',
+      'You stared at the screen. It stared back. A standoff.',
+      'The day passed without incident. The screen remains unapplied to.',
+      'Peaceful. The void was merciful today.',
+    ];
+    recap.textContent = parts.length ? `${parts.join(', ')}. ${DATA.pick(closingLines)}` : DATA.pick(zeroDayLines);
 
     /* Stat changes */
     const s = g.run.stats;
-    const prevS = g.run._prevStats || {};
+    const prevStats2 = g.run._prevStats || {};
     const changesHTML = [];
     for (const key of Object.keys(s)) {
-      if (typeof s[key] === 'number' && key !== 'maxEnergy' && prevS[key] !== s[key]) {
-        const diff = s[key] - (prevS[key] || 0);
+      if (typeof s[key] === 'number' && key !== 'maxEnergy' && prevStats2[key] !== s[key]) {
+        const diff = s[key] - (prevStats2[key] || 0);
         if (diff !== 0) {
           const icons = {rent:'💰',hope:'💡',burnout:'🔥',credibility:'🎯',clout:'⭐',atsFavor:'🤖',robotSuspicion:'👁️',humanContact:'🤝',energy:'⚡',scamEvidence:'🚩',ghostEvidence:'👻',scamsFell:'🛡️'};
           const names = {rent:'Rent Money',hope:'Hope',burnout:'Burnout',credibility:'Credibility',clout:'Clout',atsFavor:'Bot Aura',robotSuspicion:'Robot Suspicion',humanContact:'Human Contact',energy:'Energy',scamEvidence:'Scam Evidence',ghostEvidence:'Ghost Evidence',scamsFell:'Scams Felled'};
@@ -3028,6 +3116,7 @@ profileViewed: [
     }
     changes.innerHTML = changesHTML.join('');
     g.run._prevStats = {...s};
+    g.run._prevFlags = {...g.run.flags};
 
     /* Lead results */
     if (results.offers && results.offers.length > 0) {
@@ -3040,6 +3129,15 @@ profileViewed: [
     document.getElementById('eod-continue').onclick = () => {
       modal.classList.remove('active');
       startDay();
+    };
+  }
+
+  function showCountdown(text) {
+    const modal = document.getElementById('countdown-modal');
+    document.getElementById('countdown-text').textContent = text;
+    modal.classList.add('active');
+    document.getElementById('countdown-continue').onclick = () => {
+      modal.classList.remove('active');
     };
   }
 
@@ -3112,10 +3210,10 @@ profileViewed: [
     document.getElementById('btn-share').onclick = () => {
       if (navigator.clipboard) {
         navigator.clipboard.writeText(shareText).then(() => {
-          E.toast('Cringe copied to clipboard! Share it with your remaining friends.', 'info');
-        }).catch(() => E.toast('Could not copy to clipboard.', 'info'));
+          toast('Cringe copied to clipboard! Share it with your remaining friends.', 'info');
+        }).catch(() => toast('Could not copy to clipboard.', 'info'));
       } else {
-        E.toast('Clipboard not available on this browser.', 'info');
+        toast('Clipboard not available on this browser.', 'info');
       }
     };
 
@@ -3206,12 +3304,17 @@ profileViewed: [
     }, 600);
 
     setTimeout(() => {
-      clearInterval(loadInt);
-      E.init();
-      initTitleButtons();
-      initDoomscroll();
-      showTitle();
-      document.getElementById('loading-screen').classList.remove('active');
+      try {
+        clearInterval(loadInt);
+        E.init();
+        initTitleButtons();
+        initDoomscroll();
+        showTitle();
+        document.getElementById('loading-screen').classList.remove('active');
+      } catch(e) {
+        if (sub) sub.textContent = 'Error: ' + e.message;
+        console.error('Init failed:', e);
+      }
     }, 1500 + Math.random() * 1000);
   }
 
