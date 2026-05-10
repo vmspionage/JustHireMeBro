@@ -147,10 +147,6 @@ body{font-family:var(--font-ui);background:var(--bg);color:var(--text);min-heigh
 #game-screen.active{display:flex}
 .stat-bar{display:flex;flex-wrap:wrap;gap:.35rem;padding:.5rem .75rem;background:var(--navy);color:#fff;font-size:.8rem;align-items:center;justify-content:center;border-bottom:1px solid rgba(255,255,255,.1);position:relative;z-index:10}
 .stat-item{display:flex;align-items:center;gap:.2rem;padding:.2rem .3rem;border-radius:3px;position:relative;cursor:help}
-/* Floating stat deltas (above stat bar items) */
-   .stat-float{position:absolute;top:-2rem;left:50%;transform:translateX(-50%) scale(0.4);font-size:1.3rem;font-weight:900;pointer-events:none;white-space:nowrap;animation:statFloat 2.4s ease-out forwards;z-index:20;text-shadow:0 1px 6px rgba(27,42,78,.6),0 0 2px rgba(255,255,255,.3)}
-   .stat-float.up{color:#4caf50}.stat-float.down{color:var(--red)}
-   @keyframes statFloat{0%{opacity:0;transform:translateX(-50%) scale(0.4) translateY(6px)}10%{opacity:1;transform:translateX(-50%) scale(1.2) translateY(0)}25%{transform:translateX(-50%) scale(1.1) translateY(0)}100%{opacity:0;transform:translateX(-50%) scale(1) translateY(-22px)}}
 .stat-item:hover{background:rgba(255,255,255,.1)}
 .stat-item .stat-icon{font-size:.9rem}
 .stat-item .stat-val{font-family:var(--font-mono);font-weight:700;min-width:2ch;text-align:right}
@@ -247,12 +243,6 @@ body{font-family:var(--font-ui);background:var(--bg);color:var(--text);min-heigh
 .run-log-entry{font-size:.72rem;padding:.2rem 0;border-bottom:1px solid rgba(0,0,0,.05);line-height:1.3}
 .run-log-entry .log-day{font-family:var(--font-mono);font-weight:700;color:var(--navy);margin-right:.25rem}
 .run-log-entry .log-deltas{color:var(--accent);font-size:.7rem;margin-left:.3rem;white-space:nowrap;}
- /* Stat delta toasts */
-  .stat-delta-toast{position:fixed;top:90px;right:1rem;z-index:150;display:flex;flex-direction:column;gap:.3rem;align-items:flex-end;pointer-events:none}
-  .stat-delta{display:inline-flex;align-items:center;gap:.3rem;padding:.25rem .7rem;border-radius:20px;font-size:.78rem;font-family:var(--font-mono);font-weight:700;animation:deltaFly 2.2s ease-in-out forwards;white-space:nowrap;box-shadow:0 2px 8px rgba(27,42,78,.15)}
-  .stat-delta.up{background:#e8f5e8;color:#2a6a2a;border:1px solid rgba(42,106,42,.3)}
-  .stat-delta.down{background:#f5e8e8;color:var(--red);border:1px solid rgba(217,72,59,.3)}
-  @keyframes deltaFly{0%{opacity:0;transform:translateY(8px)}15%{opacity:1;transform:translateY(0)}85%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-12px)}}
 
   .doomscroll-btn{position:fixed;bottom:1.5rem;right:1.5rem;z-index:50;font-family:var(--font-display);font-size:1rem;padding:.75rem 1.5rem;background:var(--red);color:#fff;border:none;border-radius:var(--radius);cursor:pointer;box-shadow:0 4px 12px rgba(217,72,59,.3);transition:all .15s}
 .doomscroll-btn:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(217,72,59,.4)}
@@ -3040,38 +3030,8 @@ profileViewed: [
     return DATA.pick(pool, E._rng || Math);
   }
 
-  /* Show stat-delta toasts instead of result modal */
+  /* Show result modal with toast */
   function showResultModal(title, response, deltas) {
-    /* Floating deltas above stat bar items */
-    if (deltas.length) {
-      deltas.forEach((d, i) => {
-        const sign = d.delta > 0 ? '+' : '';
-        const cls = d.delta > 0 ? 'up' : 'down';
-        const item = document.querySelector(`.stat-item[data-stat="${d.key}"]`);
-        if (item) {
-          const fl = document.createElement('div');
-          fl.className = `stat-float ${cls}`;
-          fl.textContent = `${sign}${d.delta}`;
-          fl.style.animationDelay = `${i * 90}ms`;
-          item.appendChild(fl);
-          setTimeout(() => fl.remove(), 2600 + i * 90);
-        }
-      });
-    }
-    /* Side chips for full context */
-    const container = document.getElementById('stat-delta-toast');
-    if (container && deltas.length) {
-      deltas.forEach((d, i) => {
-        const sign = d.delta > 0 ? '+' : '';
-        const cls = d.delta > 0 ? 'up' : 'down';
-        const chip = document.createElement('div');
-        chip.className = `stat-delta ${cls}`;
-        chip.style.animationDelay = `${i * 90}ms`;
-        chip.textContent = `${d.icon} ${sign}${d.delta} ${d.display}`;
-        container.appendChild(chip);
-        setTimeout(() => chip.remove(), 2400 + i * 90);
-      });
-    }
     if (response) E.showToast(response, 'info');
   }
 
@@ -3534,7 +3494,5 @@ profileViewed: [
 /* Boot the game */
 document.addEventListener('DOMContentLoaded', UI.init);
 </script>
-<!-- Floating stat-delta toasts (result-modal HTML retained for future use) -->
-<div class="stat-delta-toast" id="stat-delta-toast" aria-live="polite"></div>
 </body>
 </html>
