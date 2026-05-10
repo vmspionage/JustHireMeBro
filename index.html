@@ -43,7 +43,7 @@
        buttons:[{label:'Action',cost:{energy:1},effect:'apply'}, ...]}
     Categories: job, recruiter, post, network, resume, investigate, rest, event
     Effect types: lead, recruit, post, net, buzzwordAdd, atsFavor, robotSuspicion,
-                  credMod, hopeMod, burnoutMod, rentMod, cloutMod, offerChance,
+                  credMod, hopeMod, rentMod, cloutMod, offerChance,
                   bossFight, captchaEvent, paEvent, bulkApply, referral
     Button effects: apply, applyCareful, applyEasy, applyDesperate, applyPortal,
                     applyTH, applyTokens, bulkApply, bossFight, investigate,
@@ -145,13 +145,20 @@ body{font-family:var(--font-ui);background:var(--bg);color:var(--text);min-heigh
 /* GAME SCREEN */
 #game-screen{display:none;flex-direction:column;height:100vh;overflow:hidden}
 #game-screen.active{display:flex}
-.stat-bar{display:flex;flex-wrap:wrap;gap:.25rem;padding:.5rem .75rem;background:var(--navy);color:#fff;font-size:.8rem;align-items:center;justify-content:center;border-bottom:1px solid rgba(255,255,255,.1);position:relative;z-index:10}
-.stat-item{display:flex;align-items:center;gap:.25rem;padding:.2rem .5rem;border-radius:3px;position:relative;cursor:help}
+.stat-bar{display:flex;flex-wrap:wrap;gap:.35rem;padding:.5rem .75rem;background:var(--navy);color:#fff;font-size:.8rem;align-items:center;justify-content:center;border-bottom:1px solid rgba(255,255,255,.1);position:relative;z-index:10}
+.stat-item{display:flex;align-items:center;gap:.2rem;padding:.2rem .3rem;border-radius:3px;position:relative;cursor:help}
 .stat-item:hover{background:rgba(255,255,255,.1)}
 .stat-item .stat-icon{font-size:.9rem}
-.stat-item .stat-val{font-family:var(--font-mono);font-weight:700}
+.stat-item .stat-val{font-family:var(--font-mono);font-weight:700;min-width:2ch;text-align:right}
 .stat-item .stat-val.danger{color:var(--red)}
 .stat-item .stat-val.ok{color:#a8e6a3}
+/* Stat gauge */
+.stat-gauge{width:32px;height:20px;display:block;flex-shrink:0}
+.stat-gauge .track-arc{stroke:rgba(255,255,255,.15);fill:none}
+.stat-gauge .fill-arc{fill:none;stroke-width:4;transition: d .35s ease}
+.stat-gauge .fill-arc.good{stroke:#4caf50}
+.stat-gauge .fill-arc.warn{stroke:#ffc107}
+.stat-gauge .fill-arc.bad{stroke:var(--red)}
 .stat-tooltip{display:none;position:absolute;top:100%;left:50%;transform:translateX(-50%);padding:.15rem 0;z-index:100;box-shadow:0 4px 12px rgba(0,0,0,.15);margin-top:.4rem;pointer-events:none;text-align:left;min-width:200px;max-width:320px;white-space:normal;line-height:1.4}
 .stat-tooltip .tt-failure{color:var(--red);font-weight:700;margin-top:.25rem;font-size:.65rem}
 .stat-item:hover .stat-tooltip{display:block}
@@ -322,14 +329,14 @@ body{font-family:var(--font-ui);background:var(--bg);color:var(--text);min-heigh
 .loading-sub{font-size:.75rem;color:#999;margin-top:.5rem;font-style:italic}
 
 /* MOBILE */
-@media(max-width:768px){
+ @media(max-width:768px){
   .game-layout{grid-template-columns:1fr;grid-template-rows:auto 1fr auto;overflow:hidden}
   .leads-panel{display:flex;position:static;z-index:auto;background:transparent;border-right:none;border-bottom:1px solid var(--card-border);max-height:20vh;overflow-y:auto;padding:.4rem .5rem}
    .right-rail{display:flex;position:static;z-index:auto;background:transparent;border-left:none;border-top:1px solid var(--card-border);max-height:20vh;overflow-y:auto;padding:.4rem .5rem}
   .feed-area{padding:.5rem;overflow-y:auto}
   .card-btn{font-size:.7rem;padding:.35rem .5rem}
   .card-title{font-size:.9rem}
-  .stat-bar{font-size:.7rem}.stat-item{padding:.15rem .3rem}
+  .stat-bar{font-size:.7rem}.stat-item{padding:.1rem .15rem}.stat-gauge{width:24px;height:15px}.stat-gauge .fill-arc{stroke-width:3}
   .doomscroll-btn{bottom:.75rem;right:.75rem;font-size:.85rem;padding:.6rem 1rem}
   .bg-grid{grid-template-columns:1fr}
 }
@@ -411,7 +418,7 @@ body{font-family:var(--font-ui);background:var(--bg);color:var(--text);min-heigh
       </div>
     </div>
   </div>
-  <button class="doomscroll-btn" id="doomscroll-btn" aria-label="Doomscroll Tomorrow — End Day">📉 Doomscroll Tomorrow</button>
+  <button class="doomscroll-btn" id="doomscroll-btn" aria-label="Doomscroll until tomorrow — End Day">📉 Doomscroll until tomorrow</button>
 </div>
 
 <!-- END OF DAY MODAL -->
@@ -494,7 +501,7 @@ body{font-family:var(--font-ui);background:var(--bg);color:var(--text);min-heigh
         <li><strong>Pick your background.</strong> Your origin story determines your starting stats and quirks.</li>
         <li><strong>Each day, you get Energy points (starts at 3).</strong> Spend them on feed cards — applying to jobs, posting on Linkfluence, networking, or resting.</li>
         <li><strong>Apply to jobs to create leads.</strong> Leads progress through stages: Applied → Auto-Screen → Recruiter → Interview → Offer. But many will ghost you. Investigate before applying!</li>
-        <li><strong>Watch your stats.</strong> Rent drops every 5 days. If Hope hits 0, you spiral. If Burnout hits 100, you crash. If Money hits 0... well.</li>
+        <li><strong>Watch your stats.</strong> Rent drops every 5 days. If Hope hits 0, you spiral. If Money hits 0... well.</li>
         <li><strong>Use Investigate cards.</strong> They cost Energy but reveal ghost jobs and scams, saving you from wasting it on dead ends.</li>
         <li><strong>Survive 30 days.</strong> Land an offer, expose enough ghost jobs, or find another path to victory. Good luck. You'll need it.</li>
       </ol>
@@ -659,23 +666,23 @@ const DATA = (() => {
       mk({id:'confidential',title:'Confidential Company, Confidential Salary, Confidential Duties',category:'job',flavor:'Even the job description signed an NDA.',cost:{energy:1},redFlags:5,ghostChance:.6,scamChance:.3,weight:.7,effects:[{type:'lead',real:.15,ats:30,gm:.1,sm:.2}],buttons:[{label:'Apply Into NDA Void',cost:{energy:1},effect:'apply'},{label:'Investigate',cost:{energy:1},effect:'investigate'},{label:'Report Scam',cost:{energy:0},effect:'reportScam'},{label:'Ignore',cost:{energy:0},effect:'discard'}],pay:'Confidential'}),
       mk({id:'remote-first',title:'Remote-First, Office-Mandatory',category:'job',flavor:'Fully remote culture. Must be onsite five days a week. Commute is unpaid mindfulness.',cost:{energy:1},redFlags:2,ghostChance:.3,weight:1.3,effects:[{type:'lead',real:.45,ats:35,gm:-.05,sm:.05}],buttons:[{label:'Easy Apply',cost:{energy:1},effect:'apply'},{label:'Negotiate Remote',cost:{energy:1},effect:'negotiateRemote'},{label:'Ignore',cost:{energy:0},effect:'discard'}],pay:'$90k–$120k + "mindful" commute'}),
       mk({id:'easy-abyss',title:'One-Click Easy Apply Abyss',category:'job',flavor:'One click. Zero witnesses. The void receives your résumé like a pearl into the sea.',cost:{energy:0},redFlags:1,ghostChance:.95,weight:2,effects:[{type:'lead',real:.01,ats:5,gm:.4,sm:.1}],buttons:[{label:'Click Into Void',cost:{energy:0},effect:'applyEasy'},{label:'Back Away',cost:{energy:0},effect:'discard'}],pay:'Your dignity'}),
-      mk({id:'portal-labyrinth',title:'Company Portal Labyrinth',category:'job',flavor:'Create account, verify email, upload résumé, retype résumé, answer 47 dropdowns including \'how did you hear about us\' and three different versions of your address, wait.',cost:{energy:2},redFlags:2,ghostChance:.3,weight:.9,effects:[{type:'lead',real:.55,ats:25,gm:-.1,sm:.05,burnout:.1}],buttons:[{label:'Enter the Labyrinth',cost:{energy:2},effect:'applyPortal'},{label:'Back Away',cost:{energy:0},effect:'discard'}],pay:'$80k–$110k (after the ordeal)'}),
+      mk({id:'portal-labyrinth',title:'Company Portal Labyrinth',category:'job',flavor:'Create account, verify email, upload résumé, retype résumé, answer 47 dropdowns including \'how did you hear about us\' and three different versions of your address, wait.',cost:{energy:2},redFlags:2,ghostChance:.3,weight:.9,effects:[{type:'lead',real:.55,ats:25,gm:-.1,sm:.05,hope:-.1}],buttons:[{label:'Enter the Labyrinth',cost:{energy:2},effect:'applyPortal'},{label:'Back Away',cost:{energy:0},effect:'discard'}],pay:'$80k–$110k (after the ordeal)'}),
       mk({id:'stealth-startup',title:'Stealth Startup Seeking Founding Intern',category:'job',flavor:'Compensation: equity, exposure, and a hoodie.',cost:{energy:1},redFlags:3,ghostChance:.7,weight:.6,effects:[{type:'lead',real:.15,ats:10,gm:.2,sm:.15,founder:1}],buttons:[{label:'Join the Startup',cost:{energy:1},effect:'apply'},{label:'Investigate',cost:{energy:1},effect:'investigate'},{label:'Ignore',cost:{energy:0},effect:'discard'}],pay:'Vibes + equity (worth $0–$2M)'}),
       mk({id:'evergreen',title:'Evergreen Talent Pipeline',category:'job',flavor:'There is no job. Only pipeline.',cost:{energy:1},redFlags:5,ghostChance:1,weight:.5,effects:[{type:'lead',real:0,ats:50,gm:.5,sm:0}],buttons:[{label:'Enter the Pipeline',cost:{energy:1},effect:'applyPipeline'},{label:'Expose Ghost Job',cost:{energy:0},effect:'exposeGhost'},{label:'Ignore',cost:{energy:0},effect:'discard'}],pay:'"Exposure"'}),
       mk({id:'actually-normal',title:'Actually Normal Job, Posted by a Person',category:'job',flavor:'Salary range listed. PTO described. The hiring manager has a face. This is illegal.',cost:{energy:1},redFlags:0,ghostChance:.1,weight:.3,effects:[{type:'lead',real:.85,ats:30,gm:-.2,sm:0,offer:.2}],buttons:[{label:'Apply (Carefully)',cost:{energy:1},effect:'applyCareful'},{label:'Investigate',cost:{energy:0},effect:'investigate'},{label:'Ignore',cost:{energy:0},effect:'discard'}],pay:'$95k–$125k + real PTO'}),
       mk({id:'ai-vibe',title:'AI-Required Senior Vibe Coder',category:'job',flavor:'Must have 6 years experience with a tool released last quarter. Bonus: you\'ve vibe-coded.',cost:{energy:1},redFlags:2,ghostChance:.4,weight:1,effects:[{type:'lead',real:.4,ats:50,gm:.1,sm:.05}],buttons:[{label:'Easy Apply',cost:{energy:1},effect:'apply'},{label:'Add "AI" to Résumé',cost:{energy:1},effect:'addAI'},{label:'Ignore',cost:{energy:0},effect:'discard'}],pay:'Competitive (in crypto)'}),
-      mk({id:'unpaid-th',title:'Unpaid Take-Home That Builds Their Product',category:'job',flavor:'Brief: design our entire onboarding flow. Should take you "a couple hours."',cost:{energy:2},redFlags:3,ghostChance:.5,weight:.7,effects:[{type:'lead',real:.3,ats:40,gm:.1,sm:.1,burnout:.2,th:1}],buttons:[{label:'Build Their Product',cost:{energy:2},effect:'applyTH'},{label:'Decline Unpaid',cost:{energy:0},effect:'discard'},{label:'Ignore',cost:{energy:0},effect:'discard'}],pay:'Exposure + maybe an offer'}),
+      mk({id:'unpaid-th',title:'Unpaid Take-Home That Builds Their Product',category:'job',flavor:'Brief: design our entire onboarding flow. Should take you "a couple hours."',cost:{energy:2},redFlags:3,ghostChance:.5,weight:.7,effects:[{type:'lead',real:.3,ats:40,gm:.1,sm:.1,hope:-.2,th:1}],buttons:[{label:'Build Their Product',cost:{energy:2},effect:'applyTH'},{label:'Decline Unpaid',cost:{energy:0},effect:'discard'},{label:'Ignore',cost:{energy:0},effect:'discard'}],pay:'Exposure + maybe an offer'}),
       mk({id:'disrupting',title:'Disrupting the [Industry] Space',category:'job',flavor:'We\'re like Uber for filing cabinets. No wait — we\'re like Slack for drywall.',cost:{energy:1},redFlags:2,ghostChance:.5,weight:1,effects:[{type:'lead',real:.35,ats:35,gm:.05,sm:.05}],buttons:[{label:'Apply',cost:{energy:1},effect:'apply'},{label:'Investigate',cost:{energy:1},effect:'investigate'},{label:'Ignore',cost:{energy:0},effect:'discard'}],pay:'$75k–$100k + "disruption equity"'}),
       mk({id:'already-filled',title:'The Role Was Already Filled',category:'job',flavor:'We post quarterly to maintain top-of-funnel awareness with talent. You\'re aware now. Thanks.',cost:{energy:1},redFlags:5,ghostChance:1,weight:.5,effects:[{type:'lead',real:0,ats:100,gm:.5,sm:0}],buttons:[{label:'Apply Anyway',cost:{energy:1},effect:'applyDesperate'},{label:'Expose Ghost Job',cost:{energy:0},effect:'exposeGhost'},{label:'Ignore',cost:{energy:0},effect:'discard'}],pay:'Your time (already spent)'}),
-      mk({id:'family-culture',title:'"We\'re Like a Family Here"',category:'job',flavor:'We work hard, play hard, and stay late hard. Unpaid.',cost:{energy:1},redFlags:4,ghostChance:.5,weight:.8,effects:[{type:'lead',real:.3,ats:30,gm:.15,sm:.1,burnout:.15}],buttons:[{label:'Join the Family',cost:{energy:1},effect:'apply'},{label:'Ask About PTO',cost:{energy:1},effect:'askPTO'},{label:'Ignore',cost:{energy:0},effect:'discard'}],pay:'Family love (non-transferable)'}),
-      mk({id:'pip-speedrun',title:'PIP Speedrun, Inc.',category:'job',flavor:'Six-month average tenure. Don\'t ask why. High pay though.',cost:{energy:1},redFlags:3,ghostChance:.3,weight:.7,effects:[{type:'lead',real:.5,ats:30,gm:-.05,sm:.05,burnout:.25}],buttons:[{label:'Take the Money',cost:{energy:1},effect:'apply'},{label:'Investigate',cost:{energy:1},effect:'investigate'},{label:'Ignore',cost:{energy:0},effect:'discard'}],pay:'$150k (you won\'t last)'}),
+      mk({id:'family-culture',title:'"We\'re Like a Family Here"',category:'job',flavor:'We work hard, play hard, and stay late hard. Unpaid.',cost:{energy:1},redFlags:4,ghostChance:.5,weight:.8,effects:[{type:'lead',real:.3,ats:30,gm:.15,sm:.1,hope:-.15}],buttons:[{label:'Join the Family',cost:{energy:1},effect:'apply'},{label:'Ask About PTO',cost:{energy:1},effect:'askPTO'},{label:'Ignore',cost:{energy:0},effect:'discard'}],pay:'Family love (non-transferable)'}),
+      mk({id:'pip-speedrun',title:'PIP Speedrun, Inc.',category:'job',flavor:'Six-month average tenure. Don\'t ask why. High pay though.',cost:{energy:1},redFlags:3,ghostChance:.3,weight:.7,effects:[{type:'lead',real:.5,ats:30,gm:-.05,sm:.05,hope:-.25}],buttons:[{label:'Take the Money',cost:{energy:1},effect:'apply'},{label:'Investigate',cost:{energy:1},effect:'investigate'},{label:'Ignore',cost:{energy:0},effect:'discard'}],pay:'$150k (you won\'t last)'}),
       mk({id:'foreign-rec',title:'Foreign Recruiter for a US Role',category:'job',flavor:'"Hello dear, are you available for opportunity?" No salary. No company. Just vibes.',cost:{energy:1},redFlags:4,ghostChance:.6,scamChance:.2,weight:.6,effects:[{type:'lead',real:.15,ats:20,gm:.15,sm:.25}],buttons:[{label:'Respond Politely',cost:{energy:1},effect:'apply'},{label:'Report Scam',cost:{energy:0},effect:'reportScam'},{label:'Ignore',cost:{energy:0},effect:'discard'}],pay:'"Competitive (in your currency)"'}),
       mk({id:'pays-tokens',title:'The Job That Pays in Tokens',category:'job',flavor:'Base: 500 $HIVE tokens. Vesting: 4 years. Valuation: "soon."',cost:{energy:1},redFlags:4,ghostChance:.7,weight:.4,effects:[{type:'lead',real:.1,ats:15,gm:.2,sm:.2,founder:1}],buttons:[{label:'Accept Tokens',cost:{energy:1},effect:'applyTokens'},{label:'Ask for USD',cost:{energy:1},effect:'askUSD'},{label:'Ignore',cost:{energy:0},effect:'discard'}],pay:'500 $HIVE (worth... vibes?)'}),
       mk({id:'hvac-company',title:'A Real, Boring, Mid-Sized B2B Company',category:'job',flavor:'They make accounting software for HVAC contractors. The benefits are genuinely good. The dream.',cost:{energy:1},redFlags:0,ghostChance:.1,weight:.3,effects:[{type:'lead',real:.9,ats:20,gm:-.3,sm:0,offer:.15}],buttons:[{label:'Apply (This is the one)',cost:{energy:1},effect:'applyCareful'},{label:'Investigate',cost:{energy:0},effect:'investigate'},{label:'Ignore',cost:{energy:0},effect:'discard'}],pay:'$70k–$95k + dental + 401k'}),
       mk({id:'unicorn',title:'THE UNICORN JOB',category:'job',flavor:'Perfect role. Perfect salary. Requires: Network ≥ 30, Bot Aura ≥ 60, Credibility ≥ 60.',cost:{energy:1},redFlags:0,ghostChance:.05,weight:.05,conditions:[{stat:'atsFavor',min:60},{stat:'credibility',min:60},{stat:'humanContact',min:30}],effects:[{type:'lead',real:.95,ats:10,gm:-.4,sm:0,offer:.3}],buttons:[{label:'Apply (You Earned This)',cost:{energy:1},effect:'applyCareful'},{label:'Investigate',cost:{energy:0},effect:'investigate'},{label:'Ignore',cost:{energy:0},effect:'discard'}],pay:'$140k–$180k + equity + PTO + standing desk'}),
       mk({id:'boss-fight',title:'Workday Password Reset',category:'job',flavor:'"Your new password must contain a capital letter, a number, a symbol, and the tears of a junior developer."',cost:{energy:1},isBoss:true,weight:.3,effects:[{type:'bossFight'}],buttons:[{label:'Face the Boss',cost:{energy:1},effect:'bossFight'},{label:'Back Away',cost:{energy:0},effect:'discard'}],pay:'Your sanity'}),
       mk({id:'easy-apply-10',title:'Easy Apply to 10 Jobs',category:'job',flavor:'One button. Zero thought. Your résumé is now in 10 ATS systems weeping simultaneously.',cost:{energy:1},redFlags:0,ghostChance:.8,weight:1.5,effects:[{type:'bulkApply',count:10}],buttons:[{label:'Mass Apply',cost:{energy:1},effect:'bulkApply'},{label:'Stop Before Ruin',cost:{energy:0},effect:'discard'}],pay:'Your dignity × 10'}),
-      mk({id:'glassdoor-portal',title:'Company Website Portal',category:'job',flavor:'The application form has 47 mandatory fields. Three require essay responses. All are "optional."',cost:{energy:2},redFlags:2,ghostChance:.35,weight:.7,effects:[{type:'lead',real:.5,ats:20,gm:-.05,sm:.05,burnout:.1}],buttons:[{label:'Face the Labyrinth',cost:{energy:2},effect:'applyPortal'},{label:'Back Away',cost:{energy:0},effect:'discard'}],pay:'$75k–$105k'}),
+      mk({id:'glassdoor-portal',title:'Company Website Portal',category:'job',flavor:'The application form has 47 mandatory fields. Three require essay responses. All are "optional."',cost:{energy:2},redFlags:2,ghostChance:.35,weight:.7,effects:[{type:'lead',real:.5,ats:20,gm:-.05,sm:.05,hope:-.1}],buttons:[{label:'Face the Labyrinth',cost:{energy:2},effect:'applyPortal'},{label:'Back Away',cost:{energy:0},effect:'discard'}],pay:'$75k–$105k'}),
     ],
     recruiter:[
       mk({id:'amazing-opp',title:'Amazing Opportunity!!!',category:'recruiter',flavor:'No salary. No company. No JD. Just vibes and three exclamation points.',cost:{energy:1},redFlags:2,ghostChance:.5,weight:1.2,effects:[{type:'recruit',roll:'real_waste_scam'}],buttons:[{label:'Reply',cost:{energy:1},effect:'recruitReply'},{label:'Block',cost:{energy:0},effect:'recruitBlock'},{label:'Ignore',cost:{energy:0},effect:'discard'}]}),
@@ -702,7 +709,7 @@ const DATA = (() => {
       mk({id:'useful-advice',title:'"Actually Useful Advice Thread"',category:'post',flavor:'"Here are 3 things I learned in 5 years of job hunting. None involve AI."',cost:{energy:1},redFlags:0,weight:1.1,effects:[{type:'post',clout:3,cred:8,network:2}],buttons:[{label:'Post (Boring but Good)',cost:{energy:1},effect:'postGood'},{label:'Delete',cost:{energy:0},effect:'discard'}]}),
     ],
     network:[
-      mk({id:'coffee-chat',title:'Coffee Chat With a Human',category:'network',flavor:'A real person. A real conversation. No buzzwords.',cost:{energy:1},redFlags:0,weight:1.2,effects:[{type:'net',burnout:-5,hope:3,network:3,referral:.1}],buttons:[{label:'Go (Networking)',cost:{energy:1},effect:'networkGo'},{label:'Stay Home',cost:{energy:0},effect:'discard'}]}),
+      mk({id:'coffee-chat',title:'Coffee Chat With a Human',category:'network',flavor:'A real person. A real conversation. No buzzwords.',cost:{energy:1},redFlags:0,weight:1.2,effects:[{type:'net',hope:8,network:3,referral:.1}],buttons:[{label:'Go (Networking)',cost:{energy:1},effect:'networkGo'},{label:'Stay Home',cost:{energy:0},effect:'discard'}]}),
       mk({id:'alumni-dm',title:'Alumni DM',category:'network',flavor:'"Hey fellow [University] grad! What are you up to?"',cost:{energy:1},redFlags:0,weight:1,effects:[{type:'net',humanContact:3,referral:.15}],buttons:[{label:'Send DM',cost:{energy:1},effect:'sendDM'},{label:'Too Scary',cost:{energy:0},effect:'discard'}]}),
       mk({id:'endorse-k8s',title:'Endorse Stranger for Kubernetes',category:'network',flavor:'They may endorse you back. Or not.',cost:{energy:0},redFlags:0,weight:1.5,effects:[{type:'net',clout:1,ats:.5}],buttons:[{label:'Endorse',cost:{energy:1},effect:'endorse'},{label:'Skip',cost:{energy:0},effect:'discard'}]}),
       mk({id:'work-anniv',title:'Congratulate Someone on Their Work Anniversary',category:'network',flavor:'"10 years at the same company? In this economy? Respect."',cost:{energy:0},redFlags:0,weight:1,effects:[{type:'net',clout:.5}],buttons:[{label:'Congratulate',cost:{energy:1},effect:'congrats'},{label:'Skip',cost:{energy:0},effect:'discard'}]}),
@@ -723,9 +730,9 @@ const DATA = (() => {
     ],
     gig:[
       mk({id:'fiverr-gig',title:'Fiverr Gig: "I Will Write Your LinkedIn About"',category:'gig',flavor:'$5 for 50 words of corporate nonsense. The algorithm loves you.',cost:{energy:0},weight:.9,effects:[{type:'rentMod',mod:15}],buttons:[{label:'Do the Gig',cost:{energy:0},effect:'fiverrGig'},{label:'My Dignity > $5',cost:{energy:0},effect:'discard'}]}),
-      mk({id:'uber-gig',title:'Drive for RideShare',category:'gig',flavor:'The void of the road. A stranger texts "where are you" for the 3rd time.',cost:{energy:0},weight:1.0,effects:[{type:'burnoutMod',mod:3},{type:'rentMod',mod:20}],buttons:[{label:'Accept the Trip',cost:{energy:0},effect:'uberGig'},{label:'Keep Scrolling',cost:{energy:0},effect:'discard'}]}),
+      mk({id:'uber-gig',title:'Drive for RideShare',category:'gig',flavor:'The void of the road. A stranger texts "where are you" for the 3rd time.',cost:{energy:0},weight:1.0,effects:[{type:'hopeMod',mod:-3},{type:'rentMod',mod:20}],buttons:[{label:'Accept the Trip',cost:{energy:0},effect:'uberGig'},{label:'Keep Scrolling',cost:{energy:0},effect:'discard'}]}),
       mk({id:'user-test',title:'$10 User Testing',category:'gig',flavor:'"Please think out loud while we watch you fail at clicking the right button."',cost:{energy:0},weight:.8,effects:[{type:'hopeMod',mod:2},{type:'rentMod',mod:10}],buttons:[{label:'Think Out Loud',cost:{energy:0},effect:'userTest'},{label:'Not Worth It',cost:{energy:0},effect:'discard'}]}),
-      mk({id:'data-entry',title:'Data Entry Marathon',category:'gig',flavor:'10,000 rows. Spreadsheet. Silence. The ancient art of being replaced by a script.',cost:{energy:0},weight:.7,effects:[{type:'burnoutMod',mod:5},{type:'rentMod',mod:12},{type:'atsFavor',mod:2}],buttons:[{label:'Enter the Data',cost:{energy:0},effect:'dataEntry'},{label:'Let AI Do It',cost:{energy:0},effect:'discard'}]}),
+      mk({id:'data-entry',title:'Data Entry Marathon',category:'gig',flavor:'10,000 rows. Spreadsheet. Silence. The ancient art of being replaced by a script.',cost:{energy:0},weight:.7,effects:[{type:'hopeMod',mod:-5},{type:'rentMod',mod:12},{type:'atsFavor',mod:2}],buttons:[{label:'Enter the Data',cost:{energy:0},effect:'dataEntry'},{label:'Let AI Do It',cost:{energy:0},effect:'discard'}]}),
       mk({id:'consulting',title:'$50/hr Consulting Call',category:'gig',flavor:'"So what do you do?" "I advise people on digital transformation." "Cool, can you just...?"',cost:{energy:0},weight:.5,effects:[{type:'humanContact',mod:3},{type:'rentMod',mod:50}],buttons:[{label:'Take the Call',cost:{energy:0},effect:'consulting'},{label:'Too Real',cost:{energy:0},effect:'discard'}]}),
     ],
     investigate:[
@@ -736,19 +743,19 @@ const DATA = (() => {
       mk({id:'report-scam',title:'Report Scam to Linkfluence',category:'investigate',flavor:'"Report submitted. Review time: 3-5 business years."',cost:{energy:0},redFlags:0,weight:1,effects:[{type:'reportScam'}],buttons:[{label:'Report',cost:{energy:0},effect:'reportScam'},{label:'Never Mind',cost:{energy:0},effect:'discard'}]}),
     ],
     rest:[
-      mk({id:'touch-grass',title:'Touch Grass',category:'rest',flavor:'You go outside. The sun is bright. People walk their dogs. You feel... alive?',cost:{energy:1},redFlags:0,weight:1.2,effects:[{type:'burnoutMod',mod:-15},{type:'hopeMod',mod:3}],buttons:[{label:'Touch Grass',cost:{energy:1},effect:'touchGrass'},{label:'Stay Inside',cost:{energy:0},effect:'discard'}]}),
-      mk({id:'delete-app',title:'Delete the App for One Day',category:'rest',flavor:'No Linkfluence. No DMs. No "amazing opportunities." Just... peace?',cost:{energy:0},redFlags:0,weight:.8,effects:[{type:'burnoutMod',mod:-20},{type:'hopeMod',mod:5},{noRecruiterTomorrow:true}],buttons:[{label:'Delete (For Now)',cost:{energy:0},effect:'deleteApp'},{label:'Keep the App',cost:{energy:0},effect:'discard'}]}),
-      mk({id:'therapy',title:'Therapy Session ($30)',category:'rest',flavor:'"So you\'re telling me the job market isn\'t a personal attack?" "Exactly." "That\'s... helpful."',cost:{energy:0},redFlags:0,weight:.6,effects:[{type:'burnoutMod',mod:-25},{type:'hopeMod',mod:10},{type:'rentMod',mod:-30}],buttons:[{label:'Book Session',cost:{energy:0},effect:'therapy'},{label:'Self-Help Book',cost:{energy:0},effect:'discard'}]}),
-      mk({id:'cook-meal',title:'Cook a Real Meal',category:'rest',flavor:'You cook something that wasn\'t delivered in plastic. It tastes like... not sadness.',cost:{energy:0},redFlags:0,weight:.8,effects:[{type:'burnoutMod',mod:-5},{type:'hopeMod',mod:2}],buttons:[{label:'Cook',cost:{energy:0},effect:'cookMeal'},{label:'Order Food ($25)',cost:{energy:0},effect:'orderFood'},{label:'Eat Cereal',cost:{energy:0},effect:'eatCereal'}]}),
-      mk({id:'sleep-card',title:'Sleep',category:'rest',flavor:'You sleep. It\'s free. The only thing the job market hasn\'t monetized.',cost:{energy:0},redFlags:0,weight:1,effects:[{type:'burnoutMod',mod:-3}],buttons:[{label:'Sleep',cost:{energy:0},effect:'sleep'},{label:'Doomscroll Instead',cost:{energy:0},effect:'doomscroll'}]}),
+      mk({id:'touch-grass',title:'Touch Grass',category:'rest',flavor:'You go outside. The sun is bright. People walk their dogs. You feel... alive?',cost:{energy:1},redFlags:0,weight:1.2,effects:[{type:'hopeMod',mod:18}],buttons:[{label:'Touch Grass',cost:{energy:1},effect:'touchGrass'},{label:'Stay Inside',cost:{energy:0},effect:'discard'}]}),
+      mk({id:'delete-app',title:'Delete the App for One Day',category:'rest',flavor:'No Linkfluence. No DMs. No "amazing opportunities." Just... peace?',cost:{energy:0},redFlags:0,weight:.8,effects:[{type:'hopeMod',mod:25},{noRecruiterTomorrow:true}],buttons:[{label:'Delete (For Now)',cost:{energy:0},effect:'deleteApp'},{label:'Keep the App',cost:{energy:0},effect:'discard'}]}),
+      mk({id:'therapy',title:'Therapy Session ($30)',category:'rest',flavor:'"So you\'re telling me the job market isn\'t a personal attack?" "Exactly." "That\'s... helpful."',cost:{energy:0},redFlags:0,weight:.6,effects:[{type:'hopeMod',mod:35},{type:'rentMod',mod:-30}],buttons:[{label:'Book Session',cost:{energy:0},effect:'therapy'},{label:'Self-Help Book',cost:{energy:0},effect:'discard'}]}),
+      mk({id:'cook-meal',title:'Cook a Real Meal',category:'rest',flavor:'You cook something that wasn\'t delivered in plastic. It tastes like... not sadness.',cost:{energy:0},redFlags:0,weight:.8,effects:[{type:'hopeMod',mod:7}],buttons:[{label:'Cook',cost:{energy:0},effect:'cookMeal'},{label:'Order Food ($25)',cost:{energy:0},effect:'orderFood'},{label:'Eat Cereal',cost:{energy:0},effect:'eatCereal'}]}),
+      mk({id:'sleep-card',title:'Sleep',category:'rest',flavor:'You sleep. It\'s free. The only thing the job market hasn\'t monetized.',cost:{energy:0},redFlags:0,weight:1,effects:[{type:'hopeMod',mod:3}],buttons:[{label:'Sleep',cost:{energy:0},effect:'sleep'},{label:'Doomscroll Instead',cost:{energy:0},effect:'doomscroll'}]}),
     ],
     event:[
       mk({id:'alg-change',title:'Algorithm Change',category:'event',flavor:'Linkfluence changed its algorithm. Your old viral combos get nerfed.',cost:{energy:0},redFlags:0,weight:.5,effects:[{type:'cloutMod',mod:-10},{type:'credMod',mod:-3}],buttons:[{label:'Accept Fate',cost:{energy:0},effect:'algChange'}]}),
-      mk({id:'layoff-wave',title:'Layoff Wave',category:'event',flavor:'Another round of layoffs. Burnout spike. Network opportunities double.',cost:{energy:0},redFlags:1,weight:.4,effects:[{type:'burnoutMod',mod:5},{type:'networkMod',mod:3}],buttons:[{label:'Brace Yourself',cost:{energy:0},effect:'layoffWave'}]}),
+      mk({id:'layoff-wave',title:'Layoff Wave',category:'event',flavor:'Another round of layoffs. Hope evaporates. Network opportunities double.',cost:{energy:0},redFlags:1,weight:.4,effects:[{type:'hopeMod',mod:-5},{type:'networkMod',mod:3}],buttons:[{label:'Brace Yourself',cost:{energy:0},effect:'layoffWave'}]}),
       mk({id:'profile-viewed',title:'Recruiter Viewed Your Profile',category:'event',flavor:'80% chance of absolutely nothing happening.',cost:{energy:0},redFlags:0,weight:.8,effects:[{type:'hopeMod',mod:5},{type:'nothing',chance:.8}],buttons:[{label:'Get Hyped',cost:{energy:0},effect:'profileViewed'}]}),
       mk({id:'ceo-family',title:'CEO Announces "Family Culture"',category:'event',flavor:'"We\'re like a family!" says the CEO whose family has never seen them.',cost:{energy:0},redFlags:2,weight:.3,effects:[{type:'familyFlag'}],buttons:[{label:'Ugh',cost:{energy:0},effect:'ceoFamily'}]}),
       mk({id:'role-paused',title:'The Role Was Put on Hold',category:'event',flavor:'"Due to strategic realignment..." One of your leads vanished.',cost:{energy:0},redFlags:3,weight:.3,effects:[{type:'rolePaused'}],buttons:[{label:'Accept',cost:{energy:0},effect:'rolePaused'}]}),
-      mk({id:'final-interview',title:'Final Interview Added',category:'event',flavor:'"We\'d like to add one more final interview." This is the 3rd "final."',cost:{energy:0},redFlags:3,weight:.2,effects:[{type:'burnoutMod',mod:5},{type:'finalInterview'}],buttons:[{label:'Sigh',cost:{energy:0},effect:'finalInterview'}]}),
+      mk({id:'final-interview',title:'Final Interview Added',category:'event',flavor:'"We\'d like to add one more final interview." This is the 3rd "final."',cost:{energy:0},redFlags:3,weight:.2,effects:[{type:'hopeMod',mod:-5},{type:'finalInterview'}],buttons:[{label:'Sigh',cost:{energy:0},effect:'finalInterview'}]}),
       mk({id:'hiring-pto',title:'Hiring Manager on PTO',category:'event',flavor:'"Your hiring manager is on PTO until the heat death of the universe."',cost:{energy:0},redFlags:2,weight:.4,effects:[{type:'leadStall'}],buttons:[{label:'Wait',cost:{energy:0},effect:'hiringPTO'}]}),
       mk({id:'mass-layoffs',title:'Mass Layoffs at Your Top Pick',category:'event',flavor:'Schadenfreude (+20 Hope) followed by existential dread (-30 Hope).',cost:{energy:0},redFlags:1,weight:.3,effects:[{type:'hopeMod',mod:-10}],buttons:[{label:'Mixed Emotions',cost:{energy:0},effect:'massLayoffs'}]}),
       mk({id:'friend-hired',title:'A Friend Got Hired',category:'event',flavor:'Your friend just got a job offer. Depending on your Credibility, this either inspires or destroys you.',cost:{energy:0},redFlags:0,weight:.5,effects:[{type:'friendHired'}],buttons:[{label:'React',cost:{energy:0},effect:'friendHired'}]}),
@@ -760,13 +767,13 @@ const DATA = (() => {
 
   /* BACKGROUNDS */
   const BACKGROUNDS=[
-    {id:'recent-grad',name:'Recent Grad',icon:'🎓',vibe:'Optimistic. Doomed.',perk:'+2 Hope, free "Brand New LinkedIn" card',penalty:'Lower Bot Aura',stats:{hope:52,burnout:0,credibility:50,rent:100,clout:0,atsFavor:7,robotSuspicion:0,humanContact:5,energy:3,maxEnergy:3}},
-    {id:'mid-career',name:'Mid-Career Pivot',icon:'🔄',vibe:'Tired. Wise. Tired.',perk:'+20 Network, +5 Credibility',penalty:'"Overqualified" event fires more',stats:{hope:50,burnout:0,credibility:55,rent:100,clout:0,atsFavor:10,robotSuspicion:0,humanContact:25,energy:3,maxEnergy:3}},
-    {id:'tech-refugee',name:'Tech Refugee',icon:'🏚️',vibe:'Eyes have seen things.',perk:'+30 Rent (severance), Open-to-Work Halo',penalty:'+10 Burnout, recruiter spam doubled',stats:{hope:50,burnout:10,credibility:50,rent:130,clout:0,atsFavor:10,robotSuspicion:0,humanContact:5,energy:3,maxEnergy:3}},
-    {id:'bootcamp',name:'Bootcamp Survivor',icon:'💻',vibe:'Confident in JavaScript.',perk:'+15 Bot Aura, +1 Energy day 1',penalty:'+15 Robot Suspicion, AI detection risk doubled',stats:{hope:50,burnout:0,credibility:50,rent:100,clout:0,atsFavor:25,robotSuspicion:15,humanContact:5,energy:4,maxEnergy:4}},
-    {id:'career-goblin',name:'Career Goblin',icon:'👺',vibe:'The everyman experience.',perk:'Balanced stats, +1 extra feed card/day',penalty:'Nothing',stats:{hope:50,burnout:0,credibility:50,rent:100,clout:0,atsFavor:10,robotSuspicion:0,humanContact:5,energy:3,maxEnergy:3}},
-    {id:'reformed-influencer',name:'Reformed Influencer',icon:'📱',vibe:'Chastened. Still posts.',perk:'First post each day is free',penalty:'-10 Credibility',locked:true,lockHint:'Unlock: Hit 200 Clout in a run',stats:{hope:50,burnout:0,credibility:40,rent:100,clout:0,atsFavor:10,robotSuspicion:0,humanContact:5,energy:3,maxEnergy:3}},
-    {id:'ghost-vigilante',name:'Ghost Job Vigilante',icon:'🔍',vibe:'Sees through walls.',perk:'Investigate cards cost 0 Energy',penalty:'Cannot use Easy Apply',locked:true,lockHint:'Unlock: Expose 25 ghost jobs across runs',stats:{hope:50,burnout:0,credibility:50,rent:100,clout:0,atsFavor:10,robotSuspicion:0,humanContact:5,energy:3,maxEnergy:3}},
+    {id:'recent-grad',name:'Recent Grad',icon:'🎓',vibe:'Optimistic. Doomed.',perk:'+2 Hope, free "Brand New LinkedIn" card',penalty:'Lower Bot Aura',stats:{hope:52,credibility:50,rent:100,clout:0,atsFavor:7,robotSuspicion:0,humanContact:5,energy:3,maxEnergy:3}},
+    {id:'mid-career',name:'Mid-Career Pivot',icon:'🔄',vibe:'Tired. Wise. Tired.',perk:'+20 Network, +5 Credibility',penalty:'"Overqualified" event fires more',stats:{hope:50,credibility:55,rent:100,clout:0,atsFavor:10,robotSuspicion:0,humanContact:25,energy:3,maxEnergy:3}},
+    {id:'tech-refugee',name:'Tech Refugee',icon:'🏚️',vibe:'Eyes have seen things.',perk:'+30 Rent (severance), Open-to-Work Halo',penalty:'Recruiter spam doubled',stats:{hope:40,credibility:50,rent:130,clout:0,atsFavor:10,robotSuspicion:0,humanContact:5,energy:3,maxEnergy:3}},
+    {id:'bootcamp',name:'Bootcamp Survivor',icon:'💻',vibe:'Confident in JavaScript.',perk:'+15 Bot Aura, +1 Energy day 1',penalty:'+15 Robot Suspicion, AI detection risk doubled',stats:{hope:50,credibility:50,rent:100,clout:0,atsFavor:25,robotSuspicion:15,humanContact:5,energy:4,maxEnergy:4}},
+    {id:'career-goblin',name:'Career Goblin',icon:'👺',vibe:'The everyman experience.',perk:'Balanced stats, +1 extra feed card/day',penalty:'Nothing',stats:{hope:50,credibility:50,rent:100,clout:0,atsFavor:10,robotSuspicion:0,humanContact:5,energy:3,maxEnergy:3}},
+    {id:'reformed-influencer',name:'Reformed Influencer',icon:'📱',vibe:'Chastened. Still posts.',perk:'First post each day is free',penalty:'-10 Credibility',locked:true,lockHint:'Unlock: Hit 200 Clout in a run',stats:{hope:50,credibility:40,rent:100,clout:0,atsFavor:10,robotSuspicion:0,humanContact:5,energy:3,maxEnergy:3}},
+    {id:'ghost-vigilante',name:'Ghost Job Vigilante',icon:'🔍',vibe:'Sees through walls.',perk:'Investigate cards cost 0 Energy',penalty:'Cannot use Easy Apply',locked:true,lockHint:'Unlock: Expose 25 ghost jobs across runs',stats:{hope:50,credibility:50,rent:100,clout:0,atsFavor:10,robotSuspicion:0,humanContact:5,energy:3,maxEnergy:3}},
   ];
 
  /* ACHIEVEMENTS (32) */
@@ -788,7 +795,7 @@ const DATA = (() => {
     {id:'parser-ate',name:'The Parser Ate My Homework',desc:'Lose 30+ Bot Aura to a single event.',icon:'📄',hidden:false},
     {id:'humbled-hon',name:'Humbled and Honored',desc:'Gain 100 Clout in one day.',icon:'⭐',hidden:false},
     {id:'agree-ach',name:'Agree?',desc:'Get a one-word "Agree?" post to go viral.',icon:'💬',hidden:false},
-    {id:'touch-grass-s',name:'Touch Grass Speedrun',desc:'Win without ever exceeding 50 Burnout.',icon:'🌿',hidden:false},
+    {id:'touch-grass-s',name:'Touch Grass Speedrun',desc:'Win without hope ever dropping below 50.',icon:'🌿',hidden:false},
     {id:'quiet-win',name:'The Quiet Win',desc:'Achieve "The Quiet Win" ending.',icon:'🌅',hidden:false},
     {id:'founder-mode',name:'Founder Mode Activated',desc:'Collect 15 buzzwords.',icon:'🦅',hidden:false},
     {id:'reformed-inf',name:'Reformed Influencer',desc:'Hit 200 Clout.',icon:'📱',hidden:false},
@@ -816,7 +823,7 @@ const DATA = (() => {
     'quiet-win-end':{name:'The Quiet Win',type:'victory',icon:'🌅',review:'You survived 30 days. Took a job at an HVAC accounting software company. The benefits are good. You feel okay. Maybe that\'s the real victory.'},
     'resume-bh-end':{name:'Résumé Black Hole',type:'loss',icon:'🕳️',review:'After {apps} applications with no human contact, your résumé has entered the shadow dimension. It is now a legend.'},
     'doomscroll-end':{name:'Doomscroll Spiral',type:'loss',icon:'🌀',review:'Your Hope hit 0. You closed the laptop and went outside. The sun was still there. You didn\'t notice.'},
-    'burnout-end':{name:'Burnout% Speedrun',type:'loss',icon:'🔥',review:'Your Burnout hit 100. Your body has filed a formal complaint. Rest is now a "legacy dependency."'},
+    'burnout-end':{name:'Hopeless',type:'loss',icon:'🔥',review:'Your Hope hit 0. Your body has filed a formal complaint. Rest is now a "legacy dependency."'},
     'rent-end':{name:'Rent Has Entered the Chat',type:'loss',icon:'💸',review:'Your Rent Money hit 0. The landlord has entered the chat. They are not asking nicely.'},
     'final-round-end':{name:'Final Round Forever',type:'loss',icon:'♾️',review:'Trapped in interview loops past day 30. You are now in "Final_Final_v7" status. You have forgotten your own name.'},
     'times-up-end':{name:'Time\'s Up, Bro',type:'loss',icon:'⏰',review:'Day 31 hit with no leads in the final stages. The job market moved on. You remain in applied limbo.'},
@@ -1053,7 +1060,7 @@ const Engine = (() => {
       g.run.log.push({day: g.run.day, text: 'Did a Fiverr gig. $15 earned. Your soul: devalued.'});
     } else if (effect.effect === 'uberGig') {
       g.run.stats.rent = DATA.clamp((g.run.stats.rent || 0) + 20, 0, 9999);
-      g.run.stats.burnout = DATA.clamp((g.run.stats.burnout || 0) + 3, 0, 100);
+      g.run.stats.hope = DATA.clamp((g.run.stats.hope || 0) - 3, 0, 100);
       g.run.log.push({day: g.run.day, text: 'Drove for rideshare. Made $20. The passenger cried. You did not.'});
     } else if (effect.effect === 'userTest') {
       g.run.stats.rent = DATA.clamp((g.run.stats.rent || 0) + 10, 0, 9999);
@@ -1061,7 +1068,7 @@ const Engine = (() => {
       g.run.log.push({day: g.run.day, text: 'Did user testing. $10 earned. You felt seen. For 10 minutes.'});
     } else if (effect.effect === 'dataEntry') {
       g.run.stats.rent = DATA.clamp((g.run.stats.rent || 0) + 12, 0, 9999);
-      g.run.stats.burnout = DATA.clamp((g.run.stats.burnout || 0) + 5, 0, 100);
+      g.run.stats.hope = DATA.clamp((g.run.stats.hope || 0) - 5, 0, 100);
       g.run.stats.atsFavor = DATA.clamp((g.run.stats.atsFavor || 0) + 2, 0, 100);
       g.run.log.push({day: g.run.day, text: 'Data entry marathon. $12 earned. 10,000 rows later, a script replaced you.'});
     } else if (effect.effect === 'consulting') {
@@ -1095,11 +1102,11 @@ const Engine = (() => {
       g.run.log.push({day:g.run.day, text:'Added "AI" to everything. The ATS is pleased. Humans are not.'});
     } else if (effect.effect === 'applyPortal') {
       track('portalApps', 1);
-      g.run.stats.burnout = DATA.clamp((g.run.stats.burnout || 0) + 3, 0, 100);
+      g.run.stats.hope = DATA.clamp((g.run.stats.hope || 0) - 3, 0, 100);
       createLead(card);
     } else if (effect.effect === 'applyTH') {
       track('takeHomeApps', 1);
-      g.run.stats.burnout = DATA.clamp((g.run.stats.burnout || 0) + 5, 0, 100);
+      g.run.stats.hope = DATA.clamp((g.run.stats.hope || 0) - 5, 0, 100);
       createLead(card);
     } else if (effect.effect === 'negotiateRemote') {
       g.run.stats.hope = DATA.clamp((g.run.stats.hope || 0) + 3, 0, 100);
@@ -1137,7 +1144,7 @@ const Engine = (() => {
         }
       }
       g.run.stats.robotSuspicion = DATA.clamp((g.run.stats.robotSuspicion||0)+5,0,100);
-      g.run.stats.burnout = DATA.clamp((g.run.stats.burnout||0)+3,0,100);
+      g.run.stats.hope = DATA.clamp((g.run.stats.hope||0)-3,0,100);
       track('applicationsSubmitted', count);
       g.run.log.push({day:g.run.day, text:`Mass-applied to ${count} jobs. Your résumé now weeps.`});
     } else if (effect.effect === 'bossFight') {
@@ -1198,7 +1205,7 @@ const Engine = (() => {
       g.run.log.push({day:g.run.day, text:'Blocked a recruiter. Feels good. Makes you feel smaller.'});
     } else if (effect.effect === 'recruitCall') {
       g.run.log.push({day:g.run.day, text:'Scheduled a "quick 15-min call." It will be 45 minutes and involve a PowerPoint.'});
-      g.run.stats.burnout = DATA.clamp((g.run.stats.burnout||0)+2,0,100);
+      g.run.stats.hope = DATA.clamp((g.run.stats.hope||0)-2,0,100);
     } else if (effect.effect === 'sendSSN') {
       g.run.stats.scamsFell = (g.run.stats.scamsFell||0)+1;
       g.run.flags.scamsReceived = (g.run.flags.scamsReceived||0) + 1;
@@ -1324,28 +1331,24 @@ const Engine = (() => {
   function processRest(card) {
     const g = _g;
     if (card.id === 'touch-grass') {
-      g.run.stats.burnout = DATA.clamp((g.run.stats.burnout||0) - 15, 0, 100);
-      g.run.stats.hope = DATA.clamp((g.run.stats.hope||0) + 3, 0, 100);
+      g.run.stats.hope = DATA.clamp((g.run.stats.hope||0) + 18, 0, 100);
       g.run.log.push({day:g.run.day, text:'Touched grass. It was green. You forgot what green looked like.'});
     } else if (card.id === 'delete-app') {
-      g.run.stats.burnout = DATA.clamp((g.run.stats.burnout||0) - 20, 0, 100);
-      g.run.stats.hope = DATA.clamp((g.run.stats.hope||0) + 5, 0, 100);
+      g.run.stats.hope = DATA.clamp((g.run.stats.hope||0) + 25, 0, 100);
       g.run.flags.noRecruiterTomorrow = true;
       g.run.log.push({day:g.run.day, text:'Deleted the app. For one day. Tomorrow you\'ll reinstall it. You always do.'});
     } else if (card.id === 'therapy') {
-      g.run.stats.burnout = DATA.clamp((g.run.stats.burnout||0) - 25, 0, 100);
-      g.run.stats.hope = DATA.clamp((g.run.stats.hope||0) + 10, 0, 100);
+      g.run.stats.hope = DATA.clamp((g.run.stats.hope||0) + 35, 0, 100);
       g.run.stats.rent = DATA.clamp((g.run.stats.rent||0) - 30, 0, 9999);
       g.run.log.push({day:g.run.day, text:'Therapy session. Therapist: "The job market isn\'t a personal attack." You: "That\'s... helpful."'});
     } else if (card.id === 'cookMeal') {
-      g.run.stats.burnout = DATA.clamp((g.run.stats.burnout||0) - 5, 0, 100);
-      g.run.stats.hope = DATA.clamp((g.run.stats.hope||0) + 2, 0, 100);
+      g.run.stats.hope = DATA.clamp((g.run.stats.hope||0) + 7, 0, 100);
       g.run.log.push({day:g.run.day, text:'Cooked a real meal. It tasted like... not sadness.'});
     } else if (card.id === 'eatCereal') {
-      g.run.stats.burnout = DATA.clamp((g.run.stats.burnout||0) - 2, 0, 100);
+      g.run.stats.hope = DATA.clamp((g.run.stats.hope||0) + 2, 0, 100);
       g.run.log.push({day:g.run.day, text:'Ate cereal for dinner. The cereal was cold. Just like your prospects.'});
     } else if (card.id === 'sleep') {
-      g.run.stats.burnout = DATA.clamp((g.run.stats.burnout||0) - 3, 0, 100);
+      g.run.stats.hope = DATA.clamp((g.run.stats.hope||0) + 3, 0, 100);
       g.run.log.push({day:g.run.day, text:'Slept. The only thing the job market hasn\'t figured out how to monetize.'});
     }
   }
@@ -1429,7 +1432,7 @@ const Engine = (() => {
         } else {
           /* Stall */
           if (lead.daysSinceUpdate > 3) {
-            g.run.stats.burnout = DATA.clamp((g.run.stats.burnout||0) + 1, 0, 100);
+            g.run.stats.hope = DATA.clamp((g.run.stats.hope||0) - 1, 0, 100);
           }
           g.run.log.push({day:g.run.day, text:`${lead.company}: No update. Stalling. Classic.`});
         }
@@ -1451,8 +1454,8 @@ const Engine = (() => {
       g.run.log.push({day:g.run.day, text:'💸 Rent due! -$25. The landlord does not accept "vibes" as payment.'});
     }
 
-    /* Sleep burnout recovery */
-    g.run.stats.burnout = DATA.clamp((g.run.stats.burnout||0) - 3, 0, 100);
+    /* Sleep recovery */
+    g.run.stats.hope = DATA.clamp((g.run.stats.hope||0) + 3, 0, 100);
 
     /* Buzzword penalty */
     if (g.run.stats.buzzwords && g.run.stats.buzzwords.length > 10) {
@@ -1476,10 +1479,10 @@ const Engine = (() => {
     return null;
   }
 
-  /**
-   * Check all loss conditions. Returns the ending key if a loss is triggered,
-   * or null if the run continues. Checks rent, hope, burnout, credibility,
-   * robot suspicion, scams felled, resume black hole, and ATS ate résumé.
+ /**
+    * Check all loss conditions. Returns the ending key if a loss is triggered,
+    * or null if the run continues. Checks rent, hope, credibility,
+    * robot suspicion, scams felled, resume black hole, and ATS ate résumé.
    * @returns {string|null} Ending key if lost, null otherwise.
    */
   function checkLosses() {
@@ -1487,7 +1490,6 @@ const Engine = (() => {
     const s = g.run.stats;
     if (s.rent <= 0) return 'rent-end';
     if (s.hope <= 0) return 'doomscroll-end';
-    if (s.burnout >= 100) return 'burnout-end';
     if (s.credibility <= 0) return 'culture-fit';
     if (s.robotSuspicion >= 100) return 'ai-detected';
     if ((s.scamsFell||0) >= 3) return 'kindly-end';
@@ -1535,7 +1537,7 @@ const Engine = (() => {
     if ((s.buzzwords||[]).filter(b => b === 'AI').length >= 8) return 'prompt-eng-end';
 
     /* Quiet Win: survived 30 days with reasonable stats */
-    if (g.run.day > 30 && (s.hope||0) > 20 && (s.burnout||0) < 80) return 'quiet-win-end';
+    if (g.run.day > 30 && (s.hope||0) > 20) return 'quiet-win-end';
 
     return null;
   }
@@ -1580,7 +1582,7 @@ const Engine = (() => {
       {id:'30-days', check: () => g.run.day >= 30},
       {id:'first-round', check: () => (f.offerDay||0) > 0 && f.offerDay <= 10},
       {id:'speedrun-app', check: () => (f.applicationsSubmitted||0) >= 50 && g.run.day <= 5},
-     {id:'touch-grass-s', check: () => g.run.won && (f.maxBurnoutRun||0) <= 50},
+     {id:'touch-grass-s', check: () => g.run.won && (f.minHopeRun||100) >= 50},
        {id:'touch-crypt', check: () => _meta.lifetime.cryptidRuns >= 3},
      ];
 
@@ -1721,8 +1723,8 @@ const Engine = (() => {
           pw.classList.remove('active');
           input.removeEventListener('input', renderReqs);
           _g.run.flags.bossFightActive = false;
-          _g.run.stats.burnout = DATA.clamp((_g.run.stats.burnout||0) + 10, 0, 100);
-          _g.run.log.push({day:_g.run.day, text:'🔐 Boss Fight failed 3 times. You wasted Energy on password resets. Burnout +10.'});
+          _g.run.stats.hope = DATA.clamp((_g.run.stats.hope||0) - 10, 0, 100);
+          _g.run.log.push({day:_g.run.day, text:'🔐 Boss Fight failed 3 times. You wasted Energy on password resets. Hope -10.'});
         } else {
           /* Add harder requirements */
           if (activeReqs.length < DATA.PW_REQS.length) activeReqs.push(DATA.PW_REQS[activeReqs.length]);
@@ -1752,7 +1754,7 @@ const Engine = (() => {
         pw.classList.remove('active');
         input.removeEventListener('input', renderReqs);
         _g.run.flags.bossFightActive = false;
-        _g.run.stats.burnout = DATA.clamp((_g.run.stats.burnout||0) + 10, 0, 100);
+        _g.run.stats.hope = DATA.clamp((_g.run.stats.hope||0) - 10, 0, 100);
         _g.run.log.push({day:_g.run.day, text:'🔐 Time ran out on the boss fight. Password reset: lost. Energy: also lost.'});
       }
     }, 1000);
@@ -1793,7 +1795,7 @@ const Engine = (() => {
         _g.run.stats.robotSuspicion = DATA.clamp((_g.run.stats.robotSuspicion||0) - 3, 0, 100);
         _g.run.log.push({day:_g.run.day, text:'🤖 Passed the Captcha for Employment. You are "human enough." Robot Suspicion -3.'});
       } else {
-        _g.run.stats.burnout = DATA.clamp((_g.run.stats.burnout||0) + 3, 0, 100);
+        _g.run.stats.hope = DATA.clamp((_g.run.stats.hope||0) - 3, 0, 100);
         _g.run.log.push({day:_g.run.day, text:'🤖 Failed the Captcha. "Please select all squares with transferable skills." You selected 0. How ironic.'});
       }
     };
@@ -1838,7 +1840,7 @@ const Engine = (() => {
           holdBtn.style.display = 'none';
           actionsEl.style.display = 'flex';
           _g.run.log.push({day:_g.run.day, text:'🎥 Completed the one-way video interview. You sounded professional. You were crying.'});
-          _g.run.stats.burnout = DATA.clamp((_g.run.stats.burnout||0) + 3, 0, 100);
+          _g.run.stats.hope = DATA.clamp((_g.run.stats.hope||0) - 3, 0, 100);
         }
       }, 100);
     };
@@ -1876,7 +1878,7 @@ const Engine = (() => {
 
     document.getElementById('pa-submit').onclick = () => {
       overlay.classList.remove('active');
-      _g.run.stats.burnout = DATA.clamp((_g.run.stats.burnout||0) + 3, 0, 100);
+      _g.run.stats.hope = DATA.clamp((_g.run.stats.hope||0) - 3, 0, 100);
       _g.run.log.push({day:_g.run.day, text:'📝 Personality Assessment complete. Result: "Borderline Culture Fit." As expected.'});
     };
 
@@ -1948,9 +1950,9 @@ const Engine = (() => {
       _g = {
         run: {
           day: 1, background: '', energy: 3, maxEnergy: 3,
-          stats: { rent:100, hope:50, burnout:0, credibility:50, clout:0, atsFavor:10, robotSuspicion:0, humanContact:5, buzzwords:[], scamEvidence:0, ghostEvidence:0, scamsFell:0 },
+          stats: { rent:100, hope:50, credibility:50, clout:0, atsFavor:10, robotSuspicion:0, humanContact:5, buzzwords:[], scamEvidence:0, ghostEvidence:0, scamsFell:0 },
           activeLeads: [], feed: [], log: [],
-          flags: { easyApplyCount:0, ghostsExposed:0, scamsReported:0, consecutiveGhosts:0, applicationsSubmitted:0, leadsGhosted:0, leadsGhostedRun:0, bossFightActive:false, bossFightWon:false, bossFightWonFirstTry:false, recruiterTypes:0, maxFinalInterviews:0, cloutGainToday:0, agreeViral:0, offerDay:0, maxClout:0, maxRobotSusp:0, maxBurnoutRun:0, maxActiveLeads:0, portalApps:0, takeHomeApps:0, referralUsed:false, referralSaved:false, noRecruiterTomorrow:false, recruiterDoubled:false, unicornSeen:false, repostExposed:false, totalAtsLoss:0 },
+          flags: { easyApplyCount:0, ghostsExposed:0, scamsReported:0, consecutiveGhosts:0, applicationsSubmitted:0, leadsGhosted:0, leadsGhostedRun:0, bossFightActive:false, bossFightWon:false, bossFightWonFirstTry:false, recruiterTypes:0, maxFinalInterviews:0, cloutGainToday:0, agreeViral:0, offerDay:0, maxClout:0, maxRobotSusp:0, minHopeRun:100, maxActiveLeads:0, portalApps:0, takeHomeApps:0, referralUsed:false, referralSaved:false, noRecruiterTomorrow:false, recruiterDoubled:false, unicornSeen:false, repostExposed:false, totalAtsLoss:0 },
           permaPlayedCards: new Set(),
           seed: Date.now(),
           won: null,
@@ -2070,7 +2072,7 @@ const UI = (() => {
     if (bgData) {
       g.run.background = bgId;
       /* Preserve all stat keys — merge background overrides into default stats */
-      const defaultStats = { rent:100, hope:50, burnout:0, credibility:50, clout:0, atsFavor:10, robotSuspicion:0, humanContact:5, buzzwords:[], scamEvidence:0, ghostEvidence:0 };
+      const defaultStats = { rent:100, hope:50, credibility:50, clout:0, atsFavor:10, robotSuspicion:0, humanContact:5, buzzwords:[], scamEvidence:0, ghostEvidence:0 };
       Object.keys(defaultStats).forEach(k => {
         g.run.stats[k] = (bgData.stats[k] !== undefined) ? bgData.stats[k] : defaultStats[k];
       });
@@ -2161,25 +2163,42 @@ const UI = (() => {
     const g = E.state;
     const s = g.run.stats;
     const bar = document.getElementById('stat-bar');
-    const failureStats = ['rent','hope','burnout','credibility','atsFavor','robotSuspicion','humanContact'];
+    const failureStats = ['rent','hope','credibility','atsFavor','robotSuspicion','humanContact'];
+    /* highIsGood: higher value = better. false = higher value = worse. */
     const stats = [
-      {icon:'💰', key:'rent', max:999, label:'Rent', funny:'Rent Money — because the void charges $1,200/month.', fail:'⚠️ Hits 0 = Game Over (Evicted!)'},
-      {icon:'💡', key:'hope', max:100, label:'Hope', funny:'Hope — the first thing the ATS deletes.', fail:'⚠️ Hits 0 = Game Over (Gave up.)'},
-      {icon:'🔥', key:'burnout', max:100, label:'Burnout', funny:'Burnout — your new personality trait.', fail:'⚠️ Hits 100 = Game Over (Crash.)'},
-      {icon:'🎯', key:'credibility', max:100, label:'Cred', funny:'Credibility — how much the robots trust you.', fail:'⚠️ Hits 0 = Game Over (Doxxed.)'},
-      {icon:'⭐', key:'clout', max:999, label:'Clout', funny:'Clout — the only metric that matters on Linkfluence.'},
-      {icon:'🤖', key:'atsFavor', max:100, label:'Bot Aura', funny:'Bot Aura — how much the résumé-parser loves you.', fail:'⚠️ Hits 0 = Game Over (Blacklisted.)'},
-      {icon:'👁️', key:'robotSuspicion', max:100, label:'Robot Susp', funny:'Robot Suspicion — are you human? The machine doubts.', fail:'⚠️ Hits 100 = Game Over (Banned.)'},
-      {icon:'🤝', key:'humanContact', max:999, label:'Human', funny:'Human Contact — real people who like you.', fail:'⚠️ Hits 0 = Game Over (Isolated.)'},
+      {icon:'💰', key:'rent', max:100, label:'Money', funny:'Rent Money — because the void charges $1,200/month.', fail:'⚠️ Hits 0 = Game Over (Evicted!)', highIsGood:true},
+      {icon:'💡', key:'hope', max:100, label:'Hope', funny:'Hope — the first thing the ATS deletes.', fail:'⚠️ Hits 0 = Game Over (Gave up.)', highIsGood:true},
+      {icon:'🎯', key:'credibility', max:50, label:'Cred', funny:'Credibility — how much the robots trust you.', fail:'⚠️ Hits 0 = Game Over (Doxxed.)', highIsGood:true},
+      {icon:'🤝', key:'humanContact', max:10, label:'Human', funny:'Human Contact — real people who like you.', fail:'⚠️ Hits 0 = Game Over (Isolated.)', highIsGood:true},
+      {icon:'🤖', key:'atsFavor', max:10, label:'Aura', funny:'Bot Aura — how much the résumé-parser loves you.', fail:'⚠️ Hits 0 = Game Over (Blacklisted.)', highIsGood:true},
+      {icon:'👁️', key:'robotSuspicion', max:100, label:'Sus', funny:'But Sus — are you human? The machine doubts.', fail:'⚠️ Hits 100 = Game Over (Banned.)', highIsGood:false},
+      {icon:'⭐', key:'clout', max:200, label:'Clout', funny:'Clout — the only metric that matters on Linkfluence.', highIsGood:true},
     ];
 
     bar.innerHTML = stats.map(st => {
       const val = s[st.key] || 0;
-      const danger = (st.key === 'burnout' || st.key === 'robotSuspicion') ? val > 75 : (st.key === 'rent' || st.key === 'hope') ? val < 25 : false;
+      const pct = Math.min(100, Math.round((val / st.max) * 100));
+      /* Health = how "good" the stat is. Inverts for bad stats so 100 = ideal. */
+      const health = st.highIsGood ? pct : 100 - pct;
+      const displayHealth = Math.max(5, Math.min(100, health));
+
+      /* Gauge arc endpoint: center(18,17), rx=15, ry=10. */
+      const angle = displayHealth / 100 * Math.PI;
+      const gx = (18 - 15 * Math.cos(angle)).toFixed(1);
+      const gy = (17 - 10 * Math.sin(angle)).toFixed(1);
+      const d = `M3 17 A15 10 0 0 1 ${gx} ${gy}`;
+
+      const colorClass = displayHealth > 50 ? 'good' : displayHealth > 20 ? 'warn' : 'bad';
+      const danger = (st.key === 'robotSuspicion') ? val > 75 : (st.key === 'rent' || st.key === 'hope') ? val < 25 : false;
       const hasFail = st.fail && failureStats.includes(st.key);
+
       return `<div class="stat-item" aria-label="${st.label}: ${val}">
         <span class="stat-icon">${st.icon}</span>
-        <span class="stat-val ${danger?'danger':val>60?'ok':''}">${val}</span>
+        <svg class="stat-gauge" viewBox="0 0 36 22" aria-hidden="true">
+          <path class="track-arc" d="M3 17 A15 10 0 0 1 33 17"/>
+          <path class="fill-arc ${colorClass}" d="${d}"/>
+        </svg>
+        <span class="stat-val ${danger?'danger':displayHealth>20?'ok':''}">${val}</span>
         <div class="stat-tooltip"><div class="tt-body"><span class="tt-funny">${st.label}</span><span class="tt-desc">${st.funny}</span>${hasFail ? `<div class="tt-failure">${st.fail}</div>` : ''}</div></div>
       </div>`;
     }).join('');
@@ -2291,7 +2310,7 @@ const UI = (() => {
     const statMeta = {
       rent: { icon:'💰', label:'Rent', display:'Rent Money' },
       hope: { icon:'💡', label:'Hope', display:'Hope' },
-      burnout: { icon:'🔥', label:'Burnout', display:'Burnout' },
+          
       credibility: { icon:'🎯', label:'Cred', display:'Credibility' },
       clout: { icon:'⭐', label:'Clout', display:'Clout' },
       atsFavor: { icon:'🤖', label:'Bot Aura', display:'Bot Aura' },
@@ -2354,7 +2373,7 @@ const UI = (() => {
         'Buzzword bingo complete. Used every buzzword since 2016. ATS confused. Clout: +1.',
       ],
       applyPortal: [
-        'Workday portal entered. Burnout increased. You may never leave.',
+        'Workday portal entered. Hope decreased. You may never leave.',
         'Portal application submitted. You traded energy for the slim chance of a reply.',
         'Filled out 14 fields on the company portal. Field 15: "upload your birth certificate." You left.',
         'Workday portal: where applications go to die. The abyss submitted you to a background check.',
@@ -2581,7 +2600,7 @@ negotiateRemote: [
         'Remote work negotiated. You get to work from home. You just have to log in from 6am to 10pm. Remote, technically.',
       ],
 bulkApply: [
-        'You applied to 50 jobs in one hour. Your burnout increased. Your hope did not.',
+        'You applied to 50 jobs in one hour. Your hope plummeted. Your soul: priced at $0.23 per application.',
         'Bulk application sent. The ATS rejected them all. At least you tried.',
         'You applied to 100 jobs. 99 were "easy apply." 1 was a 20-page form. You filled out the form. It was a scam.',
         'Bulk applied. Your résumé was sent to 47 companies. 46 of them didn\'t reply. The 47th asked for a reference.',
@@ -3060,9 +3079,9 @@ profileViewed: [
       launchConfetti();
     }
 
-    /* Track max robot suspicion */
+    /* Track max robot suspicion, min hope */
     g.run.flags.maxRobotSusp = Math.max(g.run.flags.maxRobotSusp || 0, g.run.stats.robotSuspicion || 0);
-    g.run.flags.maxBurnoutRun = Math.max(g.run.flags.maxBurnoutRun || 0, g.run.stats.burnout || 0);
+    g.run.flags.minHopeRun = Math.min(g.run.flags.minHopeRun || 100, g.run.stats.hope || 100);
     g.run.flags.maxClout = Math.max(g.run.flags.maxClout || 0, g.run.stats.clout || 0);
 
     /* Check for loss/win */
@@ -3141,8 +3160,8 @@ profileViewed: [
         if (typeof s[key] === 'number' && key !== 'maxEnergy' && prevStats2[key] !== s[key]) {
           const diff = s[key] - (prevStats2[key] || 0);
           if (diff !== 0) {
-            const icons = {rent:'💰',hope:'💡',burnout:'🔥',credibility:'🎯',clout:'⭐',atsFavor:'🤖',robotSuspicion:'👁️',humanContact:'🤝',energy:'⚡',scamEvidence:'🚩',ghostEvidence:'👻',scamsFell:'🛡️'};
-            const names = {rent:'Rent Money',hope:'Hope',burnout:'Burnout',credibility:'Credibility',clout:'Clout',atsFavor:'Bot Aura',robotSuspicion:'Robot Suspicion',humanContact:'Human Contact',energy:'Energy',scamEvidence:'Scam Evidence',ghostEvidence:'Ghost Evidence',scamsFell:'Scams Felled'};
+            const icons = {rent:'💰',hope:'💡',credibility:'🎯',clout:'⭐',atsFavor:'🤖',robotSuspicion:'👁️',humanContact:'🤝',energy:'⚡',scamEvidence:'🚩',ghostEvidence:'👻',scamsFell:'🛡️'};
+            const names = {rent:'Rent Money',hope:'Hope',credibility:'Credibility',clout:'Clout',atsFavor:'Bot Aura',robotSuspicion:'Robot Suspicion',humanContact:'Human Contact',energy:'Energy',scamEvidence:'Scam Evidence',ghostEvidence:'Ghost Evidence',scamsFell:'Scams Felled'};
             changesHTML.push(`<span class="stat-change ${diff>0?'up':'down'}">${icons[key]||''} ${names[key]||key}: ${diff>0?'+':''}${diff}</span>`);
           }
         }
@@ -3217,8 +3236,7 @@ profileViewed: [
       <tr><td>Scams reported</td><td>${g.run.stats.scamEvidence||0}</td></tr>
       <tr><td>Final Clout</td><td>${s.clout||0}</td></tr>
       <tr><td>Final Bot Aura</td><td>${s.atsFavor||0}</td></tr>
-      <tr><td>Final Burnout</td><td>${s.burnout||0}</td></tr>
-      <tr><td>Final Hope</td><td>${s.hope||0}</td></tr>
+            <tr><td>Final Hope</td><td>${s.hope||0}</td></tr>
       <tr><td>Final Cred</td><td>${s.credibility||0}</td></tr>
       <tr><td>Final Robot Susp</td><td>${s.robotSuspicion||0}</td></tr>
       <tr><td>Final Human Contact</td><td>${s.humanContact||0}</td></tr>
@@ -3226,7 +3244,7 @@ profileViewed: [
     scores.innerHTML = scoresHTML;
 
     /* Score calculation */
-    const score = (s.clout||0)*2 + (s.atsFavor||0) + (s.hope||0)*3 - (s.burnout||0)*2 + (g.run.stats.ghostEvidence||0)*10 + (g.run.stats.scamEvidence||0)*10 + (g.run.day)*5;
+    const score = (s.clout||0)*2 + (s.atsFavor||0) + (s.hope||0)*3 + (g.run.stats.ghostEvidence||0)*10 + (g.run.stats.scamEvidence||0)*10 + (g.run.day)*5;
 
     /* Save to high scores */
     E.saveHighScore(ending.name, score);
