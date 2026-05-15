@@ -1172,7 +1172,7 @@ profileViewed: [
         'Discarded the opportunity. Company will never know what they missed. Or care.',
         'Discarded. Chose yourself over a job posting that said "fast-paced." Not fast. Tired.',
       ],
-      /* Orphan effects — prevent generateResponse crashes */
+      acceptCheck: [
       acceptCheck: [
         'You signed the background check. They signed your soul in return.',
         'Background check complete. The void saw all your secrets and nodded.',
