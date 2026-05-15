@@ -1172,6 +1172,207 @@ profileViewed: [
         'Discarded the opportunity. Company will never know what they missed. Or care.',
         'Discarded. Chose yourself over a job posting that said "fast-paced." Not fast. Tired.',
       ],
+      /* Orphan effects — prevent generateResponse crashes */
+      acceptCheck: [
+        'You signed the background check. They signed your soul in return.',
+        'Background check complete. The void saw all your secrets and nodded.',
+        'You signed the NDA. The NDA is longer than your résumé.',
+      ],
+      applyTH: [
+        'Built the unpaid take-home in your lunch break. They called it "culture fit."',
+        'Delivered the take-home at 3am. They said "thanks, but we moved on."',
+        'Solved an unpaid assignment. It felt like free consulting.',
+      ],
+      askCity: [
+        'Asked for the office address. Got "we\'re rethinking our physical footprint."',
+        'They said "hybrid." You said "where?" HR said "that\'s not decided yet."',
+        'Asked about relocation. They said "we pay for it in exposure."',
+      ],
+      askPTO: [
+        'Asked about PTO. They showed you the employee handbook from 2012.',
+        '"Unlimited PTO" means "no PTO but also no guilt."',
+        'Asked if you could take Monday off. HR said "Monday is accountability day."',
+      ],
+      askUSD: [
+        'Asked for $95k. HR said "we pay in equity." You said "in what company?" Silence.',
+        'Requested salary in USD. They offered crypto. You gave them silence.',
+        'Asked for base salary. Recruiter paused. "We\'re actually a talent platform." Silence.',
+      ],
+      bulkApply: [
+        'Applied to 15 jobs before breakfast. Your résumé became a statistic.',
+        'Clicked "easy apply" until your fingers got tired. The void said "nice try."',
+        'Bulk-applied with the energy of someone who gave up hope at 8am.',
+      ],
+      congrats: [
+        'You said "congrats!" They said "same." Nobody was promoted.',
+        'Wrote "congrats!" They replied "congrats!" It was a loop.',
+        'Congratulated someone on their promotion. They replied with three emojis.',
+      ],
+      declineUnpaid: [
+        '"No pay, no play." They said "but you\'ll gain experience!" You gained freedom.',
+        'Declined the unpaid internship. They called you "difficult."',
+        'Told them "I\'m worth more than exposure." Exposure said "you\'re right."',
+      ],
+      doomscroll: [
+        'Scrolled through 47 job postings at 2am. None wanted humans.',
+        'Doomscrolled until the algorithm offered you a job. It was a scam.',
+        'Found a job posting at 3am. Applied at 3:17am. Regretted it at 8am.',
+      ],
+      endorse: [
+        'Endorsed someone\'s skills. They endorsed your LinkedIn post from 2019.',
+        'Gave them Python, SQL, and "Resilience." They gave you "Can Work Independently."',
+        'Clicked "endorse." They clicked "Coffee" and "Punctuality."',
+      ],
+      friendHired: [
+        'Your friend got hired. They forgot to send you the referral link.',
+        'You congratulated your friend. They said "same." Nobody was hired.',
+        'Friend got an offer. You said "congrats" through the void.',
+      ],
+      hiringPTO: [
+        'Asked for PTO during the interview. Offer letter said "unlimited PTO (subject to approval)."',
+        '"We want work-life balance." HR laughed. The offer letter laughed louder.',
+        'Negotiated PTO. They gave you a calendar with every Sunday in red.',
+      ],
+      keywordStuff: [
+        'Added keywords until your soul was just keywords. Bot Aura loved it.',
+        'Stuffed your résumé with buzzwords. Each word was a small piece of your soul.',
+        'Keyword-stuffed your résumé. Bot Aura said "delicious." You said "please."',
+      ],
+      layoffWave: [
+        'Saw the layoffs at 6am. Your inbox had the memo at 6:03am.',
+        'Company went silent. You started the mass apply routine. The routine was tired too.',
+        'Pink slip arrived. You applied for "Senior Everything." They replied "everything is junior."',
+      ],
+      massLayoffs: [
+        'They let go everyone. You let go hope. Hope let you go back.',
+        'Company laid off 40% of staff including the HR person who sent the email.',
+        'News broke at 5pm. The memo said "strategic realignment." Nobody aligned anything.',
+      ],
+      mentorMeet: [
+        'Met with a mentor. They said "follow your passion." You said "can you pay my rent?"',
+        'Your mentor said "network more." Your network said "network less."',
+        'Mentor meeting. They gave advice. You gave them silence.',
+      ],
+      negotiateRemote: [
+        'Negotiated remote. They said "hybrid once a week." You negotiated back. They fired you.',
+        '"Remote first" became "remote sometimes." You said "what does that mean?"',
+        'Asked for remote. They said "the office is where the action is." The office was empty.',
+      ],
+      networkGo: [
+        'Attended a networking event. Nobody shared contact info. The bar shared something.',
+        'Met 7 people. 6 said "let\'s follow up." 1 followed up (it was a recruiter).',
+        'Networking night. You got one referral. They said "keep applying."',
+      ],
+      nothing: [
+        'You chose nothing. The void chose silence. Silence chose peace.',
+        'No action taken. The algorithm forgot you existed. It\'s fine.',
+        'Said nothing. Did nothing. Achieved nothing. The void said "progress."',
+      ],
+      postAgree: [
+        'Posted "This is so true!" under a thread about hiring. Got 3 likes.',
+        '"Agree" under someone\'s post. They said "agree back." It\'s a cult.',
+        'Commented "Agree" on a post about agreeing. The algorithm agreed.',
+      ],
+      postBait: [
+        'Posted something controversial. Arguments multiplied. You deleted the account.',
+        'The bait was "AI will destroy jobs." The comments destroyed the algorithm.',
+        'Posted bait. Comments said "we\'re already destroyed." Nobody bit.',
+      ],
+      postCarousel: [
+        'Made a carousel of 7 slides. Slide 6 was just whitespace.',
+        'Posted a carousel. Nobody swiped. You swiped. Got stuck on slide 3.',
+        'Made slides. Shared slides. Nobody viewed slides. The algorithm made slides.',
+      ],
+      postCringe: [
+        'Posted "I\'m hiring!" when nobody was. Comments were kind. Kind comments are rare.',
+        '"I\'m excited to announce..." Nobody announced. You announced. It was cringe.',
+        'Posted "I\'m looking for roles!" Reply came at 3am: "I\'m looking too."',
+      ],
+      postGood: [
+        'Posted something thoughtful. Nobody noticed. Nobody was there.',
+        'Wrote a thoughtful post. Comments said "same" and "relatable."',
+        'Shared thoughts. One friend liked it. It was enough.',
+      ],
+      postSincere: [
+        'Posted honestly about your job hunt. Comments said "relatable."',
+        '"Job hunting is hard." They said "yours is hard." Yours was harder.',
+        'Told the truth. Nobody believed the truth. The truth posted an AI reply.',
+      ],
+      postSlowBurn: [
+        'Posted "slow burn." Nobody burned. Nobody slowed. The post burned quietly.',
+        '"Slow burn" about layoffs. Comments burned faster than the post.',
+        'Posted something real. Nobody reacted. You unposted. The void posted it back.',
+      ],
+      postThis: [
+        'Posted "I\'m looking!" Nobody looked. Void looked. Void didn\'t find.',
+        '"Open to work" post. Open to work. Nobody opened.',
+        'Shared a job hunt post. The algorithm shared it with nobody.',
+      ],
+      profileViewed: [
+        'Saw someone view your profile at 2am. You viewed theirs. Both of you left.',
+        'Profile viewed by "Recruiter, AI Corp." The AI had opinions about your résumé.',
+        'Someone looked at your profile. They didn\'t apply. They didn\'t leave.',
+      ],
+      recruitBlock: [
+        'Blocked the recruiter. They sent an email, voicemail, carrier pigeon. All blocked.',
+        '"Do not call me at 6am." You never heard from them again.',
+        'They called. You blocked. They texted. Your phone said "nope."',
+      ],
+      recruitCall: [
+        'Recruiter called. You called back. Both left voicemails.',
+        '"Hey, quick question!" You hung up when they said "quick." Always quick.',
+        'Recruiter call. They said "exciting role." You said "exciting how?" Silence.',
+      ],
+      saveReferral: [
+        'Saved a referral for later. Later never came. The referral expired.',
+        '"Thanks, I\'ll use this soon." You meant it. Soon was never.',
+        'Opened the referral tab. Closed it. Opened again. It expired.',
+      ],
+      sendDM: [
+        'Sent a DM at 2am. They replied at 3am: "what?" You said "nothing."',
+        'DM\'d someone at a conference. They replied with "DMs disabled."',
+        'Messaged cold. They said "what?" You said "sorry." They said "nevermind."',
+      ],
+      sendSSN: [
+        'Sent your SSN to "Government Portal." They said "thanks for trusting us." It wasn\'t.',
+        'Pasted your SSN. The website asked for your mother\'s maiden name too.',
+        'Submitted "confidential info." Reply said "your data is secure with us." It wasn\'t.',
+      ],
+      slackHang: [
+        'Slack hangout with a recruiter. Both of you said "good vibes only."',
+        'Joined the Slack channel. Nobody posted. You were the first post.',
+        'Slacked about jobs. They slacked back about coffee. Coffee slacked about jobs.',
+      ],
+      sleep: [
+        'You slept. The algorithm kept running. None of the jobs kept.',
+        'Slept through 12 emails. None of them were offers. All were noise.',
+        'Dreamt about an offer. Woke up to a job listing from 2017.',
+      ],
+      slideIn: [
+        'Slid into DMs. Nobody slid back. You slid alone. The slide was DMs.',
+        'Sent "quick question!" at 2am. Nobody answered. You answered "nothing."',
+        'Slid. Nobody slid back. You slid away.',
+      ],
+      therapy: [
+        'Went to therapy. They said "keep applying." You applied. You kept applying.',
+        '"I need breaks." Therapist said "schedule them." You scheduled one. You didn\'t take it.',
+        'Talked about job hunting. Therapist talked. You listened. The void listened too.',
+      ],
+      touchGrass: [
+        'Touched grass. The grass said "go back inside. The void has jobs."',
+        'Went outside for air. The air said "the algorithm is online."',
+        'Grass said "relax." You relaxed. Relaxed. You weren\'t relaxed.',
+      ],
+      useReferral: [
+        'Used a referral. It referred you to an automated rejection.',
+        'Your friend referred you. The company said "no, but keep applying."',
+        'Referred to a recruiter. They referred you to HR. It was a game of telephone.',
+      ],
+      default: [
+        'Action taken. The void noted it. No one noted.',
+        'You clicked something. Something clicked back. Something clicked away.',
+        'The algorithm processed your action. The algorithm is busy. You wait.',
+      ],
     };
 
     const pool = responses[effect] || responses.default;
@@ -1999,14 +2200,15 @@ profileViewed: [
       onComplete(false);
     };
 
-    submitBtn.onclick = () => {
-      document.getElementById('screening-form-modal').remove();
-      lead.stageIdx++;
-      lead.followUpsThisStage = 0;
-      lead.history.push({day:g.run.day,text:'Submitted screening form'});
-      g.run.stats.hope = DATA.clamp((g.run.stats.hope||0)-2, 0, 100);
-      g.run.stats.credibility = DATA.clamp((g.run.stats.credibility||0)+2, 0, 100);
-      g.run.flags.formsCompleted = (g.run.flags.formsCompleted||0) + 1;
+      submitBtn.onclick = () => {
+        document.getElementById('screening-form-modal').remove();
+        lead.stageIdx++;
+        lead.followUpsThisStage = 0;
+        const s = E.state();
+        lead.history.push({day:s.run.day,text:'Submitted screening form'});
+        g.run.stats.hope = DATA.clamp((g.run.stats.hope||0)-2, 0, 100);
+        g.run.stats.credibility = DATA.clamp((g.run.stats.credibility||0)+2, 0, 100);
+        g.run.flags.formsCompleted = (g.run.flags.formsCompleted||0) + 1;
       g.run.flags.formSurvivorCount = (g.run.flags.formSurvivorCount||0) + 1;
       if (g.run.flags.formSurvivorCount >= 10 && !_meta.achievements['form-survivor']) {
         _meta.achievements['form-survivor'] = true;
