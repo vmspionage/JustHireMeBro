@@ -247,7 +247,7 @@ mk({id:'sleep-card',title:'Sleep',category:'rest',flavor:'You sleep. It\'s free.
     'quiet-win-end':{name:'The Quiet Win',type:'victory',icon:'🌅',review:'You survived 30 days. Took a job at an HVAC accounting software company. The benefits are good. You feel okay. Maybe that\'s the real victory.'},
     'resume-bh-end':{name:'Résumé Black Hole',type:'loss',icon:'🕳️',review:'After {apps} applications with no human contact, your résumé has entered the shadow dimension. It is now a legend.'},
     'doomscroll-end':{name:'Doomscroll Spiral',type:'loss',icon:'🌀',review:'Your Hope hit 0. You closed the laptop and went outside. The sun was still there. You didn\'t notice.'},
-    'burnout-end':{name:'Hopeless',type:'loss',icon:'🔥',review:'Your Hope hit 0. Your body has filed a formal complaint. Rest is now a "legacy dependency."'},
+
     'rent-end':{name:'Rent Has Entered the Chat',type:'loss',icon:'💸',review:'Your Rent Money hit 0. The landlord has entered the chat. They are not asking nicely.'},
     'final-round-end':{name:'Final Round Forever',type:'loss',icon:'♾️',review:'Trapped in interview loops past day 30. You are now in "Final_Final_v7" status. You have forgotten your own name.'},
     'times-up-end':{name:'Time\'s Up, Bro',type:'loss',icon:'⏰',review:'Day 31 hit with no leads in the final stages. The job market moved on. You remain in applied limbo.'},
@@ -623,9 +623,6 @@ mk({id:'sleep-card',title:'Sleep',category:'rest',flavor:'You sleep. It\'s free.
         "We regret to inform you that your morale has fallen below operational thresholds. You closed the laptop on Day {day}. We respect this decision. We will not be reaching out further.",
         "After {day} business days, your Hope reserves were depleted. Our system flagged you as 'unreachable.' We sincerely hope you find peace. We have already moved on.",
       ],
-      'burnout-end': [
-        "Following sustained exposure to our hiring pipeline, your physical and mental capacity has reached critical levels. We recommend rest. We will not be providing it. We wish you all the best in your future endeavors.",
-      ],
       'rent-end': [
         "We regret to inform you that you ran out of rent money on Day {day}. The job market is, unfortunately, indifferent to this development. Please find structured feedback below, though we acknowledge its limited practical utility at this time.",
       ],
@@ -744,9 +741,6 @@ mk({id:'sleep-card',title:'Sleep',category:'rest',flavor:'You sleep. It\'s free.
       ],
       'thought-leader': [
         "We've reviewed your {clout} Clout score and must admit: your personal brand is functioning as a form of currency. We're creating a role for you that involves 'thought leadership' and 'strategic voice.' The actual job duties remain to be determined.",
-      ],
-      'burnout-end': [
-        "Following the depletion of your Hope reserves, we note that your candidacy has reached what we call 'clinical exhaustion.' We recommend rest. We will not be scheduling a follow-up. We will be scheduling one for our replacement.",
       ],
       'culture-fit': [
         "We regret to inform you that our Culture Fit scores have placed you outside the acceptable range. We define culture fit as 'someone whose LinkedIn reads exactly like ours.' There will be no appeal process. We recommend a LinkedIn overhaul.",
