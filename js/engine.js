@@ -487,7 +487,7 @@ const Engine = (() => {
       if (roll < 0.3) { g.run.stats.hope = DATA.clamp((g.run.stats.hope||0)+5,0,100); g.run.stats.humanContact = DATA.clamp((g.run.stats.humanContact||0)+1,0,999); pushLog(g.run.day, 'A recruiter actually replied! "Great fit! Send resume!" ... then ghosted.'); }
       else if (roll < 0.6) { g.run.stats.hope = DATA.clamp((g.run.stats.hope||0)-3,0,100); pushLog(g.run.day, 'Recruiter reply was just a template. "We are pleased to inform you..." pleased with whom?'); }
       else if (roll < 0.8) { g.run.stats.robotSuspicion = DATA.clamp((g.run.stats.robotSuspicion||0)+2,0,100); pushLog(g.run.day, 'Recruiter asked for your SSN. You politely declined. They blocked you.'); }
-      else { g.run.stats.clout = DATA.clamp((g.run.stats.clout||0)+3,0,999); pushLog(g.run.day, 'The recruiter liked your profile picture. Clout +3.'); }
+      else { g.run.stats.clout = DATA.clamp((g.run.stats.clout||0)+3,0,1000); pushLog(g.run.day, 'The recruiter liked your profile picture. Clout +3.'); }
     } else if (effect.effect === 'recruitBlock') {
       pushLog(g.run.day, 'Blocked a recruiter. Feels good. Makes you feel smaller.');
     } else if (effect.effect === 'recruitCall') {
