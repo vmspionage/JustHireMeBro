@@ -605,7 +605,7 @@ const Engine = (() => {
       pushLog(g.run.day, 'Added "AI" to everything. Bot Aura is pleased. Humans flee.');
     } else if (card.id === 'certificate') {
       g.run.stats.atsFavor = DATA.clamp((g.run.stats.atsFavor||0) + 4, 0, 100);
-      g.run.stats.clout = DATA.clamp((g.run.stats.clout||0) + 3, 0, 999);
+      g.run.stats.clout = DATA.clamp((g.run.stats.clout||0) + 3, 0, 1000);
       pushLog(g.run.day, 'Completed "AI for Business Leaders: A Beginner\'s Guide to Nothing."');
     } else if (card.id === 'portfolio') {
       g.run.stats.credibility = DATA.clamp((g.run.stats.credibility||0) + 8, 0, 100);
