@@ -440,14 +440,13 @@ const UI = (() => {
 
     const energyEl = document.getElementById('energy-display');
     if (energyEl) {
-      energyEl.replaceChildren(
-        ...Array.from({length: g.maxEnergy}, (_, i) => {
-          const span = document.createElement('span');
-          span.className = i < g.run.energy ? 'energy-cup' : 'energy-icon';
-          span.textContent = i < g.run.energy ? '☕' : '💤';
-          return span;
-        })
-      );
+      energyEl.innerHTML = '';
+      for (let i = 0; i < g.run.maxEnergy; i++) {
+        const span = document.createElement('span');
+        span.className = i < g.run.energy ? 'energy-cup' : 'energy-icon';
+        span.textContent = i < g.run.energy ? '☕' : '💤';
+        energyEl.appendChild(span);
+      }
     }
 
     const cloutEl = document.getElementById('clout-display');
