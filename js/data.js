@@ -640,6 +640,11 @@ mk({id:'sleep-card',title:'Sleep',category:'rest',flavor:'You sleep. It\'s free.
       ],
       'culture-fit': [
         "After 30 days, our Culture Fit Algorithm has determined that you are not, in fact, a culture fit. We define culture fit as 'someone who would post the same things you post but without sounding bitter.' We have notes.",
+        "Your candidacy has reached Day {day} with a credibility score of 0. This does not constitute a culture fit by our standards or anyone else's. We offer no recommendation for improvement, only structured feedback.",
+      ],
+      'times-up-end': [
+        "You completed 30 days of job searching. The timer has expired. We note that your candidacy reached Day {day} without advancing beyond the initial stages. We will not be extending the deadline.",
+        "Thirty days have elapsed. Your candidacy file has transitioned from 'active' to 'archived.' We regret to inform you that this was never a contest with a prize. Please find some structured feedback below.",
       ],
       'ats-ate-end': [
         "Following a catastrophic incident with our résumé parsing system, your candidate file has been corrupted beyond recovery. The file now contains only the character '•' repeated 47,000 times. This has been added to our talent pool.",
@@ -713,6 +718,9 @@ mk({id:'sleep-card',title:'Sleep',category:'rest',flavor:'You sleep. It\'s free.
       'founder-mode-end': [
         "We wish PromptPivot.ai every success. We have already invested. We expect to invest again at a lower valuation in approximately 18 months.",
       ],
+      'network-wizard': [
+        "With {hc} Human Contacts and zero Easy Apply uses, our system has flagged you as 'suspiciously human.' We are conducting an internal review of whether this is a vulnerability or a feature. Welcome for now.",
+      ],
       'doomscroll-end': [
         "We'd like to wish you the best in whatever you do next. We will not be checking in. We have moved on.",
       ],
@@ -730,6 +738,24 @@ mk({id:'sleep-card',title:'Sleep',category:'rest',flavor:'You sleep. It\'s free.
       ],
       'ats-ate-end': [
         "We've decided not to move forward at this time. We were unable to read your résumé. Or our own database. Or this letter. The systems are down.",
+      ],
+      'scam-scammers': [
+        "We applaud your work exposing {scamEvidence} fraudulent recruiters. The FTC has opened a file. We have not. We recommend you proceed with your newfound reputation as a one-person regulatory agency. Best of luck.",
+      ],
+      'thought-leader': [
+        "We've reviewed your {clout} Clout score and must admit: your personal brand is functioning as a form of currency. We're creating a role for you that involves 'thought leadership' and 'strategic voice.' The actual job duties remain to be determined.",
+      ],
+      'burnout-end': [
+        "Following the depletion of your Hope reserves, we note that your candidacy has reached what we call 'clinical exhaustion.' We recommend rest. We will not be scheduling a follow-up. We will be scheduling one for our replacement.",
+      ],
+      'culture-fit': [
+        "We regret to inform you that our Culture Fit scores have placed you outside the acceptable range. We define culture fit as 'someone whose LinkedIn reads exactly like ours.' There will be no appeal process. We recommend a LinkedIn overhaul.",
+      ],
+      'final-round-end': [
+        "Your file has been in 'final round' for {day} days. Our leadership team has decided that 'final' no longer means 'last.' We're promoting your candidacy to what we call 'perpetual finalist.' No offer is included. Offers are a separate process that we do not have a budget for.",
+      ],
+      'times-up-end': [
+        "Your 30-day candidacy window has expired. We note that you did not advance beyond application-stage filters. We will not be renewing your deadline. We recommend you apply again — ideally to a different company. Possibly a different industry. Possibly a different planet.",
       ],
       'default': [
         "We'll keep your file on hand. We will not look at it. Thank you for your time.",
