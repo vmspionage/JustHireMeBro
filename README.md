@@ -24,7 +24,7 @@ Every run is different. Cards are drawn from weighted pools covering job posting
 - **Lead Follow-Up Progression** — Each lead has a randomized track of stages; follow-up triggers mini-games or flavor responses
 - **6 mini-games** — Screening Form, Take-Home, Panel Interview, Salary Stall, Video Interview, Personality Test (various approaches exist in codebase)
 - **Signal-based leads** — Each lead accumulates signals (salary disclosed, real recruiter, reference trouble) that affect terminal outcomes
-- **34 achievements** — for the completionists (and the deeply troubled)
+- **42 achievements** — for the completionists (and the deeply troubled)
 - **19 endings** — 9 victory paths and 10 loss paths, each with satirical HR-style review letters
 - **Fully offline** — zero external dependencies, zero network requests
 
