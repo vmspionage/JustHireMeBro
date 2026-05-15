@@ -441,12 +441,13 @@ const UI = (() => {
     const energyEl = document.getElementById('energy-display');
     if (energyEl) {
       energyEl.innerHTML = '';
-      for (let i = 0; i < g.run.maxEnergy; i++) {
+      const cups = Array.from({length: g.run.maxEnergy}, (_, i) => {
         const span = document.createElement('span');
         span.className = i < g.run.energy ? 'energy-cup' : 'energy-icon';
         span.textContent = i < g.run.energy ? '☕' : '💤';
-        energyEl.appendChild(span);
-      }
+        return span;
+      });
+      cups.forEach(s => energyEl.appendChild(s));
     }
 
     const cloutEl = document.getElementById('clout-display');
