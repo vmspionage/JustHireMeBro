@@ -335,7 +335,7 @@ const Engine = (() => {
     } else if (effect.effect === 'consulting') {
       snapStats();
       g.run.stats.rent = DATA.clamp((g.run.stats.rent || 0) + 50, 0, 9999);
-      g.run.stats.humanContact = DATA.clamp((g.run.stats.humanContact || 0) + 3, 0, 999);
+      g.run.stats.humanContact = DATA.clamp((g.run.stats.humanContact || 0) + 3, 0, 100);
       pushLog(g.run.day, 'Consulting call. $50 earned. You sold "digital transformation" to a guy who uses Windows 7.');
       exposeGhost();
     } else if (effect.effect === 'investigate') {
@@ -484,7 +484,7 @@ const Engine = (() => {
     } else if (effect.effect === 'recruitReply') {
       snapStats();
       const roll = _rng();
-      if (roll < 0.3) { g.run.stats.hope = DATA.clamp((g.run.stats.hope||0)+5,0,100); g.run.stats.humanContact = DATA.clamp((g.run.stats.humanContact||0)+1,0,999); pushLog(g.run.day, 'A recruiter actually replied! "Great fit! Send resume!" ... then ghosted.'); }
+      if (roll < 0.3) { g.run.stats.hope = DATA.clamp((g.run.stats.hope||0)+5,0,100); g.run.stats.humanContact = DATA.clamp((g.run.stats.humanContact||0)+1,0,100); pushLog(g.run.day, 'A recruiter actually replied! "Great fit! Send resume!" ... then ghosted.'); }
       else if (roll < 0.6) { g.run.stats.hope = DATA.clamp((g.run.stats.hope||0)-3,0,100); pushLog(g.run.day, 'Recruiter reply was just a template. "We are pleased to inform you..." pleased with whom?'); }
       else if (roll < 0.8) { g.run.stats.robotSuspicion = DATA.clamp((g.run.stats.robotSuspicion||0)+2,0,100); pushLog(g.run.day, 'Recruiter asked for your SSN. You politely declined. They blocked you.'); }
       else { g.run.stats.clout = DATA.clamp((g.run.stats.clout||0)+3,0,1000); pushLog(g.run.day, 'The recruiter liked your profile picture. Clout +3.'); }
@@ -569,7 +569,7 @@ const Engine = (() => {
   function processNetwork(card) {
     const g = _g;
     snapStats();
-    g.run.stats.humanContact = DATA.clamp((g.run.stats.humanContact||0) + 2, 0, 999);
+    g.run.stats.humanContact = DATA.clamp((g.run.stats.humanContact||0) + 2, 0, 100);
     g.run.stats.hope = DATA.clamp((g.run.stats.hope||0) + 2, 0, 100);
     pushLog(g.run.day, 'Connected with a human. They liked your post. The circle of life.');
   }
@@ -578,7 +578,7 @@ const Engine = (() => {
     const g = _g;
     snapStats();
     g.run.flags.referralUsed = true;
-    g.run.stats.humanContact = DATA.clamp((g.run.stats.humanContact||0) + 3, 0, 999);
+    g.run.stats.humanContact = DATA.clamp((g.run.stats.humanContact||0) + 3, 0, 100);
     g.run.stats.hope = DATA.clamp((g.run.stats.hope||0) + 5, 0, 100);
     pushLog(g.run.day, 'Used a referral! Your friend\'s cousin\'s friend works there. Bot Aura has been bypassed.');
   }
@@ -1514,7 +1514,7 @@ const Engine = (() => {
            if (_g.run.energy !== before) deltas.push({stat:'energy', delta:_g.run.energy - before});
          } else {
            const before = _g.run.stats[e.stat] || 0;
-           const cap = (e.stat === 'rent' || e.stat === 'clout' || e.stat === 'humanContact') ? 9999 : 100;
+           const cap = (e.stat === 'rent' || e.stat === 'clout') ? 9999 : 100;
            _g.run.stats[e.stat] = Math.max(0, Math.min(cap, before + e.delta));
            if (_g.run.stats[e.stat] !== before) deltas.push({stat:e.stat, delta:_g.run.stats[e.stat] - before});
          }
