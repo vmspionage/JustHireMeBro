@@ -12,16 +12,16 @@ Every run is different. Cards are drawn from weighted pools covering job posting
 
 ## Features
 
-- **Custom procedural card engine** — 92 unique cards across 10 categories (job, recruiter, post, network, resume, gig, investigate, rest, event, micro)
+- **Custom procedural card engine** — 93 unique cards across 9 categories (job, recruiter, post, network, resume, gig, investigate, rest, event)
 - **7 playable backgrounds** — each with unique starting stats and passive perks
 - **Day-by-day card game loop** — manage energy, money, hope, credibility, and Bot Aura across a ticking clock
 - **Micro-events** — boss fights, CAPTCHAs, video interviews, personality assessments, and more
 - **Morning Events** — 30% chance per day (from Day 2) for a random real-world life event modal with 20 events and hidden outcomes
 - **Lead Follow-Up Progression** — Each lead has a randomized track of stages; follow-up triggers mini-games or flavor responses
-- **6 mini-games** — Screening Form, Take-Home, Panel Interview, Salary Stall, Video Interview, Personality Test (various approaches exist in codebase)
+- **6 mini-games** — Screening Form, Take-Home, Panel Interview, Salary Stall, Video Interview, Personality Test
 - **Signal-based leads** — Each lead accumulates signals (salary disclosed, real recruiter, reference trouble) that affect terminal outcomes
 - **42 achievements** — for the completionists (and the deeply troubled)
-- **19 endings** — 9 victory paths and 10 loss paths, each with satirical HR-style review letters
+- **18 endings** — 9 victory paths and 9 loss paths, each with satirical HR-style review letters
 - **Fully offline** — zero external dependencies, zero network requests
 
 ## Getting Started
@@ -49,11 +49,12 @@ vercel
 ### Stats at a Glance
 | Stat | Starting | Max | Description |
 |------|----------|-----|-------------|
-| Energy | 10 | 20 | Spent on daily actions. Refills by resting. |
-| Hope | 70 | 100 | Your will to continue. Hit 0 and it's over. |
-| Money | 500 | — | Your finances used for rent and expenses. |
-| Credibility | 60 | 100 | How human and trustworthy you seem. |
-| Bot Aura | 10 | 100 | Your digital presence. High Bot Aura = more applications seen. |
+| Energy | 3 | 3 | Actions per day. Restored each morning. |
+| Hope | 50 | 100 | Your will to continue. Hit 0 and it's over. |
+| Rent (Money) | 100 | — | Funds for rent and expenses. Game over at 0. |
+| Credibility | 50 | 100 | How human and trustworthy you seem. Game over at 0. |
+| Bot Aura (atsFavor) | 10 | 100 | Your digital presence. Game over at 0. |
+| Robot Suspicion (Sus) | 100 | 0 | AI suspicion level. Game over when it hits 0. |
 
 ---
 
@@ -65,7 +66,7 @@ Cards represent job applications, recruiters, social media posts, networking eve
 ### Card Anatomy
 Each card has:
 - **Title**: The name of the opportunity, event, or action available
-- **Category**: One of 10 types (job, recruiter, post, network, resume, gig, investigate, rest, event, micro)
+- **Category**: One of 9 types (job, recruiter, post, network, resume, gig, investigate, rest, event)
 - **Flavor Text**: Satirical commentary on modern recruitment culture
 - **Cost**: Energy or money paid to pursue this option
 - **Effects**: How your stats change when you take action
@@ -91,16 +92,13 @@ Investigation opportunities allow you to dig into job listings to expose ghost j
 Rest cards are essential for survival. Sleep restores hope and energy, while venting outlets help you decompress when things get overwhelming.
 
 #### 7. Events
-Random event cards represent unexpected opportunities, setbacks, or bizarre situations you encounter during your job search.
+Random event cards represent unexpected opportunities, setbacks, or bizarre situations. This includes boss fights and salary cryptids.
 
 #### 8. Jobs (Standard Applications)
 Standard job applications require significant effort but provide structured interview pipelines with predictable progression tracks.
 
 #### 9. Gigs (Side Work)
 Gig work cards offer quick opportunities to earn income while job hunting, though they can interfere with your primary job search goals.
-
-#### 10. Micro
-Micro-event cards represent brief, high-stakes interactions during the application process like screening forms, take-home assignments, and other gatekeeping mechanisms.
 
 ### Weight System
 Each card has a weight attribute from 0.5 to 2.0. Higher weight = more frequent appearance in your daily feed. Weight 2 cards appear roughly twice as often as weight 1 cards.
@@ -131,21 +129,20 @@ Each lead progresses through randomized stages:
 3. **Screening Form (Mini-Game)**: Fill out company portal with personality questions and references
 4. **Recruiter Screen**: Automated or live phone screening
 5. **Video Interview (Mini-Game)**: Online interview with company representatives
-6. **Personality Test (Mini-Game)**: Behavioral assessment via company portal
-7. **Take-Home (Mini-Game)**: Unpaid assignment evaluation
-8. **Panel Interview (Mini-Game)**: Group panel decision-making process
-9. **Salary Stall (Mini-Game)**: Compensation negotiation phase
-10. **Reference Checks**: Background verification through professional contacts
-11. **Final Interviews**: Decision-making panel and next steps
-12. **Offer Pending**: Final wait while offer is prepared
-13. **Terminal Outcome**: Reaches end-game condition
+6. **Take-Home (Mini-Game)**: Unpaid assignment evaluation
+7. **Panel Interview (Mini-Game)**: Group decision-making process
+8. **Salary Stall (Mini-Game)**: Compensation negotiation phase
+9. **Reference Checks**: Background verification through professional contacts
+10. **Final Interviews**: Decision-making panel and next steps
+11. **Offer Pending**: Final wait while offer is prepared
+12. **Terminal Outcome**: Reaches end-game condition
 
 ### Ghost Tracking
 Leads that ghost contribute to ghost tracking stats. Tracking 2+ leads in one run triggers achievement checks for ghost-related milestones.
 
 ---
 
-## Mini-Games (6 Types)
+## Mini-Games (5 Types)
 
 ### 1. Screening Form
 Fill out a company portal with questions about personality, experience, and references. Wrong answers lead to immediate rejection.
@@ -162,28 +159,20 @@ Negotiate compensation through increasingly absurd HR tactics ranging from "comp
 ### 5. Video Interview
 Navigate online interviews with company representatives testing your cultural fit and technical knowledge.
 
-### 6. Personality Test
-Answer behavioral assessment questions that seem reasonable but have absurdly specific correct answers.
-
 ---
 
 ## Boss Fights
 
-### Standard Bosses (3 Types)
-Bosses appear as special cards with multiple phases, each requiring different strategies based on your current stats:
+Boss cards appear as high-stakes encounters during the application process. Currently implemented:
 
-1. **The Infinite Applicant**: A recruiter who claims to have 14 years of experience at a company founded 8 years ago. Three phases testing persistence and credibility across resume review, behavioral interview, and technical assessment.
+- **Workday Password Reset**: A satirical boss encounter requiring strategic energy allocation.
 
-2. **The Legacy Hire**: Former employee promoted through nepotism now interviewing you. Three phases testing your ability to navigate legacy corporate culture while maintaining hope.
-
-3. **The AI Hiring Manager**: An algorithm evaluating your application through increasingly absurd tests. Four phases testing your digital presence, pattern recognition, and meta-awareness.
-
-### Cryptid
-The Cryptid is a legendary card that represents an impossibly good opportunity. Encountering it triggers special achievement and ending conditions.
+### The Cryptid
+The Salary Cryptid is a legendary card that represents an impossibly good opportunity. Encountering it triggers special achievement conditions (`salary-crypt` and `touch-crypt`).
 
 ---
 
-## Endings (19 Total)
+## Endings (18 Total)
 
 ### Victory Paths (9)
 
@@ -214,41 +203,38 @@ Build 3+ Human Contact and accumulate significant credibility. Win through pure 
 **The Quiet Win** 🌅
 Survive 30 days without burning out. Take a mundane but satisfying job in a stable industry while maintaining 60+ Hope.
 
-### Loss Paths (10)
+### Loss Paths (9)
 
-**The Résumé Black Hole** 🕳️
-Apply to 5+ jobs without a single response. Your applications enter the void. Requires 10+ applications before triggering.
+**Résumé Black Hole** 🕳️
+Your applications enter the void. After countless submissions with zero human contact, your résumé becomes a legend in the shadow dimension.
 
-**The Doomscroll Spiral** 🌀
-Hope reaches 0 from continuous negative events. You close the devices and question everything.
-
-**Hopeless** 🔥
-Hope reaches 0 from poor decisions and bad luck. Your body files a formal complaint.
+**Doomscroll Spiral** 🌀
+Hope hits 0. You close the laptop and go outside. The sun was still there. You didn't notice.
 
 **Rent Has Entered the Chat** 💸
-Money reaches 0 and rent accumulates. The landlord stops being polite. Survival takes priority over job hunting.
+Money hits 0. The landlord has entered the chat and is not asking nicely.
 
 **Final Round Forever** ♾️
-Trapped in continuous interview loops with no advancement past Day 15. You're stuck in "Final_Final_v7" status permanently.
+Trapped in interview loops past day 30. You are now in "Final_Final_v7" status. You have forgotten your own name.
 
-**The Ghost Town** 👻
-Submit 5+ applications and receive not a single response. The job market goes completely silent.
+**Time's Up, Bro** ⏰
+Day 31 hit with no leads in final stages. The job market moved on. You remain in applied limbo.
 
-**The Infinite Internship** 🔄
-Get stuck in unpaid internship loops that exploit your skills without compensation.
+**Kindly Do the Needful** 🎭
+You fell for enough scams. The scammers now have your SSN, your check deposit, and your dignity.
 
-**The Algorithm's Playground** 🎰
-Complete 3+ applications but get auto-rejected 10+ times. The ATS system wins decisively.
+**AI Detected AI** 🤖
+Robot Suspicion hits 0. An AI determined you are an AI. The bureaucracy of machines is endless.
 
-**Overqualified** 🎓
-Reach 100 Credibility but fail to secure a job due to being "too good" for available positions. Irony intact.
+**Culture Fit Not Found** 🧩
+Credibility hits 0. You are now "not a culture fit" in every system on Earth.
 
-**The Quiet Exit** 🌿
-Survive for 30 days and simply give up. Take a career in a completely unrelated field. Sometimes running away is the realistic choice.
+**The Parser Ate Your Résumé** 📄
+A catastrophic Bot Aura loss has left your résumé as digital soup. Your career is now a .txt file titled "HELP."
 
 ---
 
-## Achievements (34)
+## Achievements (42)
 
 | Achievement | Trigger | Hidden? |
 |-------------|---------|---------|

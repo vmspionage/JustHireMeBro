@@ -21,8 +21,6 @@ const DATA = (() => {
 
   const BUZZWORDS=['synergy','alignment','stakeholder','scalable','agile','AI-powered','growth mindset','disruptive','mission-driven','high agency','founder mode','thought leadership','value-add','async','lean-in','strategic narrative','unlock','optimize','ecosystem','human-centered','paradigm','flywheel','GTM','B2B SaaS','authentic vulnerability','personal brand','north star','velocity','empathy at scale','10x','tip-of-the-spear','radical candor','low-ego','ownership','intentionality','operating cadence','best-in-class'];
 
-  const HISTS=['invention of the wheel','Bronze Age','Great Fire of London','invention of the fax machine','peak oil','the fall of Rome','Y2K panic','the dot-com bubble'];
-  const NAMES=['Brenda','Spencer','Mackenzie','Brayden','Ashleigh','Kourtney','Jaxson','Brittaney','Kyler','Tatum','Braxton','Kennedi','Corbin','Presleigh','Daxton','Brynnlee','Kason','Aspyn','Brixton','Raelynn'];
   const CITIES=['Knoxville','Topeka','Fargo','Sioux Falls','Bismarck','Cheyenne','Pierre','Biloxi','Cedar Rapids','Rock Hill'];
 
   const HEADLINES=[
@@ -188,7 +186,7 @@ mk({id:'sleep-card',title:'Sleep',category:'rest',flavor:'You sleep. It\'s free.
     {id:'ghost-vigilante',name:'Ghost Job Vigilante',icon:'🔍',vibe:'Sees through walls.',perk:'Investigate cards cost 0 Energy',penalty:'Cannot use Easy Apply',locked:true,lockHint:'Unlock: Expose 25 ghost jobs across runs',stats:{hope:50,credibility:50,rent:100,clout:0,atsFavor:10,robotSuspicion:100,humanContact:5,energy:3,maxEnergy:3}},
   ];
 
- /* ACHIEVEMENTS (34) */
+ /* ACHIEVEMENTS (42) */
   const ACHIEVEMENTS=[
     {id:'win-job',name:'Just Hire Me, Bro',desc:'Win with an actual job.',icon:'🎉',hidden:false},
     {id:'robot-said-no',name:'The Robot Said No',desc:'Get auto-rejected 10 times in one run.',icon:'🤖',hidden:false},
@@ -781,5 +779,5 @@ mk({id:'sleep-card',title:'Sleep',category:'rest',flavor:'You sleep. It\'s free.
     ],
   };
 
-  return {mulberry32,pick,clamp,rInt,genComp,COMPS,JOBS,BUZZWORDS,HISTS,NAMES,CITIES,HEADLINES,POOLS,BACKGROUNDS,ACHIEVEMENTS,ENDINGS,PW_REQS,VID_PROMPTS,VID_SUBS,PA_QS,CAPTCHA_ITEMS,MORNING_EVENTS,FOLLOWUP_FLAVOR,SCREENING_FIELDS,TAKE_HOME_OPTIONS,WEAKNESS_ANSWERS,SALARY_STALL_OPTIONS,PIP_LETTER,pickWaitingMessage,pickAutoReplyMessage,pickRecruiterScreenMessage,pickFinalInterviewMessage,pickGhostMessage,pickRejectionMessage};
+  return {mulberry32,pick,clamp,rInt,genComp,COMPS,JOBS,BUZZWORDS,CITIES,HEADLINES,POOLS,BACKGROUNDS,ACHIEVEMENTS,ENDINGS,PW_REQS,VID_PROMPTS,VID_SUBS,PA_QS,CAPTCHA_ITEMS,MORNING_EVENTS,FOLLOWUP_FLAVOR,SCREENING_FIELDS,TAKE_HOME_OPTIONS,WEAKNESS_ANSWERS,SALARY_STALL_OPTIONS,PIP_LETTER,pickWaitingMessage,pickAutoReplyMessage,pickRecruiterScreenMessage,pickFinalInterviewMessage,pickGhostMessage,pickRejectionMessage};
 })();

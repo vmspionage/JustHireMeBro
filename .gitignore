@@ -1,5 +1,5 @@
 .playwright-mcp/
 .sisyphus/
 test-results/
-node-modules/
+node_modules/
 auto-omo.sh

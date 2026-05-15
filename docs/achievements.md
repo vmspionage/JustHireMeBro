@@ -1,7 +1,7 @@
 # Achievement System
 
 ## Overview
-The achievement system tracks player milestones and unlocks special rewards. There are **38 achievements** total.
+The achievement system tracks player milestones and unlocks special rewards. There are **42 achievements** total.
 
 ## Achievement Structure
 ```javascript

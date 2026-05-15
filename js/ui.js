@@ -219,13 +219,13 @@ const UI = (() => {
     }
 
     /* Batched DOM updates via requestAnimationFrame */
-    scheduleRender(() => { try { renderStatBar(); } catch(e) { console.warn('renderStatBar failed:', e); } });
-    scheduleRender(() => { try { renderDayHeader(); } catch(e) { console.warn('renderDayHeader failed:', e); } });
-    scheduleRender(() => { try { renderFeed(); } catch(e) { console.warn('renderFeed failed:', e); } });
-    scheduleRender(() => { try { renderLeads(); } catch(e) { console.warn('renderLeads failed:', e); } });
-    scheduleRender(() => { try { renderRunLog(); } catch(e) { console.warn('renderRunLog failed:', e); } });
-    scheduleRender(() => { try { renderNewsTicker(); } catch(e) { console.warn('renderNewsTicker failed:', e); } });
-    scheduleRender(() => { try { updateScanline(); } catch(e) { console.warn('updateScanline failed:', e); } });
+    scheduleRender(() => { try { renderStatBar(); } catch(e) {} });
+    scheduleRender(() => { try { renderDayHeader(); } catch(e) {} });
+    scheduleRender(() => { try { renderFeed(); } catch(e) {} });
+    scheduleRender(() => { try { renderLeads(); } catch(e) {} });
+    scheduleRender(() => { try { renderRunLog(); } catch(e) {} });
+    scheduleRender(() => { try { renderNewsTicker(); } catch(e) {} });
+    scheduleRender(() => { try { updateScanline(); } catch(e) {} });
 
     /* Re-add key listener after EOD modal dismissal */
     document.addEventListener('keydown', handleKey);
@@ -1652,7 +1652,7 @@ profileViewed: [
     }
 
     /* Show end-of-day modal (error-boundary: EOD render failures don't crash the game) */
-    try { showEODModal(g, results); } catch(e) { console.warn('showEODModal failed:', e); }
+    try { showEODModal(g, results); } catch(e) {}
   }
 
   function showEODModal(g, results) {
@@ -1693,7 +1693,7 @@ profileViewed: [
       'The day passed without incident. The screen remains unapplied to.',
       'Peaceful. The void was merciful today.',
     ];
-    try { recap.textContent = parts.length ? `${parts.join(', ')}. ${DATA.pick(closingLines)}` : DATA.pick(zeroDayLines); } catch(e) { console.warn('EOD recap failed:', e); }
+    try { recap.textContent = parts.length ? `${parts.join(', ')}. ${DATA.pick(closingLines)}` : DATA.pick(zeroDayLines); } catch(e) {}
 
     /* Stat changes */
     const s = g.run.stats;
@@ -1711,7 +1711,7 @@ profileViewed: [
         }
       }
       if (changes) changes.replaceChildren(htmlToDom(changesHTML.join('')));
-    } catch(e) { console.warn('EOD stat changes failed:', e); }
+    } catch(e) {}
     g.run._prevStats = {...s};
     g.run._prevFlags = {...g.run.flags};
 
@@ -1720,12 +1720,12 @@ profileViewed: [
       if (results.offers && results.offers.length > 0 && leadRes) {
         leadRes.replaceChildren(htmlToDom(results.offers.map(o => `<div style="text-align:center;padding:.5rem;color:var(--teal);font-weight:700">🎉 ${o.company} — ${o.role} — ${o.pay}</div>`).join('')));
       }
-    } catch(e) { console.warn('EOD lead results failed:', e); }
+    } catch(e) {}
 
     try {
       modal.classList.add('active');
       setTimeout(() => document.getElementById('eod-continue')?.focus(), 100);
-    } catch(e) { console.warn('EOD modal activation failed:', e); }
+    } catch(e) {}
 
     const contBtn = document.getElementById('eod-continue');
     /* Hide continue button when next day would be >= 30 */
@@ -1955,7 +1955,6 @@ profileViewed: [
       try {
         pipContainer.innerHTML = buildPIPLetter();
       } catch(e) {
-        console.error('buildPIPLetter failed:', e);
         pipContainer.innerHTML = `<div class="pip-letter"><div class="pip-para">We regret to inform you that your Performance Improvement Plan could not be generated. Please contact your recruiter for assistance.</div></div>`;
       }
     }
@@ -2025,7 +2024,7 @@ profileViewed: [
     };
 
     setupLetterActions(ending, score, isVictory);
-    } catch(e) { console.warn('showEndScreen failed:', e); }
+    } catch(e) {}
   }
 
   function showAchievements() {
@@ -2046,7 +2045,7 @@ profileViewed: [
       }).join('')));
 
       document.getElementById('btn-ach-back').onclick = () => showTitle();
-    } catch(e) { console.warn('showAchievements failed:', e); }
+    } catch(e) {}
   }
 
   function showHowTo() { showScreen('howto-screen'); }
@@ -2064,7 +2063,7 @@ profileViewed: [
         ).join('')));
       }
       document.getElementById('btn-hs-back').onclick = () => showTitle();
-    } catch(e) { console.warn('showHighScores failed:', e); }
+    } catch(e) {}
   }
 
   function updateScanline() {
@@ -2141,7 +2140,7 @@ profileViewed: [
         document.addEventListener('keydown', handleKey);
       } catch(e) {
         if (sub) sub.textContent = 'Error: ' + e.message;
-        console.error('Init failed:', e);
+
       }
     }, 1500 + Math.random() * 1000);
   }
@@ -2419,6 +2418,82 @@ profileViewed: [
         onComplete(true);
       };
     });
+
+modal.onclick = (e) => { if (e.target === modal) { modal.remove(); } };
+  }
+
+  /* Mini-game: Personality Assessment */
+  function startPA(lead, onComplete) {
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.id = 'pa-modal';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-label', 'Personality Assessment');
+
+    const questions = DATA.PA_QS.slice(0, 4);
+
+    modal.innerHTML = `
+      <div class="modal" style="max-width:500px">
+        <div class="modal-title">📝 Personality Assessment</div>
+        <div class="modal-body" id="pa-questions">
+          ${questions.map((q, i) => `
+            <div class="pa-question" data-q="${i}" style="margin-bottom:1.5rem;padding:.75rem;border:1px solid var(--text-muted);border-radius:var(--radius)">
+              <p style="font-weight:bold;margin-bottom:.75rem">${i + 1}. ${q.q}</p>
+              <div style="display:flex;flex-direction:column;gap:.3rem">
+                ${q.opts.map((opt, j) => `<button class="me-choice-btn" data-idx="${j}" style="text-align:left;font-weight:normal;font-size:.85rem;padding:.4rem .75rem">${opt}</button>`).join('')}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>`;
+
+    document.body.appendChild(modal);
+    modal.classList.add('active');
+
+    const answers = {};
+    const totalQuestions = questions.length;
+
+    modal.querySelectorAll('.pa-question').forEach(qDiv => {
+      const qIdx = parseInt(qDiv.dataset.q);
+      qDiv.querySelectorAll('.me-choice-btn').forEach(btn => {
+        btn.onclick = () => {
+          answers[qIdx] = parseInt(btn.dataset.idx);
+          qDiv.querySelectorAll('.me-choice-btn').forEach(b => b.style.background = '');
+          btn.style.background = 'var(--teal)';
+          btn.style.color = 'var(--navy)';
+        };
+      });
+    });
+
+    const submitBtn = htmlToDom(`
+      <button class="title-btn" id="pa-submit" style="width:100%;margin-top:1rem" disabled>Submit Assessment</button>
+    `);
+    modal.querySelector('#pa-questions').appendChild(submitBtn);
+
+    submitBtn.onclick = () => {
+      if (Object.keys(answers).length < totalQuestions) return;
+      const g = E.state;
+      let hopeDelta = 0, credDelta = 0;
+      const score = Object.values(answers).reduce((s, ans) => s + ans, 0);
+      const maxScore = totalQuestions * 4;
+
+      if (score > maxScore * 0.75) {
+        hopeDelta = 5; credDelta = -3;
+      } else {
+        hopeDelta = -3; credDelta = 5;
+      }
+
+      g.run.stats.hope = DATA.clamp((g.run.stats.hope || 0) + hopeDelta, 0, 100);
+      g.run.stats.credibility = DATA.clamp((g.run.stats.credibility || 0) + credDelta, 0, 100);
+
+      lead.stageIdx++;
+      lead.followUpsThisStage = 0;
+      lead.history.push({day: g.run.day, text: 'Completed personality assessment'});
+
+      modal.classList.remove('active');
+      modal.remove();
+      onComplete(true);
+    };
 
     modal.onclick = (e) => { if (e.target === modal) { modal.remove(); } };
   }
