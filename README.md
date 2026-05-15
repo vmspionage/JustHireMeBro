@@ -1,4 +1,4 @@
-# Just Hire Me Bro, Bro
+# Just Hire Me Bro
 
 > A satirical job-hunting game.
 
@@ -9,10 +9,6 @@
 **Just Hire Me Bro** is a browser-based card game that turns the modern job search into a ruthless game. You play as a job seeker grinding through applications, recruiter calls, background checks, and the occasional boss fight — all rendered in a satirical take on corporate hiring culture.
 
 Every run is different. Cards are drawn from weighted pools covering job postings, recruiter interactions, resume hacks, networking, investigations, and random events. Your stats shift with every decision — burn out too fast and it's game over. Land enough leads and you might actually get hired.
-
-## What is "Bro, Bro"?
-
-"Bro, Bro" is a tongue-in-cheek acknowledgment of the game's satirical nature. The title riff plays on the casual, almost desperate energy of modern job hunting. It's not a sequel — it's a wink to anyone who's spent enough time doomscrolling through job boards to start questioning reality.
 
 ## Features
 
