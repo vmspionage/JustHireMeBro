@@ -236,43 +236,43 @@ A catastrophic Bot Aura loss has left your résumé as digital soup. Your career
 
 ## Achievements (42)
 
-| Achievement | Trigger | Hidden? |
-|-------------|---------|---------|
-| Just Hire Me, Bro | Win with an actual job | No |
-| The Robot Said No | Get auto-rejected 10 times | No |
-| Résumé Black Hole Researcher | Have 15 leads ghost in one run | No |
-| Open to Work, Open to Scams | Receive 10 scam DMs in one run | No |
-| Salary Range Cryptid | Find a recruiter who states salary upfront | No |
-| Networking Is Just Friendship With KPIs | Win via referral | No |
-| Prompt Engineer by Accident | Win the AI ending | No |
-| Final Round Forever | Reach 4+ "final" interviews on a single lead | No |
-| Reposted Since Antiquity | Expose a job marked "reposted 50+ times" | No |
-| One Click, No Witnesses | Submit 20 Easy Apply applications | No |
-| Ghostbuster | Expose 10 ghost jobs in one run | No |
-| Ghost Job Vigilante | Expose 25 ghost jobs across all runs | No |
-| Kindly Champion | Correctly report 5 scam recruiters | No |
-| Workday Warrior | Survive 10 company portal applications | No |
-| The Parser Ate My Homework | Lose 30+ Bot Aura to a single event | No |
-| Humbled and Honored | Gain 100 Clout in one day | No |
-| Agree? | Get a one-word "Agree?" post to go viral | No |
-| Touch Grass Speedrun | Win without hope ever dropping below 50 | No |
-| The Quiet Win | Achieve "The Quiet Win" ending | No |
-| Founder Mode Activated | Collect 15 buzzwords | No |
-| Reformed Influencer | Hit 200 Clout | No |
-| Circle Back Champion | Have 8 active leads at once | No |
-| No Take-Homes | Win without completing a take-home | No |
-| Pure Human | Win with Sus ≥ 80 throughout | No |
-| Pure Robot | Win with Bot Aura ≥ 90 and Sus ≤ 20 | No |
-| Recruiter Bingo | Trigger 5 distinct recruiter cards in one run | No |
-| The 30 Days Are a Lifetime | Reach day 30 in any state | No |
-| First-Round Knockout | Get an offer on or before day 10 | No |
-| Speedrunner | Submit 50+ applications in 5 days or fewer | No |
-| Touch Cryptid | Encounter a Salary Range Cryptid in 3+ runs | No |
-| True Boss | Defeat a boss fight without failing a single requirement | No |
-| AGI Pilled | Win the Prompt Engineer ending 5 times across all runs | No |
-| Good Morning | Experience 10 morning events across all runs | No |
-| The Right Thing | Report the DoorDash glitch | **Yes** |
-| Free Pizza Generation | Go to a meetup for the pizza alone | **Yes** |
+| Achievement | Trigger |
+|-------------|---------|
+| Just Hire Me, Bro | Win with an actual job |
+| The Robot Said No | Get auto-rejected 10 times |
+| Résumé Black Hole Researcher | Have 15 leads ghost in one run |
+| Open to Work, Open to Scams | Receive 10 scam DMs in one run |
+| Salary Range Cryptid | Find a recruiter who states salary upfront |
+| Networking Is Just Friendship With KPIs | Win via referral |
+| Prompt Engineer by Accident | Win the AI ending |
+| Final Round Forever | Reach 4+ "final" interviews on a single lead |
+| Reposted Since Antiquity | Expose a job marked "reposted 50+ times" |
+| One Click, No Witnesses | Submit 20 Easy Apply applications |
+| Ghostbuster | Expose 10 ghost jobs in one run |
+| Ghost Job Vigilante | Expose 25 ghost jobs across all runs |
+| Kindly Champion | Correctly report 5 scam recruiters |
+| Workday Warrior | Survive 10 company portal applications |
+| The Parser Ate My Homework | Lose 30+ Bot Aura to a single event |
+| Humbled and Honored | Gain 100 Clout in one day |
+| Agree? | Get a one-word "Agree?" post to go viral |
+| Touch Grass Speedrun | Win without hope ever dropping below 50 |
+| The Quiet Win | Achieve "The Quiet Win" ending |
+| Founder Mode Activated | Collect 15 buzzwords |
+| Reformed Influencer | Hit 200 Clout |
+| Circle Back Champion | Have 8 active leads at once |
+| No Take-Homes | Win without completing a take-home |
+| Pure Human | Win with Sus ≥ 80 throughout |
+| Pure Robot | Win with Bot Aura ≥ 90 and Sus ≤ 20 |
+| Recruiter Bingo | Trigger 5 distinct recruiter cards in one run |
+| The 30 Days Are a Lifetime | Reach day 30 in any state |
+| First-Round Knockout | Get an offer on or before day 10 |
+| Speedrunner | Submit 50+ applications in 5 days or fewer |
+| Touch Cryptid | Encounter a Salary Range Cryptid in 3+ runs |
+| True Boss | Defeat a boss fight without failing a single requirement |
+| AGI Pilled | Win the Prompt Engineer ending 5 times across all runs |
+| Good Morning | Experience 10 morning events across all runs |
+| The Right Thing | Report the DoorDash glitch |
+| Free Pizza Generation | Go to a meetup for the pizza alone |
 
 ---
 
