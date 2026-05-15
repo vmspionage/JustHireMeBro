@@ -2453,6 +2453,15 @@ modal.onclick = (e) => { if (e.target === modal) { modal.remove(); } };
     const answers = {};
     const totalQuestions = questions.length;
 
+    const submitBtn = document.createElement('button');
+    submitBtn.className = 'title-btn';
+    submitBtn.id = 'pa-submit';
+    submitBtn.style.width = '100%';
+    submitBtn.style.marginTop = '1rem';
+    submitBtn.textContent = 'Submit Assessment';
+    submitBtn.disabled = true;
+    modal.querySelector('#pa-questions').appendChild(submitBtn);
+
     modal.querySelectorAll('.pa-question').forEach(qDiv => {
       const qIdx = parseInt(qDiv.dataset.q);
       qDiv.querySelectorAll('.me-choice-btn').forEach(btn => {
@@ -2461,14 +2470,12 @@ modal.onclick = (e) => { if (e.target === modal) { modal.remove(); } };
           qDiv.querySelectorAll('.me-choice-btn').forEach(b => b.style.background = '');
           btn.style.background = 'var(--teal)';
           btn.style.color = 'var(--navy)';
+          if (Object.keys(answers).length >= totalQuestions) {
+            submitBtn.disabled = false;
+          }
         };
       });
     });
-
-    const submitBtn = htmlToDom(`
-      <button class="title-btn" id="pa-submit" style="width:100%;margin-top:1rem" disabled>Submit Assessment</button>
-    `);
-    modal.querySelector('#pa-questions').appendChild(submitBtn);
 
     submitBtn.onclick = () => {
       if (Object.keys(answers).length < totalQuestions) return;
