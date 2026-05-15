@@ -1173,7 +1173,6 @@ profileViewed: [
         'Discarded. Chose yourself over a job posting that said "fast-paced." Not fast. Tired.',
       ],
       acceptCheck: [
-      acceptCheck: [
         'You signed the background check. They signed your soul in return.',
         'Background check complete. The void saw all your secrets and nodded.',
         'You signed the NDA. The NDA is longer than your résumé.',
