@@ -430,11 +430,12 @@ body.pip-screenshot-mode > *:not(.pip-screenshot-frame) { display: none !importa
   z-index: 9999;
   overflow: auto;
   padding: 2rem 1rem;
+}
+body.pip-screenshot-mode .pip-screenshot-frame {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-body.pip-screenshot-mode .pip-screenshot-frame { display: flex; }
 .pip-screenshot-exit {
   position: fixed;
   top: 1rem; right: 1rem;
