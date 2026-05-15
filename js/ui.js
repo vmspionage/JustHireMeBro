@@ -1728,7 +1728,7 @@ profileViewed: [
     } catch(e) {}
 
     const contBtn = document.getElementById('eod-continue');
-    if (g.run.day >= 30) contBtn.style.display = 'none';
+    if (g.run.day > 30) contBtn.style.display = 'none';
     contBtn.onclick = () => {
       if (g.run.won) return;
       modal.classList.remove('active');
