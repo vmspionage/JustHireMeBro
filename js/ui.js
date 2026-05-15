@@ -1728,8 +1728,7 @@ profileViewed: [
     } catch(e) {}
 
     const contBtn = document.getElementById('eod-continue');
-    /* Hide continue button when next day would be >= 30 */
-    if (g.run.day >= 29) contBtn.style.display = 'none';
+    if (g.run.day >= 30) contBtn.style.display = 'none';
     contBtn.onclick = () => {
       if (g.run.won) return;
       modal.classList.remove('active');
