@@ -10,7 +10,9 @@ html{font-size:16px}
 body{font-family:var(--font-ui);background:var(--bg);color:var(--text);min-height:100vh;line-height:1.5;overflow-x:hidden}
 *:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
 .skip-link{position:absolute;top:-40px;left:0;background:var(--navy);color:#fff;padding:.5rem 1rem;z-index:999;font-size:.9rem;text-decoration:none;border-radius:0 0 4px 0;transition:top .2s}.skip-link:focus{top:0}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0s!important;transition-duration:0s!important}}
+@media (prefers-reduced-motion: reduce) {
+  *,*::before,*::after{animation-duration:0s!important;transition-duration:0s!important}
+}
 .screen{display:none;min-height:100vh;position:relative}
 .screen.active{display:flex;flex-direction:column}
 
