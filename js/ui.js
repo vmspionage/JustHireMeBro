@@ -2003,7 +2003,7 @@ profileViewed: [
       document.getElementById('screening-form-modal').remove();
       lead.stageIdx++;
       lead.followUpsThisStage = 0;
-      lead.history.push({day:_g.run.day,text:'Submitted screening form'});
+      lead.history.push({day:g.run.day,text:'Submitted screening form'});
       g.run.stats.hope = DATA.clamp((g.run.stats.hope||0)-2, 0, 100);
       g.run.stats.credibility = DATA.clamp((g.run.stats.credibility||0)+2, 0, 100);
       g.run.flags.formsCompleted = (g.run.flags.formsCompleted||0) + 1;
@@ -2066,7 +2066,7 @@ profileViewed: [
 
         lead.stageIdx++;
         lead.followUpsThisStage = 0;
-        lead.history.push({day:_g.run.day,text:'Completed take-home assignment'});
+        lead.history.push({day:g.run.day,text:'Completed take-home assignment'});
 
         g.run.stats.hope = DATA.clamp((g.run.stats.hope||0) + outcome.hopeDelta, 0, 100);
         g.run.stats.credibility = DATA.clamp((g.run.stats.credibility||0) + outcome.credDelta, 0, 100);
@@ -2132,7 +2132,7 @@ profileViewed: [
 
         lead.stageIdx++;
         lead.followUpsThisStage = 0;
-        lead.history.push({day:_g.run.day,text:'Panel interview complete'});
+        lead.history.push({day:g.run.day,text:'Panel interview complete'});
 
         if (_rng() < ghostChance) {
           modal.classList.remove('active');
@@ -2198,7 +2198,7 @@ profileViewed: [
 
         lead.stageIdx++;
         lead.followUpsThisStage = 0;
-        lead.history.push({day:_g.run.day,text:'Salary discussion complete'});
+        lead.history.push({day:g.run.day,text:'Salary discussion complete'});
 
         if (option.signalOnly) {
           lead.signals.salaryDisclosed = true;
