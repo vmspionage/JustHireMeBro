@@ -574,6 +574,11 @@ mk({id:'sleep-card',title:'Sleep',category:'rest',flavor:'You sleep. It\'s free.
         {weight:1,effects:[{stat:'hope',delta:-1},{stat:'credibility',delta:1}],result:'You spent 20 minutes convinced it was a setup. It wasn\'t. Probably.'},
       ]},
     ]},
+    {id:'union-flyer',icon:'📰',title:'Someone Hands You a Flyer',flavor:'A person stands outside a coffee shop handing out "Know Your Rights" pamphlets. They look at you directly when they hand you one.',choices:[
+      {label:'Take it and read it later',outcomes:[{weight:1,effects:[{stat:'hope',delta:3},{stat:'credibility',delta:2}],result:'You actually read it. It mentions "at-will" employment and "collective bargaining." Interesting.',grants:['union-pamphlet']}]},
+      {label:'Pocket it',outcomes:[{weight:1,effects:[],result:'It ends up in your junk drawer alongside expired gym cards.'}]},
+      {label:'Politely decline',outcomes:[{weight:1,effects:[{stat:'hope',delta:-2}],result:'"No thanks." They understand. The world is what it is.'}]},
+    ]},
   ];
 
   const PIP_LETTER = {
@@ -779,5 +784,23 @@ mk({id:'sleep-card',title:'Sleep',category:'rest',flavor:'You sleep. It\'s free.
     ],
   };
 
-  return {mulberry32,pick,clamp,rInt,genComp,COMPS,JOBS,BUZZWORDS,CITIES,HEADLINES,POOLS,BACKGROUNDS,ACHIEVEMENTS,ENDINGS,PW_REQS,VID_PROMPTS,VID_SUBS,PA_QS,CAPTCHA_ITEMS,MORNING_EVENTS,FOLLOWUP_FLAVOR,SCREENING_FIELDS,TAKE_HOME_OPTIONS,WEAKNESS_ANSWERS,SALARY_STALL_OPTIONS,PIP_LETTER,pickWaitingMessage,pickAutoReplyMessage,pickRecruiterScreenMessage,pickFinalInterviewMessage,pickGhostMessage,pickRejectionMessage};
+  /* ========== S.3 — Career Inventory Items ========== */
+  const ITEMS = [
+    { id:'pristine-resume', icon:'📄', name:'The Pristine Résumé PDF', flavor:'Three reviews. Two friends. One coffee. It is finally good.', type:'passive', rarity:'common', passive:{ description:'+5% offer chance on real leads', hooks:{ offerChanceBonus:0.05 } } },
+    { id:'mentor-advice', icon:'🧓', name:'Half-Remembered Mentor Advice', flavor:'"Just be yourself." You wrote it down anyway.', type:'passive', rarity:'common', passive:{ description:'First follow-up each day costs 0 Energy', hooks:{ followUpEnergyDiscount:1 } } },
+    { id:'useful-cert', icon:'🎓', name:'That One Useful Cert', flavor:'You actually learned something. The certificate is also pretty.', type:'passive', rarity:'common', passive:{ description:'+3 Bot Aura per day', hooks:{ botAuraPerDay:3 } } },
+    { id:'glassbore-login', icon:'🔍', name:'Glassbore Login', flavor:'A friend\'s account. They forgot they shared it.', type:'passive', rarity:'rare', passive:{ description:'Red flags visible on all job and recruiter cards', hooks:{ revealRedFlags:true } } },
+    { id:'good-luck-sweater', icon:'🧶', name:'Lucky Interview Sweater', flavor:'Your aunt knitted it in 2014. It has not been washed since.', type:'passive', rarity:'common', passive:{ description:'+2 Hope when you advance an interview stage', hooks:{ hopeOnStageAdvance:2 } } },
+    { id:'noise-cancelling', icon:'🎧', name:'Noise-Cancelling Headphones', flavor:'Your roommate cannot find you anymore. Neither can recruiters.', type:'passive', rarity:'common', passive:{ description:'-1 Bot Sus per day, recruiters appear 25% less often', hooks:{ botSusPerDay:-1, recruiterRateMod:-0.25 } } },
+    { id:'standing-desk', icon:'🪑', name:'Standing Desk (Free, Curb)', flavor:'Someone put it out on trash day. It wobbles. You love it.', type:'passive', rarity:'common', passive:{ description:'+1 Energy on days you used at least one rest card yesterday', hooks:{ energyAfterRestDay:1 } } },
+    { id:'union-pamphlet', icon:'📰', name:'A Union Pamphlet', flavor:'Someone handed it to you outside a coffee shop. You actually read it.', type:'passive', rarity:'rare', passive:{ description:'+1 Cred per day, +1 Hope when a lead pauses or ghosts', hooks:{ credPerDay:1, hopeOnLeadEnd:1 } } },
+    { id:'coffee-card', icon:'☕', name:'$50 Coffee Shop Gift Card', flavor:'A birthday present from a relative who still thinks coffee is a "treat."', type:'active', rarity:'common', active:{ label:'Use (+1 Energy)', description:'+1 Energy today, consumed', onUse:'addEnergy', onUseArg:1 } },
+    { id:'real-reference', icon:'🤝', name:'A Real Reference', flavor:'A former coworker who actually likes you. They will answer the call.', type:'active', rarity:'rare', active:{ label:'Use on a lead', description:'Pick a lead — skip a Reference Check stage and +5 Cred', onUse:'useReferenceOnLead' } },
+    { id:'therapist-card', icon:'🧘', name:'Therapist\'s Business Card', flavor:'You\'ve been carrying it in your wallet for 6 months. Now you call.', type:'active', rarity:'common', active:{ label:'Book a session (-$30, +20 Hope)', description:'-$30 Money, +20 Hope', onUse:'useTherapy' } },
+    { id:'recruiter-friend', icon:'💼', name:'A Recruiter Friend', flavor:'You met them at a wedding. They\'ve been waiting for this DM.', type:'active', rarity:'rare', active:{ label:'Cash in the favor', description:'+8 Human Contact, +1 Energy, consumed', onUse:'useRecruiterFriend' } },
+    { id:'severance-check', icon:'💰', name:'Forgotten Severance Check', flavor:'You found it in a drawer. It expires in 3 days. You will cash it.', type:'active', rarity:'rare', active:{ label:'Cash it (+$60)', description:'+$60 Money', onUse:'useSeverance' } },
+    { id:'red-bull-32oz', icon:'🥤', name:'32oz Red Bull (Warm)', flavor:'It was on sale. You bought 4. This is the last one.', type:'active', rarity:'common', active:{ label:'Chug it (+2 Energy, -3 Hope)', description:'+2 Energy now, -3 Hope tomorrow', onUse:'useRedBull' } },
+  ];
+
+  return {mulberry32,pick,clamp,rInt,genComp,COMPS,JOBS,BUZZWORDS,CITIES,HEADLINES,POOLS,BACKGROUNDS,ACHIEVEMENTS,ENDINGS,PW_REQS,VID_PROMPTS,VID_SUBS,PA_QS,CAPTCHA_ITEMS,MORNING_EVENTS,FOLLOWUP_FLAVOR,SCREENING_FIELDS,TAKE_HOME_OPTIONS,WEAKNESS_ANSWERS,SALARY_STALL_OPTIONS,PIP_LETTER,ITEMS,pickWaitingMessage,pickAutoReplyMessage,pickRecruiterScreenMessage,pickFinalInterviewMessage,pickGhostMessage,pickRejectionMessage};
 })();

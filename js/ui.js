@@ -222,7 +222,8 @@ const UI = (() => {
     scheduleRender(() => { try { renderStatBar(); } catch(e) {} });
     scheduleRender(() => { try { renderDayHeader(); } catch(e) {} });
     scheduleRender(() => { try { renderFeed(); } catch(e) {} });
-    scheduleRender(() => { try { renderLeads(); } catch(e) {} });
+scheduleRender(() => { try { renderLeads(); } catch(e) {} });
+    scheduleRender(() => { try { renderInventory(); } catch(e) {} });
     scheduleRender(() => { try { renderRunLog(); } catch(e) {} });
     scheduleRender(() => { try { renderNewsTicker(); } catch(e) {} });
     scheduleRender(() => { try { updateScanline(); } catch(e) {} });
@@ -472,7 +473,8 @@ const UI = (() => {
     }
 
     const cardsFrag = htmlToDom(cards.map((card, idx) => {
-      const ghostReveal = (card.isGhostReveal || card._investigated) ? `<div class="card-redflags"><span class="rf-label">Red Flags:</span> ${'🚩'.repeat(card.redFlags)} <span style="margin-left:.5rem;color:var(--text-muted)">(${Math.round((card.ghostChance||0)*100)}% ghost)</span></div>` : '';
+      const hasGlassbore = (g.run.inventory || []).includes('glassbore-login');
+      const ghostReveal = (card.isGhostReveal || card._investigated || (hasGlassbore && ['job','recruiter'].includes(card.category))) ? `<div class="card-redflags"><span class="rf-label">Red Flags:</span> ${'🚩'.repeat(card.redFlags)} <span style="margin-left:.5rem;color:var(--text-muted)">(${Math.round((card.ghostChance||0)*100)}% ghost)</span></div>` : '';
 
       /* Apply background modifier to post energy cost */
       const isReformedInf = card.category === 'post' && g.run.background === 'reformed-influencer';
@@ -2504,5 +2506,131 @@ modal.onclick = (e) => { if (e.target === modal) { modal.remove(); } };
     modal.onclick = (e) => { if (e.target === modal) { modal.remove(); } };
   }
 
-  return { init, showTitle, showBgSelect, showAchievements, showHowTo, showCredits, showHighScores, updateScanline, buildPIPLetter };
+  function renderInventory() {
+    const g = E.state;
+    const listEl = document.getElementById('inventory-list');
+    const countEl = document.getElementById('inventory-count');
+    if (!listEl) return;
+    const inventory = g.run.inventory || [];
+    countEl.textContent = `(${inventory.length}/4)`;
+    if (inventory.length === 0) {
+      listEl.innerHTML = '<div class="inventory-empty">Empty. Complete tasks to find items.</div>';
+      return;
+    }
+    let html = '';
+    inventory.forEach(id => {
+      const def = E.getItemDef(id);
+      if (!def) return;
+      const cls = def.rarity === 'rare' ? 'rare' : def.rarity === 'legendary' ? 'legendary' : '';
+      const desc = (def.passive?.description || def.active?.description || '');
+      const btnLabel = (def.type === 'active') ? def.active?.label || 'Use' : '';
+      html += `<div class="inventory-item ${cls}" data-id="${def.id}" title="${def.flavor || ''}">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span>${def.icon} ${def.name}</span>
+          <span style="font-size:.6rem;color:var(--text-muted);margin-right:.4rem">${def.rarity || ''}</span>
+        </div>
+        <div style="font-size:.62rem;color:var(--text-muted);margin-top:.15rem">${desc}</div>`;
+      if (def.type === 'active') {
+        html += `<div style="margin-top:.3rem"><button class="item-use-btn" data-item-id="${def.id}" data-label="${btnLabel}" style="font-size:.6rem;padding:.15rem .5rem;background:var(--teal);color:var(--navy);border:none;border-radius:var(--radius);cursor:pointer">${btnLabel}</button></div>`;
+      }
+      html += '</div>';
+    });
+    listEl.innerHTML = html;
+    listEl.querySelectorAll('.item-use-btn').forEach(btn => {
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        const itemId = btn.dataset.itemId;
+        E.useItem(itemId);
+        renderInventory();
+      };
+    });
+  }
+
+  function flashInventory() {
+    const section = document.getElementById('inventory-section');
+    if (!section) return;
+    section.classList.add('flash');
+    setTimeout(() => section.classList.remove('flash'), 1200);
+  }
+
+  function showItemSwapModal(newItemId) {
+    const g = E.state;
+    const modal = document.getElementById('swap-modal');
+    if (!modal) return;
+    const def = E.getItemDef(newItemId);
+    if (!def) { g.run._pendingItem = null; return; }
+    const inventory = g.run.inventory || [];
+    document.getElementById('swap-instructions').textContent = `Inventory full (${inventory.length}/4). Drop one to pick this up.`;
+    document.getElementById('swap-new-item').innerHTML = `<div class="inventory-item" style="border-color:var(--gold)">
+      <span>${def.icon} ${def.name}</span> — <span style="font-size:.65rem;color:var(--text-muted)">${def.flavor || ''}</span>
+    </div>`;
+    const optionsEl = document.getElementById('swap-options');
+    optionsEl.innerHTML = '';
+    inventory.forEach(id => {
+      const old = E.getItemDef(id);
+      if (!old) return;
+      const cls = old.rarity === 'rare' ? 'rare' : old.rarity === 'legendary' ? 'legendary' : '';
+      const div = document.createElement('div');
+      div.className = `swap-option inventory-item ${cls}`;
+      div.href = '#';
+      div.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center">
+        <span>${old.icon} ${old.name}</span>
+        <button class="swap-drop-btn" data-drop-id="${old.id}" style="font-size:.6rem;padding:.15rem .5rem;background:var(--red);color:#fff;border:none;border-radius:var(--radius);cursor:pointer">Drop</button>
+      </div>
+      <div style="font-size:.6rem;color:var(--text-muted)">${old.passive?.description || old.active?.description || ''}</div>`;
+      div.onclick = (evt) => { if (evt.target.classList.contains('swap-drop-btn')) {
+        E.swapItem(newItemId, old.id);
+        g.run._pendingItem = null;
+        modal.classList.remove('active');
+        renderInventory();
+        scheduleRender(() => renderInventory());
+      }};
+      optionsEl.appendChild(div);
+    });
+    document.getElementById('swap-skip').onclick = () => {
+      modal.classList.remove('active');
+      g.run._pendingItem = null;
+    };
+    modal.classList.add('active');
+  }
+
+  function showReferencePicker(itemId) {
+    const g = E.state;
+    const leads = g.run.activeLeads || [];
+    if (leads.length === 0) { E.showToast('No active leads to use reference on.', 'info'); return; }
+    const modal = document.getElementById('swap-modal');
+    if (!modal) return;
+    const def = E.getItemDef(itemId);
+    document.getElementById('swap-modal-title').textContent = '🤝 Use Reference On...';
+    document.getElementById('swap-new-item').innerHTML = `<div class="inventory-item">${def ? `${def.icon} ${def.name}` : 'Real Reference'} — skip a reference check and gain +5 Cred.</div>`;
+    document.getElementById('swap-instructions').textContent = 'Pick a lead to apply your reference:';
+    const optionsEl = document.getElementById('swap-options');
+    optionsEl.innerHTML = '';
+    leads.forEach(lead => {
+      const div = document.createElement('div');
+      div.className = 'swap-option inventory-item';
+      div.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center">
+        <span>${lead.company} — ${lead.role}</span>
+        <button class="swap-drop-btn reference-use-btn" data-lead-id="${lead.id}" style="font-size:.6rem;padding:.15rem .5rem;background:var(--teal);color:var(--navy);border:none;border-radius:var(--radius);cursor:pointer">Use</button>
+      </div>`;
+      div.onclick = (evt) => { if (evt.target.classList.contains('reference-use-btn')) {
+        E.applyReferenceToLead(lead.id, itemId);
+        modal.classList.remove('active');
+        renderInventory();
+        renderLeads();
+      }};
+      optionsEl.appendChild(div);
+    });
+    document.getElementById('swap-skip').onclick = () => {
+      modal.classList.remove('active');
+    };
+    modal.classList.add('active');
+  }
+
+  function showItemUseResult(def, resultText, deltas) {
+    showResultModal(`${def.icon} ${def.name}`, resultText, deltas);
+    renderInventory();
+  }
+
+  return { init, showTitle, showBgSelect, showAchievements, showHowTo, showCredits, showHighScores, updateScanline, buildPIPLetter, renderInventory, flashInventory, showItemSwapModal, showReferencePicker, showItemUseResult };
   })();

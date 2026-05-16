@@ -464,3 +464,30 @@ body.pip-screenshot-mode .pip-screenshot-frame {
   .pip-letter { box-shadow: none; border: none; }
   .pip-actions { display: none; }
 }
+/* ========== Career Inventory ========== */
+.inventory-section{margin-top:1rem;padding-top:.75rem;border-top:1px solid var(--card-border)}
+.inventory-section.flash{animation:inventoryFlash 1.2s ease-out}
+@keyframes inventoryFlash{0%,100%{background:transparent}30%{background:rgba(200,169,81,.2)}}
+.inventory-item{background:var(--card-bg);border:1px solid var(--card-border);border-radius:var(--radius);padding:.4rem .5rem;margin-bottom:.35rem;font-size:.72rem;position:relative;transition:all .15s}
+.inventory-item:hover{box-shadow:0 2px 8px rgba(27,42,78,.1);border-color:var(--navy)}
+.inventory-item.rare{border-left:3px solid var(--teal)}
+.inventory-item.legendary{border-left:3px solid var(--gold);background:linear-gradient(135deg,#FFFDF7,#FFF8E8)}
+.inv-header{display:flex;align-items:center;gap:.35rem;margin-bottom:.15rem}
+.inv-icon{font-size:1rem}
+.inv-name{font-weight:700;color:var(--navy);font-size:.72rem;flex:1;line-height:1.2}
+.inv-drop{background:transparent;border:none;color:var(--text-muted);cursor:pointer;font-size:.85rem;padding:0;line-height:1;width:16px;height:16px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:all .12s;flex-shrink:0}
+.inv-drop:hover{background:rgba(217,72,59,.15);color:var(--red)}
+.inv-flavor{font-style:italic;color:var(--text-muted);font-size:.65rem;line-height:1.3;margin-bottom:.2rem}
+.inv-effect{font-size:.65rem;color:var(--teal);font-weight:600;line-height:1.3}
+.inv-effect.passive::before{content:'PASSIVE: ';font-family:var(--font-mono);font-size:.55rem;letter-spacing:.05em;opacity:.7}
+.inv-use-btn{margin-top:.3rem;background:var(--navy);color:#fff;border:none;border-radius:var(--radius);padding:.25rem .5rem;font-size:.65rem;font-weight:600;cursor:pointer;width:100%;transition:all .12s;font-family:var(--font-ui)}
+.inv-use-btn:hover{background:#2a3d6e}
+.inv-use-btn:disabled{opacity:.4;cursor:not-allowed}
+.inventory-empty{font-size:.65rem;color:var(--text-muted);font-style:italic;text-align:center;padding:.5rem}
+.swap-options{display:flex;flex-direction:column;gap:.5rem;margin:1rem 0}
+.swap-option{background:var(--card-bg);border:1px solid var(--card-border);border-radius:var(--radius);padding:.75rem;cursor:pointer;text-align:left;transition:all .12s;width:100%;font-family:var(--font-ui);font-size:.85rem;color:var(--text)}
+.swap-option:hover{border-color:var(--red);transform:translateX(2px);box-shadow:0 2px 8px rgba(217,72,59,.15)}
+.swap-new{border:2px solid var(--gold);background:linear-gradient(135deg,#FFFDF7,#FFF8E8);padding:.75rem;border-radius:var(--radius);margin-bottom:1rem}
+.swap-name{font-weight:700;color:var(--navy);font-size:.9rem}
+.swap-flavor{font-style:italic;color:var(--text-muted);font-size:.78rem;margin:.25rem 0}
+.swap-effect{font-size:.78rem;color:var(--teal);font-weight:600}

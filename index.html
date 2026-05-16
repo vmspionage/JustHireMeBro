@@ -95,6 +95,11 @@
       </div>
       <div class="panel-title">📋 Active Leads</div>
       <div id="leads-list"></div>
+      <!-- Career Inventory -->
+      <div class="inventory-section" id="inventory-section">
+        <div class="panel-title">🎒 Inventory <span id="inventory-count">(0/4)</span></div>
+        <div id="inventory-list"></div>
+      </div>
     </div>
     <div class="feed-area" id="feed-area" role="main" aria-label="Job feed" aria-live="polite"></div>
     <div class="right-rail">
@@ -154,6 +159,23 @@
       <div id="countdown-text" class="result-response"></div>
     </div>
     <div class="modal-actions"><button class="title-btn" id="countdown-continue" aria-label="Continue">Continue</button></div>
+  </div>
+</div>
+
+<!-- Swap/Reference Modal -->
+<div class="modal-overlay" id="swap-modal" role="dialog" aria-label="Inventory Swap" aria-modal="true">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-title" id="swap-modal-title">🎒 Inventory Full — Make Room?</div>
+    <div class="modal-body">
+      <div id="swap-new-item" class="swap-new"></div>
+      <div style="text-align:center;font-size:.85rem;color:var(--text-muted);margin:.75rem 0" id="swap-instructions">
+        Drop one item to pick this up, or skip.
+      </div>
+      <div class="swap-options" id="swap-options"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="title-btn secondary" id="swap-skip">Skip (don't take it)</button>
+    </div>
   </div>
 </div>
 

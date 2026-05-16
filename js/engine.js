@@ -197,6 +197,21 @@ const Engine = (() => {
       ...DATA.POOLS.gig.map(c => ({...c, _pool:'gig'})),
     ];
     let cards = weightedPool(combinedPool, g);
+    g.run.inventory.forEach(id => {
+      const def = getItemDef(id);
+      if (def?.passive?.hooks?.recruiterRateMod) {
+        const mod = def.passive.hooks.recruiterRateMod;
+        const filtered = [];
+        for (const card of cards) {
+          if (card._pool === 'recruiter') {
+            if (_rng() < Math.abs(mod)) filtered.push(card);
+          } else {
+            filtered.push(card);
+          }
+        }
+        cards = filtered;
+      }
+    });
 
     /* Extra card for career goblin */
     if (bg === 'career-goblin') {
@@ -344,6 +359,7 @@ const Engine = (() => {
       g.run.stats.hope = DATA.clamp(g.run.stats.hope + 2, 0, 100);
       pushLog(g.run.day, 'Investigated red flags. Found more red flags.');
       if (card.id === 'reposted') g.run.flags.repostExposed = true;
+      if (card.id === 'exposeScam' && _rng() < 0.30) grantItem('union-pamphlet');
     } else if (effect.effect === 'reportScam') {
       snapStats();
       g.run.stats.scamEvidence = DATA.clamp((g.run.stats.scamEvidence || 0) + 1, 0, 100);
@@ -572,6 +588,8 @@ const Engine = (() => {
     g.run.stats.humanContact = DATA.clamp((g.run.stats.humanContact||0) + 2, 0, 100);
     g.run.stats.hope = DATA.clamp((g.run.stats.hope||0) + 2, 0, 100);
     pushLog(g.run.day, 'Connected with a human. They liked your post. The circle of life.');
+    if (card.id === 'mentor-meet' && _rng() < 0.25) grantItem('mentor-advice');
+    if (card.id === 'coffee-chat' && _rng() < 0.30) grantItem('coffee-card');
   }
 
   function processReferral() {
@@ -591,10 +609,11 @@ const Engine = (() => {
       g.run.stats.robotSuspicion = DATA.clamp((g.run.stats.robotSuspicion||0) - 5, 0, 100);
       if ((g.run.stats.credibility||0) < 5) g.run.stats.credibility = DATA.clamp((g.run.stats.credibility||0) - 5, 0, 100);
       pushLog(g.run.day, 'Keyword-stuffed your résumé. Bot Aura loves it. Your soul weeps.');
-    } else if (card.id === 'rewrite-bullets') {
+    } else     if (card.id === 'rewrite-bullets') {
       g.run.stats.atsFavor = DATA.clamp((g.run.stats.atsFavor||0) + 5, 0, 100);
       g.run.stats.credibility = DATA.clamp((g.run.stats.credibility||0) + 5, 0, 100);
       pushLog(g.run.day, 'Rewrote bullets as impact metrics. "Increased synergy by 40% YoY."');
+      if (_rng() < 0.15) grantItem('pristine-resume');
     } else if (card.id === 'add-ai') {
       g.run.stats.buzzwords = g.run.stats.buzzwords || [];
       g.run.stats.buzzwords.push('AI');
@@ -607,10 +626,12 @@ const Engine = (() => {
       g.run.stats.atsFavor = DATA.clamp((g.run.stats.atsFavor||0) + 4, 0, 100);
       g.run.stats.clout = DATA.clamp((g.run.stats.clout||0) + 3, 0, 1000);
       pushLog(g.run.day, 'Completed "AI for Business Leaders: A Beginner\'s Guide to Nothing."');
+      if (_rng() < 0.20) grantItem('useful-cert');
     } else if (card.id === 'portfolio') {
       g.run.stats.credibility = DATA.clamp((g.run.stats.credibility||0) + 8, 0, 100);
       g.run.stats.atsFavor = DATA.clamp((g.run.stats.atsFavor||0) + 5, 0, 100);
       pushLog(g.run.day, 'Built a portfolio project. Real code. Real credibility. Real time wasted.');
+      if (_rng() < 0.10) grantItem('pristine-resume');
     } else if (card.id === 'plain-text') {
       g.run.stats.robotSuspicion = DATA.clamp((g.run.stats.robotSuspicion||0) + 5, 0, 100);
       g.run.stats.atsFavor = DATA.clamp((g.run.stats.atsFavor||0) + 3, 0, 100);
@@ -630,15 +651,18 @@ const Engine = (() => {
 
   function processRest(card) {
     const g = _g;
+    g.run.flags.usedRestToday = true;
     snapStats();
     if (card.id === 'touch-grass') {
       g.run.flags.touchGrassCount = (g.run.flags.touchGrassCount || 0) + 1;
       g.run.stats.hope = DATA.clamp((g.run.stats.hope||0) + 18, 0, 100);
       pushLog(g.run.day, 'Touched grass. It was green. You forgot what green looked like.');
+      if (_rng() < 0.15) grantItem('noise-cancelling');
     } else if (card.id === 'delete-app') {
       g.run.stats.hope = DATA.clamp((g.run.stats.hope||0) + 25, 0, 100);
       g.run.flags.noRecruiterTomorrow = true;
       pushLog(g.run.day, 'Deleted the app. For one day. Tomorrow you\'ll reinstall it. You always do.');
+      if (_rng() < 0.25) grantItem('standing-desk');
     } else if (card.id === 'therapy') {
       g.run.stats.hope = DATA.clamp((g.run.stats.hope||0) + 35, 0, 100);
       g.run.stats.rent = DATA.clamp((g.run.stats.rent||0) - 30, 0, 9999);
@@ -733,6 +757,61 @@ const Engine = (() => {
       const hasFinalLeads = (g.run.activeLeads||[]).some(l => l.stageIdx >= 6);
       return { type:'loss', ending: hasFinalLeads ? 'final-round-end' : 'times-up-end' };
     }
+
+    if (g.run.flags?.redBullHangover) {
+      snapStats();
+      g.run.stats.hope = DATA.clamp((g.run.stats.hope||0) - 3, 0, 100);
+      pushLog(g.run.day, '🤮 Red Bull hangover: -3 Hope.');
+      g.run.flags.redBullHangover = false;
+    }
+    g.run.inventory.forEach(id => {
+      const def = getItemDef(id);
+      if (!def?.passive?.hooks) return;
+      const h = def.passive.hooks;
+      if (h.perDayStatBonus) {
+        snapStats();
+        const stat = Object.keys(h.perDayStatBonus)[0];
+        const amt = h.perDayStatBonus[stat];
+        g.run.stats[stat] = DATA.clamp((g.run.stats[stat]||0) + amt, 0, stat === 'rent' ? 9999 : 100);
+        pushLog(g.run.day, `${def.icon} ${def.name}: +${amt} ${stat}.`);
+      }
+      if (h.botAuraPerDay) {
+        snapStats();
+        g.run.stats.atsFavor = DATA.clamp((g.run.stats.atsFavor||0) + h.botAuraPerDay, 0, 100);
+        pushLog(g.run.day, `${def.icon} ${def.name}: +${h.botAuraPerDay} Bot Aura.`);
+      }
+      if (h.botSusPerDay) {
+        snapStats();
+        g.run.stats.robotSuspicion = DATA.clamp((g.run.stats.robotSuspicion||0) + h.botSusPerDay, 0, 100);
+        pushLog(g.run.day, `${def.icon} ${def.name}: ${h.botSusPerDay > 0 ? '+' : ''}${h.botSusPerDay} Bot Sus.`);
+      }
+      if (h.credPerDay) {
+        snapStats();
+        g.run.stats.credibility = DATA.clamp((g.run.stats.credibility||0) + h.credPerDay, 0, 100);
+        pushLog(g.run.day, `${def.icon} ${def.name}: +${h.credPerDay} Cred.`);
+      }
+    });
+    if (g.run.flags?.usedRestToday) {
+      g.run.flags.usedRestYesterday = true;
+    } else {
+      g.run.flags.usedRestYesterday = false;
+    }
+    if (g.run.day === 15 && !g.run.flags._grantedSeverance) {
+      g.run.flags._grantedSeverance = true;
+      grantItem('severance-package');
+      pushLog(g.run.day, '📩 Milestone: Day 15 — severance package unlocked!');
+    }
+    if ((g.run.stats.humanContact||0) >= 5 && !g.run.flags._therapistGranted) {
+      g.run.flags._therapistGranted = true;
+      grantItem('therapist');
+      pushLog(g.run.day, '🧠 Milestone: Enough human contact — therapist unlocked!');
+    }
+    g.run.flags._firstFollowUpToday = false;
+    if (g.run.flags?.usedRestYesterday && hasItem('standing-desk')) {
+      g.run.energy = Math.min(g.run.maxEnergy + 2, g.run.energy + 1);
+      pushLog(g.run.day, '🪑 Standing desk: +1 Energy from yesterday\'s rest day.');
+    }
+    g.run.flags.recruiterRateApplied = false;
 
   saveRun();
     return null;
@@ -1172,12 +1251,95 @@ const Engine = (() => {
     setTimeout(() => document.getElementById('pa-questions')?.focus(), 100);
   }
 
+  /* Career Inventory helpers */
+  function getItemDef(id) { return DATA.ITEMS.find(i => i.id === id); }
+  function hasItem(id) { return _g.run.inventory.includes(id); }
+  function inventoryFull() { return _g.run.inventory.length >= 4; }
+  function grantItem(id) {
+    const def = getItemDef(id);
+    if (!def) return false;
+    if (hasItem(id)) { showToast(`Already have: ${def.icon} ${def.name}`, 'info'); return false; }
+    if (inventoryFull()) {
+      _g.run._pendingItem = id;
+      if (typeof UI !== 'undefined' && UI.showItemSwapModal) UI.showItemSwapModal(id);
+      return false;
+    }
+    _g.run.inventory.push(id);
+    _g.run._itemsAcquired = (_g.run._itemsAcquired || 0) + 1;
+    showToast(`🎁 Item: ${def.icon} ${def.name}`, 'info');
+    pushLog(_g.run.day, `Picked up: ${def.name}`);
+    if (typeof UI !== 'undefined' && UI.flashInventory) UI.flashInventory();
+    return true;
+  }
+  function dropItem(id) {
+    const idx = _g.run.inventory.indexOf(id);
+    if (idx >= 0) {
+      _g.run.inventory.splice(idx, 1);
+      const def = getItemDef(id);
+      pushLog(_g.run.day, `Dropped: ${def?.name || id}`);
+    }
+  }
+  function swapItem(newItemId, oldItemId) {
+    dropItem(oldItemId);
+    _g.run.inventory.push(newItemId);
+    const def = getItemDef(newItemId);
+    showToast(`🎁 Item: ${def.icon} ${def.name}`, 'info');
+    pushLog(_g.run.day, `Picked up: ${def.name}`);
+    _g.run._pendingItem = null;
+    if (typeof UI !== 'undefined' && UI.flashInventory) UI.flashInventory();
+  }
+  function useItem(id) {
+    const def = getItemDef(id);
+    if (!def || def.type !== 'active') return;
+    const idx = _g.run.inventory.indexOf(id);
+    if (idx < 0) return;
+    let consumed = true; let resultText = ''; const deltas = [];
+    const before = JSON.parse(JSON.stringify(_g.run.stats)); const beforeEnergy = _g.run.energy;
+    switch (def.active.onUse) {
+      case 'addEnergy': { const amt = def.active.onUseArg || 1; _g.run.energy = Math.min(_g.maxEnergy + 2, _g.run.energy + amt); resultText = `+${amt} Energy. Use it wisely.`; break; }
+      case 'useTherapy': { if ((_g.run.stats.rent||0) < 30) { showToast('Not enough money. Therapy isn\'t free.', 'info'); return; } _g.run.stats.rent = DATA.clamp(_g.run.stats.rent - 30, 0, 9999); _g.run.stats.hope = DATA.clamp(_g.run.stats.hope + 20, 0, 100); resultText = 'You talked. They listened. -$30, +20 Hope.'; break; }
+      case 'useRecruiterFriend': { _g.run.stats.humanContact = DATA.clamp((_g.run.stats.humanContact||0) + 8, 0, 9999); _g.run.energy = Math.min(_g.maxEnergy + 2, _g.run.energy + 1); resultText = 'They picked up immediately. +8 Human Contact, +1 Energy.'; break; }
+      case 'useSeverance': { _g.run.stats.rent = DATA.clamp((_g.run.stats.rent||0) + 60, 0, 9999); resultText = 'Cashed it just in time. +$60.'; break; }
+      case 'useRedBull': { _g.run.energy = Math.min(_g.maxEnergy + 2, _g.run.energy + 2); _g.run.flags.redBullHangover = true; resultText = 'Tastes like aluminum and regret. +2 Energy now. -3 Hope tomorrow.'; break; }
+      case 'useReferenceOnLead': { consumed = false; if (typeof UI !== 'undefined' && UI.showReferencePicker) UI.showReferencePicker(id); return; }
+      default: console.warn('Unknown item use:', def.active.onUse); return;
+    }
+    ['rent','hope','credibility','clout','atsFavor','robotSuspicion','humanContact'].forEach(k => { if (before[k] !== _g.run.stats[k]) deltas.push({stat:k, delta:_g.run.stats[k] - before[k]}); });
+    if (beforeEnergy !== _g.run.energy) deltas.push({stat:'energy', delta:_g.run.energy - beforeEnergy});
+    if (consumed) { _g.run.inventory.splice(idx, 1); _g.run._activeItemsUsedToday = (_g.run._activeItemsUsedToday || 0) + 1; pushLog(_g.run.day, `Used: ${def.name}`); }
+    if (typeof UI !== 'undefined' && UI.showItemUseResult) UI.showItemUseResult(def, resultText, deltas);
+  }
+  function applyReferenceToLead(leadId, itemId) {
+    const lead = _g.run.activeLeads.find(l => l.id === leadId);
+    if (!lead) return;
+    if (lead.track[lead.stageIdx] === 'reference-checks') { lead.stageIdx++; }
+    else { const ri = lead.track.indexOf('reference-checks'); if (ri > lead.stageIdx) lead.track.splice(ri, 1); }
+    lead.signals = lead.signals || {}; lead.signals.realReferenceUsed = true;
+    _g.run.stats.credibility = DATA.clamp((_g.run.stats.credibility||0) + 5, 0, 100);
+    const idx = _g.run.inventory.indexOf(itemId);
+    if (idx >= 0) _g.run.inventory.splice(idx, 1);
+    showToast(`✅ ${lead.company}: Reference check skipped. +5 Cred.`, 'info');
+    pushLog(_g.run.day, `Used Real Reference on ${lead.company}`);
+  }
+  function hopeBumpOnAdvance() {
+    _g.run.inventory.forEach(id => { const def = getItemDef(id); if (def?.passive?.hooks?.hopeOnStageAdvance) _g.run.stats.hope = DATA.clamp((_g.run.stats.hope||0) + def.passive.hooks.hopeOnStageAdvance, 0, 100); });
+    if (!_g.run.flags._sweaterGranted && !_g.run._firstStageAdvanceCompleted) {
+      _g.run._firstStageAdvanceCompleted = true;
+      grantItem('good-luck-sweater');
+    }
+  }
   /* Follow-up on leads — new stage-progression system */
   function followUpLead(leadId) {
     const g = _g;
     const lead = g.run.activeLeads.find(l => l.id === leadId);
-    if (!lead || g.run.energy < 1) return null;
-    g.run.energy--;
+    if (!lead) return null;
+    /* Mentor Advice: first follow-up each day costs 0 Energy */
+    if (!g.run.flags._firstFollowUpToday && hasItem('mentor-advice')) {
+      g.run.flags._firstFollowUpToday = true;
+    } else {
+      if (g.run.energy < 1) return null;
+      g.run.energy--;
+    }
     lead.daysSinceUpdate = 0;
 
     if (lead.stageIdx >= lead.track.length) {
@@ -1201,8 +1363,9 @@ const Engine = (() => {
       if (lead.followUpsThisStage < waitThreshold) {
         return { type:'waiting', title:'📭 Still Waiting', company:lead.company, message:DATA.pickWaitingMessage(_rng), stats:[{stat:'hope',delta:-2}] };
       }
-      lead.stageIdx++;
-      lead.followUpsThisStage = 0;
+        lead.stageIdx++;
+        hopeBumpOnAdvance();
+        lead.followUpsThisStage = 0;
       lead.history.push({day:g.run.day,text:'Got a response (finally)'});
       g.run.stats.hope = DATA.clamp((g.run.stats.hope||0) + 4, 0, 100);
       return {
@@ -1221,6 +1384,7 @@ const Engine = (() => {
 
       case 'auto-reply':
         lead.stageIdx++;
+        hopeBumpOnAdvance();
         lead.history.push({day:g.run.day,text:'Auto-reply received'});
         return {
           type:'flavor', title:'🤖 Auto-Reply', company:lead.company,
@@ -1232,6 +1396,7 @@ const Engine = (() => {
           return finishLead(lead, 'ghosted', 'The recruiter "stepped away from the role."');
         }
         lead.stageIdx++;
+        hopeBumpOnAdvance();
         if (_rng() < 0.30) { lead.signals.salaryDisclosed = true; g.run.stats.hope = DATA.clamp((g.run.stats.hope||0)+5, 0, 100); }
         if (_rng() < 0.60) lead.signals.realRecruiter = true;
         lead.history.push({day:g.run.day,text:'Recruiter screen complete'});
@@ -1261,6 +1426,7 @@ const Engine = (() => {
 
       case 'reference-checks':
         lead.stageIdx++;
+        hopeBumpOnAdvance();
         if (_rng() < 0.15) {
           lead.signals.referenceTrouble = true;
           g.run.stats.credibility = DATA.clamp((g.run.stats.credibility||0)-4, 0, 100);
@@ -1275,6 +1441,7 @@ const Engine = (() => {
         lead.finalInterviewCount++;
         g.run.flags.maxFinalInterviews = Math.max(g.run.flags.maxFinalInterviews||0, lead.finalInterviewCount);
         lead.stageIdx++;
+        hopeBumpOnAdvance();
         lead.history.push({day:g.run.day,text:`"Final" interview #${lead.finalInterviewCount}`});
         const hiMsg = lead.finalInterviewCount===1 ? DATA.pickFinalInterviewMessage(1, _rng)
                      : lead.finalInterviewCount===2 ? DATA.pickFinalInterviewMessage(2, _rng)
@@ -1286,6 +1453,7 @@ const Engine = (() => {
 
       case 'offer-pending':
         lead.stageIdx++;
+        hopeBumpOnAdvance();
         if (_rng() < 0.20 && !lead.signals.salaryDisclosed) {
           return finishLead(lead, 'ghosted', 'The offer was "coming next week." Next week never came.');
         }
@@ -1295,6 +1463,7 @@ const Engine = (() => {
     }
 
     lead.stageIdx++;
+    hopeBumpOnAdvance();
     return { type:'flavor', title:'…', company:lead.company, message:'Something happened. Probably.', stats:[] };
   }
 
@@ -1310,6 +1479,10 @@ const Engine = (() => {
     if (lead.signals.portfolioReviewed){ offerChance += 0.10; rejectChance -= 0.05; }
     if (lead.signals.referenceTrouble) { offerChance -= 0.20; rejectChance += 0.20; }
     if (lead.finalInterviewCount >= 3) { ghostChance += 0.10; pauseChance += 0.10; }
+    g.run.inventory.forEach(id => {
+      const def = getItemDef(id);
+      if (def?.passive?.hooks?.offerChanceBonus) offerChance += def.passive.hooks.offerChanceBonus;
+    });
 
     const total = offerChance + ghostChance + rejectChance + pauseChance;
     const r = _rng() * total;
@@ -1358,6 +1531,7 @@ const Engine = (() => {
 
     if (outcome === 'ghosted') {
       g.run.stats.hope = DATA.clamp((g.run.stats.hope||0) - 7, 0, 100);
+      g.run.inventory.forEach(id => { const def = getItemDef(id); if (def?.passive?.hooks?.hopeOnLeadEnd) g.run.stats.hope = DATA.clamp((g.run.stats.hope||0) + def.passive.hooks.hopeOnLeadEnd, 0, 100); });
       g.run.flags.leadsGhosted = (g.run.flags.leadsGhosted||0)+1;
       g.run.flags.consecutiveGhosts = (g.run.flags.consecutiveGhosts||0)+1;
       g.run.flags.maxConsecutiveGhosts = Math.max(g.run.flags.maxConsecutiveGhosts || 0, g.run.flags.consecutiveGhosts);
@@ -1464,14 +1638,15 @@ const Engine = (() => {
         run: {
           day: 1, background: '', energy: 3, maxEnergy: 3,
           stats: { rent:100, hope:50, credibility:50, clout:0, atsFavor:10, robotSuspicion:100, humanContact:5, buzzwords:[], scamEvidence:0, ghostEvidence:0, scamsFell:0 },
-          activeLeads: [], feed: [], log: [],
-          flags: { easyApplyCount:0, ghostsExposed:0, scamsReported:0, consecutiveGhosts:0, applicationsSubmitted:0, leadsGhosted:0, leadsGhostedRun:0, bossFightActive:false, bossFightWon:false, bossFightWonFirstTry:false, recruiterTypes:0, maxFinalInterviews:0, cloutGainToday:0, agreeViral:0, offerDay:0, maxClout:0, maxRobotSusp:0, minRobotSusp:100, minHopeRun:100, maxActiveLeads:0, portalApps:0, takeHomeApps:0, referralUsed:false, referralSaved:false, noRecruiterTomorrow:false, recruiterDoubled:false, unicornSeen:false, repostExposed:false, totalAtsLoss:0, firstEasyApplyDay:0, touchGrassCount:0, cringePostCount:0, formsCompleted:0, viralPosts:0, maxConsecutiveGhosts:0 },
-          permaPlayedCards: new Set(),
-          seed: Date.now(),
-          won: null,
-          offers: [],
-          _bossTimer: null,
-        },
+           activeLeads: [], feed: [], log: [],
+           flags: { easyApplyCount:0, ghostsExposed:0, scamsReported:0, consecutiveGhosts:0, applicationsSubmitted:0, leadsGhosted:0, leadsGhostedRun:0, bossFightActive:false, bossFightWon:false, bossFightWonFirstTry:false, recruiterTypes:0, maxFinalInterviews:0, cloutGainToday:0, agreeViral:0, offerDay:0, maxClout:0, maxRobotSusp:0, minRobotSusp:100, minHopeRun:100, maxActiveLeads:0, portalApps:0, takeHomeApps:0, referralUsed:false, referralSaved:false, noRecruiterTomorrow:false, recruiterDoubled:false, unicornSeen:false, repostExposed:false, totalAtsLoss:0, firstEasyApplyDay:0, touchGrassCount:0, cringePostCount:0, formsCompleted:0, viralPosts:0, maxConsecutiveGhosts:0 },
+           permaPlayedCards: new Set(),
+           inventory: [],
+           seed: Date.now(),
+           won: null,
+           offers: [],
+           _bossTimer: null,
+         },
         meta: _meta,
         _rng: null,
       };
@@ -1527,6 +1702,9 @@ const Engine = (() => {
         if (event.id === 'doordash-glitch' && choice.label === 'Report it') {
           _g.run.flags.rightThing = 1;
         }
+        if (outcome.grants && Array.isArray(outcome.grants)) {
+          outcome.grants.forEach(itemId => grantItem(itemId));
+        }
         pushLog(_g.run.day, `🌅 ${event.title}: ${outcome.result}`);
         return { result: outcome.result, deltas };
      },
@@ -1538,6 +1716,7 @@ const Engine = (() => {
     snapStats, pushLog, computeStatDeltas, saveRun, loadRun, clearRun, applyRun, hasRun,
     clamp: DATA.clamp,
     showToast,
+    getItemDef, hasItem, inventoryFull, grantItem, dropItem, swapItem, useItem, applyReferenceToLead,
   };
 })();
 /* ============================================================
