@@ -800,7 +800,79 @@ mk({id:'sleep-card',title:'Sleep',category:'rest',flavor:'You sleep. It\'s free.
     { id:'recruiter-friend', icon:'💼', name:'A Recruiter Friend', flavor:'You met them at a wedding. They\'ve been waiting for this DM.', type:'active', rarity:'rare', active:{ label:'Cash in the favor', description:'+8 Human Contact, +1 Energy, consumed', onUse:'useRecruiterFriend' } },
     { id:'severance-check', icon:'💰', name:'Forgotten Severance Check', flavor:'You found it in a drawer. It expires in 3 days. You will cash it.', type:'active', rarity:'rare', active:{ label:'Cash it (+$60)', description:'+$60 Money', onUse:'useSeverance' } },
     { id:'red-bull-32oz', icon:'🥤', name:'32oz Red Bull (Warm)', flavor:'It was on sale. You bought 4. This is the last one.', type:'active', rarity:'common', active:{ label:'Chug it (+2 Energy, -3 Hope)', description:'+2 Energy now, -3 Hope tomorrow', onUse:'useRedBull' } },
+   ];
+
+  const RECRUITER_FIRST=['Brenda','Chad','Tasha','Nate','Priya','Kevin','Samantha','Derek','Maya','Tyler','Chloe','Marcus','Ashley','Brandon','Jenna','Olivia','Aiden','Sophie','Liam','Emma'];
+  const RECRUITER_LAST=['Kowalski','Nguyen','Rodriguez','Chen','Patel','OBrien','Dubois','Kim','Sarkar','Vasquez','Ito','Singh','OMalley','Tran','Walsh','Fernandez','OConnell','Bergstrom','Yamamoto','Dubois'];
+  function genRecruiter(){return RECRUITER_FIRST[Math.floor(Math.random()*RECRUITER_FIRST.length)]+' '+RECRUITER_LAST[Math.floor(Math.random()*RECRUITER_LAST.length)]}
+
+  const INBOX_SUBJECTS={
+    received:['Your application has been received','Application confirmation - [Company]','We received your application!','Application status: Under review'],
+    rejection:['Update on your application','Regarding your candidacy','GREAT news (it\'s not great news)','Your application status','[No Subject]','Re: Re: Re: Quick question','Touching base!'],
+    ghost:['[No Subject]','Touching base!','Quick question...','Following up','Circle back on this...'],
+    offer:['GREAT news!','We\'d love to move forward!','Offer: [Company] - [Position]','You\'re almost hired!','Exciting next steps!'],
+    interview:['Interview scheduling: [Company]','We\'d love to set up a call!','Let\'s schedule some time!'],
+    stage:['Next steps: [Stage]','Update: Moving to [Stage]','Your application has progressed!'],
+    general:['Quick question from [Company]','Thoughts?','Circle back','An update from [Company]'],
+  };
+
+  const INBOX_BODIES={
+    received:['Hi [SENDER],\n\nWe received your application for [Position] at [Company]. We\'ll be in touch shortly with next steps.\n\nBest,\n[Recruiter]\n[Company] Talent Acquisition'],
+    rejection:['Hi [SENDER],\n\nThank you for applying to [Company]. After careful consideration, we\'ve decided to move in a different direction. Your profile is impressive, but we didn\'t feel like you were the right match for this particular role.\n\nWe\'ll keep your r? on file and reach out if something more aligned comes up.\n\nBest regards,\n[Recruiter]\n[Company] Talent Acquisition'],
+    offer:['Hi [SENDER],\n\nWe\'re thrilled to extend an offer for the [Position] role at [Company]!\n\nWe think you\'d be a great fit for the team. Would you be available for a quick call this week?\n\nBest,\n[Recruiter]\n[Company] Hiring Manager'],
+    stage:['Hi [SENDER],\n\nGreat news! Your application for [Position] has moved to [Stage]!\n\nBest,\n[Recruiter]\n[Company] Recruiting Team'],
+    interview:['Hi [SENDER],\n\nWe\'d love to set up an interview! Please let us know your availability for a 30-minute call this week.\n\nLooking forward to learning more about your background.\n\n[Recruiter]\n[Company] Recruiting Team'],
+  };
+
+  const BRENDRA_MESSAGES=[
+    {day:1,name:'Brenda Kowalski',company:'TalentFirst Global',subject:'Let\'s connect!',body:'Hi there! I came across your profile and thought we should connect. I\'m a Talent Advisor at TalentFirst Global and I\'d love to help you with your job search. Feel free to reach out anytime!\n\n- Brenda, TalentFirst Global\nP.S. - I\'m always here if you need a friendly ear!'},
+    {day:4,name:'Brenda Kowalski',company:'TalentFirst Global',subject:'Checking in!',body:'Hey! Just checking in! How\'s the search going? I\'ve seen some interesting roles at TalentFirst. Let me know if you want to chat!\n\n- Brenda, TalentFirst Global'},
+    {day:7,name:'Brenda Kowalski',company:'TalentFirst Global',subject:'Thinking of you!',body:'Hey! I was thinking about you today. I\'m the only recruiter who hasn\'t ghosted you. That\'s because I\'m different. I\'m always in your corner!\n\n- Brenda, TalentFirst Global'},
+    {day:10,name:'Brenda Kowalski',company:'TalentFirst Global',subject:'I know you\'re still out there...',body:'I know I might be emailing a lot but I genuinely believe in your potential. I\'m the kind of recruiter who follows up. Everyone else has left. I\'m still here.\n\n- Brenda, TalentFirst Global'},
+    {day:13,name:'Brenda Kowalski',company:'TalentFirst Global',subject:'We need to talk',body:'I see every rejection you get. I just want to help. I\'m the only one who really does. Please let me help you.\n\n- Brenda, TalentFirst Global\nI\'ll email again soon. I always do.'},
+    {day:16,name:'Brenda Kowalski',company:'TalentFirst Global',subject:'I know what you\'re thinking',body:'I know you\'re thinking "why won\'t Brenda stop emailing me?" I\'m good at follow-ups. I\'m the best at follow-ups. I\'m not going to stop.\n\n- Brenda, TalentFirst Global\nP.S. You met me 16 days ago. I remember because I remember everything.'},
+    {day:19,name:'Brenda Kowalski',company:'TalentFirst Global',subject:'Remember me? It\'s me.',body:'I\'m Brenda. Remember Brenda? I\'m still here. Everyone else is gone but Brenda is still here.\n\n- Brenda, TalentFirst Global\nP.S. Thinking about me is the first step to hiring me.'},
+    {day:22,name:'Brenda Kowalski',company:'TalentFirst Global',subject:'I made you a playlist',body:'I saw you were listening, so I made a playlist. "Songs to Job Search To - Curated by Brenda."\n\nI know you\'re out there. I\'m always listening.\n\n- Brenda, TalentFirst Global'},
+    {day:25,name:'Brenda Kowalski',company:'TalentFirst Global',subject:'25 days and counting',body:'Day 25 since we first connected. I\'ve been counting. I count every day I email you. You deserve a recruiter who counts.\n\n- Brenda (your recruiter, always here)'},
+    {day:28,name:'Brenda Kowalski',company:'TalentFirst Global',subject:'I\'ll be here when you return',body:'The game might end. Everything might end. But I\'ll still be here. I\'m Brenda. I don\'t leave.\n\n- Brenda, TalentFirst Global\nP.S. This is still professional.'},
   ];
 
-  return {mulberry32,pick,clamp,rInt,genComp,COMPS,JOBS,BUZZWORDS,CITIES,HEADLINES,POOLS,BACKGROUNDS,ACHIEVEMENTS,ENDINGS,PW_REQS,VID_PROMPTS,VID_SUBS,PA_QS,CAPTCHA_ITEMS,MORNING_EVENTS,FOLLOWUP_FLAVOR,SCREENING_FIELDS,TAKE_HOME_OPTIONS,WEAKNESS_ANSWERS,SALARY_STALL_OPTIONS,PIP_LETTER,ITEMS,pickWaitingMessage,pickAutoReplyMessage,pickRecruiterScreenMessage,pickFinalInterviewMessage,pickGhostMessage,pickRejectionMessage};
+  const VIBE_LINES=[
+    'Mercury is in retrograde and so is your job search.',
+    'The stars say avoid Easy Apply today. The stars are usually right.',
+    "Today feels like a 'circle back' kind of day.",
+    'A good day to touch grass. Every day is.',
+    'The algorithm woke up and chose you. Unclear if that\'s good.',
+    'Your inbox is quiet. It will not stay that way.',
+    'The universe is optimistic. You should not be.',
+    'Today\'s forecast: cloudy with a chance of rejections.',
+    'The hiring market is a character.',
+    "You'd think after this many applications something would stick. You were wrong.",
+    "It's a good day to have high expectations. It is not.",
+    'If today were a Netflix special, it would be 12 minutes of silence.',
+    'You are one interview away from everything. Or 47.',
+    'The cosmos has thoughts about your résumé. You should too.',
+  ];
+
+  const URGENT_STAT_WARNINGS={
+    hire: { threshold: 5, text: '⚠️ Hope is critically low. Consider rest.' },
+    money: { threshold: 50, text: '⚠️ Cash is bleeding. Rent is due soon. Consider gigs.' },
+    credibility: { threshold: 10, text: '⚠️ Credibility is tanking. Stop posting buzzwords.' },
+    sus: { threshold: 80, text: '⚠️ Robot Suspicion dangerously high. Do a captcha before you become one.' },
+  };
+
+  const FEED_SHIFT_HEADLINES = [
+    'The algorithm has noticed you\'re broke. It has thoughts.',
+    'Your desperation has been detected and monetized.',
+    'You posted once and now your feed is all "thought leadership." Congratulations.',
+    'The system senses vulnerability. Adjusting feed accordingly.',
+    'Your stats are trending. The algorithm is taking notes.',
+    'Feed composition has been optimized for maximum despair.',
+    'The algorithm says: "You need gigs, not dreams."',
+    'Your feed smells like desperation. The feed agrees.',
+    'The void recalibrating your feed for maximum engagement.',
+    'Stats shifted. Feed recalibrated. Hope unchanged.',
+  ];
+
+  return {mulberry32,pick,clamp,rInt,genComp,COMPS,JOBS,BUZZWORDS,CITIES,HEADLINES,POOLS,BACKGROUNDS,ACHIEVEMENTS,ENDINGS,PW_REQS,VID_PROMPTS,VID_SUBS,PA_QS,CAPTCHA_ITEMS,MORNING_EVENTS,FOLLOWUP_FLAVOR,SCREENING_FIELDS,TAKE_HOME_OPTIONS,WEAKNESS_ANSWERS,SALARY_STALL_OPTIONS,PIP_LETTER,ITEMS,pickWaitingMessage,pickAutoReplyMessage,pickRecruiterScreenMessage,pickFinalInterviewMessage,pickGhostMessage,pickRejectionMessage,RECRUITER_FIRST,RECRUITER_LAST,genRecruiter,INBOX_SUBJECTS,INBOX_BODIES,BRENDRA_MESSAGES,VIBE_LINES,URGENT_STAT_WARNINGS,FEED_SHIFT_HEADLINES};
 })();

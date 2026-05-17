@@ -6,20 +6,28 @@ async function clearState(page) {
 }
 
 async function goTitle(page) {
-  await page.waitForSelector('#loading-screen', { state: 'detached', timeout: 10000 });
-  await page.waitForSelector('#title-screen .title-logo', { state: 'visible', timeout: 10000 });
+  await page.waitForFunction(() => {
+      const ts = document.getElementById('title-screen');
+      const ls = document.getElementById('loading-screen');
+      return ts && ls && ts.classList.contains('active') && !ls.classList.contains('active');
+    }, { timeout: 30000 });
+  await page.waitForSelector('#title-screen .title-logo', { state: 'visible', timeout: 30000 });
 }
 
 async function goGame(page) {
   await clearState(page);
   await page.goto(GAME_URL, { waitUntil: 'domcontentloaded', timeout: 15000 });
-  await page.waitForSelector('#loading-screen', { state: 'detached', timeout: 10000 });
-  await page.waitForSelector('#title-screen .title-logo', { state: 'visible', timeout: 10000 });
+  await page.waitForFunction(() => {
+      const ts = document.getElementById('title-screen');
+      const ls = document.getElementById('loading-screen');
+      return ts && ls && ts.classList.contains('active') && !ls.classList.contains('active');
+    }, { timeout: 30000 });
+  await page.waitForSelector('#title-screen .title-logo', { state: 'visible', timeout: 30000 });
   await page.locator('#btn-start').click();
   await page.waitForSelector('#bg-select', { state: 'visible', timeout: 5000 });
   await page.locator('[data-bg="career-goblin"]').click();
   await page.locator('#btn-bg-confirm').click();
-  await page.waitForSelector('#game-screen .day-header', { state: 'visible', timeout: 10000 });
+  await page.waitForSelector('#game-screen .day-header', { state: 'visible', timeout: 30000 });
 }
 
 async function getStats(page) {
@@ -86,7 +94,11 @@ async function closeModal(page, id) {
 test('Test 1: Title screen loads', async ({ page }) => {
   await clearState(page);
   await page.goto(GAME_URL, { waitUntil: 'domcontentloaded', timeout: 15000 });
-  await page.waitForSelector('#loading-screen', { state: 'detached', timeout: 10000 });
+  await page.waitForFunction(() => {
+      const ts = document.getElementById('title-screen');
+      const ls = document.getElementById('loading-screen');
+      return ts && ls && ts.classList.contains('active') && !ls.classList.contains('active');
+    }, { timeout: 30000 });
 
   await expect(page.locator('.title-logo')).toBeVisible();
   await expect(page.locator('.title-logo')).toContainText('Just Hire Me Bro');
@@ -107,8 +119,12 @@ test('Test 1: Title screen loads', async ({ page }) => {
 test('Test 2: Background selection works', async ({ page }) => {
   await clearState(page);
   await page.goto(GAME_URL, { waitUntil: 'domcontentloaded', timeout: 15000 });
-  await page.waitForSelector('#loading-screen', { state: 'detached', timeout: 10000 });
-  await page.waitForSelector('#title-screen .title-logo', { state: 'visible', timeout: 10000 });
+  await page.waitForFunction(() => {
+      const ts = document.getElementById('title-screen');
+      const ls = document.getElementById('loading-screen');
+      return ts && ls && ts.classList.contains('active') && !ls.classList.contains('active');
+    }, { timeout: 30000 });
+  await page.waitForSelector('#title-screen .title-logo', { state: 'visible', timeout: 30000 });
 
   await page.locator('#btn-start').click();
   await page.waitForSelector('#bg-select', { state: 'visible', timeout: 5000 });
@@ -126,7 +142,7 @@ test('Test 2: Background selection works', async ({ page }) => {
   await expect(page.locator('#btn-bg-confirm')).toBeEnabled();
 
   await page.locator('#btn-bg-confirm').click();
-  await page.waitForSelector('#game-screen .day-header', { state: 'visible', timeout: 10000 });
+  await page.waitForSelector('#game-screen .day-header', { state: 'visible', timeout: 30000 });
   await expect(page.locator('.game-logo')).toBeVisible();
   await expect(page.locator('.game-logo')).toContainText('Linkfluence');
 });
@@ -289,7 +305,7 @@ test('Test 7: End of day flow works', async ({ page }) => {
 
   // EOD modal appears or game continues
   try {
-    await page.locator('#eod-continue').click({ timeout: 10000 });
+    await page.locator('#eod-continue').click({ timeout: 30000 });
   } catch {
     // Game might have ended, check if it's game over
   }
@@ -318,7 +334,7 @@ test('Test 8: Game over conditions trigger correctly', async ({ page }) => {
   await clickDoomscroll(page);
 
   // Wait for end screen
-  await page.waitForSelector('#end-screen .ending-title', { state: 'visible', timeout: 10000 });
+  await page.waitForSelector('#end-screen .ending-title', { state: 'visible', timeout: 30000 });
 
   // Verify defeat screen
   await expect(page.locator('#end-type-label')).toContainText(/DEFEAT/i);

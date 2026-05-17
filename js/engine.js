@@ -60,7 +60,7 @@ const Engine = (() => {
   }
   function showNotice(msg) { const n=document.createElement('div');n.style.cssText='position:fixed;top:1rem;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--navy);padding:.75rem 1.5rem;border-radius:var(--radius);z-index:999;font-size:.85rem;max-width:90vw;text-align:center';n.textContent=msg;document.body.appendChild(n);setTimeout(()=>n.remove(),5000); }
 
-  function saveRun() {
+   function saveRun() {
     try {
       if (!_g || !_g.run) return;
       const r = _g.run;
@@ -78,6 +78,7 @@ const Engine = (() => {
         seed: r.seed,
         won: r.won,
         offers: r.offers,
+        inbox: r.inbox,
         _dailyClout: r._dailyClout,
         _postsMadeToday: r._postsMadeToday,
         _prevStats: r._prevStats,
@@ -119,11 +120,88 @@ const Engine = (() => {
     r.seed = saved.seed || Date.now();
     r.won = saved.won || null;
     r.offers = saved.offers || [];
+    r.inbox = saved.inbox || [];
+    r.inbox = saved.inbox || [];
     r._dailyClout = saved._dailyClout || 0;
     r._postsMadeToday = saved._postsMadeToday || 0;
     r._prevStats = saved._prevStats || null;
     r._prevFlags = saved._prevFlags || null;
     _rng = _g._rng = DATA.mulberry32(r.seed);
+  }
+
+  /* ── Inbox System ── */
+  let _inboxId = 0;
+  const _inboxSourceKeys = new Set();
+
+  function addInboxMessage({sender, company, subject, body, type, threadId, leadId}) {
+    const msg = {
+      id: ++_inboxId,
+      threadId: threadId || 'brenda',
+      sender: sender || DATA.genRecruiter(),
+      company: company || DATA.genComp(),
+      subject,
+      body,
+      type: type || 'general',
+      day: _g.run.day,
+      read: false,
+      time: `${8 + Math.floor(Math.random()*9)}:${String(Math.floor(Math.random()*60)).padStart(2,'0')}${Math.random()>.5?'AM':'PM'}`,
+    };
+    if (leadId) msg.leadId = leadId;
+    _g.run.inbox.push(msg);
+    return msg;
+  }
+
+  function markInboxRead(msgId) {
+    const msg = _g.run.inbox.find(m => m.id === msgId);
+    if (msg) msg.read = true;
+  }
+
+  function markAllInboxRead() {
+    _g.run.inbox.forEach(m => m.read = true);
+  }
+
+  function inboxUnreadCount() {
+    return _g.run.inbox.filter(m => !m.read).length;
+  }
+
+  function inboxByThread(threadId) {
+    return _g.run.inbox.filter(m => m.threadId === threadId);
+  }
+
+  function isInboxSent(sourceKey) {
+    if (_inboxSourceKeys.has(sourceKey)) return true;
+    _inboxSourceKeys.add(sourceKey);
+    return false;
+  }
+
+  function checkBrenda(day) {
+    if (day < 1) return;
+    const pending = DATA.BRENDRA_MESSAGES.filter(b => b.day <= day && !_g.run.inbox.find(m => m.threadId === 'brenda' && m.brendaDay === b.day));
+    for (const bm of pending) {
+      addInboxMessage({sender: bm.name, company: bm.company, subject: bm.subject, body: bm.body, type: 'general', threadId: 'brenda'});
+      if (_g.run.inbox.length) _g.run.inbox[_g.run.inbox.length-1].brendaDay = bm.day;
+    }
+  }
+
+  function generateBriefing() {
+    const g = _g;
+    const stats = g.run.stats;
+    const leading = g.run.activeLeads || [];
+
+    const briefing = {
+      day: g.run.day,
+      vibe: DATA.pick(DATA.VIBE_LINES, _rng),
+      warnings: [],
+      leads: leading.filter(l => l.stageIdx >= 3).sort((a, b) => b.stageIdx - a.stageIdx).slice(0, 3),
+    };
+
+    /* Check for urgent stat warnings */
+    if (stats.hope <= 5) briefing.warnings.push(DATA.URGENT_STAT_WARNINGS.hire.text);
+    if (stats.rent <= 50) briefing.warnings.push(DATA.URGENT_STAT_WARNINGS.money.text);
+    if (stats.credibility <= 10) briefing.warnings.push(DATA.URGENT_STAT_WARNINGS.credibility.text);
+    if (stats.atsFavor >= 80) briefing.warnings.push(DATA.URGENT_STAT_WARNINGS.sus.text);
+
+    return briefing;
   }
 
   function hasRun() { return !!loadRun(); }
@@ -139,8 +217,34 @@ const Engine = (() => {
   }
 
   /* Card pool helpers */
+
+  /**
+   * Compute stat-driven category weight multipliers.
+   * Returns { category: multiplier } for each pool category.
+   * High multipliers (>1) make categories more likely; low (<1) suppress them.
+   * Thresholds tuned so shifts feel natural, not jarring.
+   */
+  function computeFeedWeights(stats) {
+    const S = Object.assign({
+      robotSuspicion: 50, rent: 300, clout: 0,
+      hope: 50, atxFavor: 50, humanContact: 50,
+      credibility: 50, scamEvidence: 0,
+      buzzwords: [], energy: 3,
+    }, stats || {});
+
+    return {
+      gig:         1 + DATA.clamp((500 - S.rent)    / 100, 0, 3),
+      rest:        1 + DATA.clamp(Math.max(0, 35 - S.hope) / 15, 0, 3),
+      post:        1 + DATA.clamp(S.clout / 80       , 0, 2),
+      network:     1 + DATA.clamp(S.humanContact / 40 , 0, 1.5),
+      investigate: 1 + DATA.clamp((S.robotSuspicion - 30) / 15, 0, 2.5),
+      resume:      1 + DATA.clamp(Math.max(0, 25 - S.credibility) / 15, 0, 1.5),
+    };
+  }
+
   function weightedPool(pool, state) {
     const g = _g;
+    const catMult = computeFeedWeights(g.run.stats);
     let total = 0;
     const items = pool.filter(c => {
       if (c.permaPlayed && g.run.permaPlayedCards && g.run.permaPlayedCards.has(c.id)) return false;
@@ -150,6 +254,10 @@ const Engine = (() => {
         }
       }
       let w = c.weight || 1;
+      /* Stat-driven category multiplier */
+      const mult = catMult[c.category] || 1;
+      w *= mult;
+      /* Existing flag-based modifiers */
       if (c.category === 'recruiter' && g.run.flags.recruiterDoubled) w *= 2;
       if (c.category === 'recruiter' && g.run.flags.noRecruiterTomorrow) w = 0;
       if (c.isUnicorn) w *= (g.run.flags.unicornSeen ? 0 : 1);
@@ -163,10 +271,14 @@ const Engine = (() => {
     const count = Math.min(r, DATA.rInt(4, 6, _rng));
     for (let i = 0; i < count && remaining.length > 0; i++) {
       let t = 0;
-      for (const c of remaining) t += (c.weight || 1);
+      for (const c of remaining) {
+        const w = (c.weight || 1) * (catMult[c.category] || 1);
+        t += w;
+      }
       let roll = _rng() * t;
       for (let j = 0; j < remaining.length; j++) {
-        roll -= (remaining[j].weight || 1);
+        const w = (remaining[j].weight || 1) * (catMult[remaining[j].category] || 1);
+        roll -= w;
         if (roll <= 0) { picks.push(remaining.splice(j,1)[0]); break; }
       }
       if (picks.length <= i) picks.push(remaining.pop());
@@ -230,6 +342,14 @@ const Engine = (() => {
       }
     }
 
+    /* Detect feed composition shift */
+    const weights = computeFeedWeights(g.run.stats);
+    const dominant = Object.entries(weights).sort((a, b) => b[1] - a[1])[0];
+    const prevDominant = g.run._lastFeedShift || '';
+
+    g.run._feedShifted = (dominant[0] !== prevDominant && weights[dominant[0]] > 1.5);
+    g.run._lastFeedShift = dominant[0];
+
     g.run.feed = cards;
 
     /* Track salary cryptid encounter for achievements */
@@ -262,6 +382,11 @@ const Engine = (() => {
       signals: { salaryDisclosed:false, realRecruiter:false, portfolioReviewed:false, referenceTrouble:false },
     };
     g.run.activeLeads.push(lead);
+    addInboxMessage({
+      company: lead.company, subject: DATA.pick(DATA.INBOX_SUBJECTS.received),
+      body: `Your application for ${lead.role} at ${lead.company} has been received. We'll be in touch!`,
+      type: 'received', threadId: 'lead-' + lead.id, leadId: lead.id,
+    });
     return lead;
   }
 
@@ -725,6 +850,8 @@ const Engine = (() => {
     g.run.energy = g.run.maxEnergy;
     pushLog(g.run.day, `☀️ Day ${g.run.day} begins.`);
 
+    checkBrenda(g.run.day);
+
     /* Weekly rent */
     if (g.run.day % 5 === 0 && g.run.day > 0) {
       snapStats();
@@ -813,7 +940,7 @@ const Engine = (() => {
     }
     g.run.flags.recruiterRateApplied = false;
 
-  saveRun();
+   saveRun();
     return null;
   }
 
@@ -1507,6 +1634,11 @@ const Engine = (() => {
       g.run.stats.rent = DATA.clamp((g.run.stats.rent||0) + 500, 0, 9999);
       g.run.flags.offerDay = g.run.flags.offerDay || g.run.day;
       g.run.log.push({day:g.run.day, text:`🎉 OFFER from ${lead.company}!`});
+      addInboxMessage({
+        company: lead.company, subject: DATA.pick(DATA.INBOX_SUBJECTS.offer),
+        body: `Congratulations! We're thrilled to offer you the ${lead.role} position at ${lead.company}! ${lead.pay || 'Let us know when you can discuss compensation.'}`,
+        type: 'offer', threadId: 'lead-' + lead.id, leadId: lead.id,
+      });
 
       /* Achievement: Principled — principled take-home decline that still won the offer */
       if (g.run.flags.principledOffer && !_meta.achievements['principled']) {
@@ -1536,6 +1668,11 @@ const Engine = (() => {
       g.run.flags.consecutiveGhosts = (g.run.flags.consecutiveGhosts||0)+1;
       g.run.flags.maxConsecutiveGhosts = Math.max(g.run.flags.maxConsecutiveGhosts || 0, g.run.flags.consecutiveGhosts);
       g.run.log.push({day:g.run.day, text:`${lead.company} ghosted you.`});
+      addInboxMessage({
+        company: lead.company, subject: DATA.pick(DATA.INBOX_SUBJECTS.ghost),
+        body: `We haven't heard from you in a while. Please let us know if you're still interested in the ${lead.role} position at ${lead.company}.`,
+        type: 'ghost', threadId: 'lead-' + lead.id, leadId: lead.id,
+      });
       return {
         type:'terminal-ghost', title:'👻 Ghosted', company:lead.company,
         message: customMessage || DATA.pickGhostMessage(_rng),
@@ -1547,6 +1684,11 @@ const Engine = (() => {
       g.run.stats.hope = DATA.clamp((g.run.stats.hope||0) - 4, 0, 100);
       g.run.flags.consecutiveGhosts = 0;
       g.run.log.push({day:g.run.day, text:`${lead.company}: "We've decided to move forward with other candidates."`});
+      addInboxMessage({
+        company: lead.company, subject: DATA.pick(DATA.INBOX_SUBJECTS.rejection),
+        body: `Thank you for your interest in ${lead.company} and for taking the time to apply for the ${lead.role} role. After careful consideration, we've determined that your background and experience are not the right match for this position at this time. We'll keep your information on file for future opportunities.`,
+        type: 'rejection', threadId: 'lead-' + lead.id, leadId: lead.id,
+      });
       return {
         type:'terminal-reject', title:'📭 Rejected', company:lead.company,
         message: customMessage || DATA.pickRejectionMessage(_rng),
@@ -1640,11 +1782,12 @@ const Engine = (() => {
           stats: { rent:100, hope:50, credibility:50, clout:0, atsFavor:10, robotSuspicion:100, humanContact:5, buzzwords:[], scamEvidence:0, ghostEvidence:0, scamsFell:0 },
            activeLeads: [], feed: [], log: [],
            flags: { easyApplyCount:0, ghostsExposed:0, scamsReported:0, consecutiveGhosts:0, applicationsSubmitted:0, leadsGhosted:0, leadsGhostedRun:0, bossFightActive:false, bossFightWon:false, bossFightWonFirstTry:false, recruiterTypes:0, maxFinalInterviews:0, cloutGainToday:0, agreeViral:0, offerDay:0, maxClout:0, maxRobotSusp:0, minRobotSusp:100, minHopeRun:100, maxActiveLeads:0, portalApps:0, takeHomeApps:0, referralUsed:false, referralSaved:false, noRecruiterTomorrow:false, recruiterDoubled:false, unicornSeen:false, repostExposed:false, totalAtsLoss:0, firstEasyApplyDay:0, touchGrassCount:0, cringePostCount:0, formsCompleted:0, viralPosts:0, maxConsecutiveGhosts:0 },
-           permaPlayedCards: new Set(),
-           inventory: [],
-           seed: Date.now(),
-           won: null,
-           offers: [],
+            permaPlayedCards: new Set(),
+            inventory: [],
+            inbox: [],
+            seed: Date.now(),
+            won: null,
+            offers: [],
            _bossTimer: null,
          },
         meta: _meta,
@@ -1717,6 +1860,7 @@ const Engine = (() => {
     clamp: DATA.clamp,
     showToast,
     getItemDef, hasItem, inventoryFull, grantItem, dropItem, swapItem, useItem, applyReferenceToLead,
+    addInboxMessage, markInboxRead, markAllInboxRead, isInboxSent, inboxUnreadCount, inboxByThread, checkBrenda, generateBriefing,
   };
 })();
 /* ============================================================

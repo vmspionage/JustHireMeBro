@@ -1585,7 +1585,15 @@ profileViewed: [
 
   function renderNewsTicker() {
     const ticker = document.getElementById('news-ticker');
-    const headlines = DATA.HEADLINES.slice(0, 3);
+    const g = E.state;
+    let headlines = [...DATA.HEADLINES.slice(0, 2)];
+
+    /* Feed shift headline */
+    if (g.run._feedShifted && DATA.FEED_SHIFT_HEADLINES.length) {
+      const shift = DATA.pick(DATA.FEED_SHIFT_HEADLINES, Math.random);
+      headlines.unshift(`<strong style="color:var(--gold)">🔮 ${shift}</strong>`);
+    }
+
     ticker.replaceChildren(htmlToDom(headlines.map(h => `<div style="margin-bottom:.5rem">📌 ${h}</div>`).join('')));
   }
 
@@ -1734,7 +1742,12 @@ profileViewed: [
     contBtn.onclick = () => {
       if (g.run.won) return;
       modal.classList.remove('active');
-      startDay();
+      const briefing = E.generateBriefing();
+      if (briefing && briefing.warnings.length > 0) {
+        showBriefing(briefing);
+      } else {
+        startDay();
+      }
     };
     contBtn.onkeydown = (e) => {
       if (e.key === 'Escape') {
@@ -2101,6 +2114,8 @@ profileViewed: [
     E.init();
     initTitleButtons();
     initDoomscroll();
+    initInbox();
+    initBriefing();
     showTitle();
     E.showToast('Career reset. Fresh start, same void.', 'info');
   }
@@ -2136,6 +2151,8 @@ profileViewed: [
         E.init();
         initTitleButtons();
         initDoomscroll();
+        initInbox();
+        initBriefing();
         showTitle();
         document.getElementById('loading-screen').classList.remove('active');
         document.addEventListener('keydown', handleKey);
@@ -2632,5 +2649,55 @@ modal.onclick = (e) => { if (e.target === modal) { modal.remove(); } };
     renderInventory();
   }
 
-  return { init, showTitle, showBgSelect, showAchievements, showHowTo, showCredits, showHighScores, updateScanline, buildPIPLetter, renderInventory, flashInventory, showItemSwapModal, showReferencePicker, showItemUseResult };
+  function renderBriefing(briefing) {
+    const dayEl = document.getElementById('briefing-day');
+    const vibeEl = document.getElementById('briefing-vibe');
+    const warningsEl = document.getElementById('briefing-warnings');
+    const leadsEl = document.getElementById('briefing-leads');
+    if (!dayEl || !vibeEl) return;
+    dayEl.textContent = `☀️ Day ${briefing.day}`;
+    vibeEl.innerHTML = `<em>"${briefing.vibe}"</em>`;
+    if (warningsEl) {
+      warningsEl.innerHTML = '';
+      briefing.warnings.forEach(w => {
+        const div = document.createElement('div');
+        div.className = 'briefing-warning';
+        div.textContent = w;
+        warningsEl.appendChild(div);
+      });
+    }
+    if (leadsEl) {
+      leadsEl.innerHTML = '';
+      briefing.leads.forEach(lead => {
+        const div = document.createElement('div');
+        div.className = 'briefing-lead';
+        div.innerHTML = `<div><span class="briefing-lead-company">${lead.company}</span> <span class="briefing-lead-role">— ${lead.role}</span></div><span class="briefing-lead-stage">${lead.currentStage?.name || 'Waiting'}</span>`;
+        leadsEl.appendChild(div);
+      });
+    }
+  }
+
+  function showBriefing(briefing) {
+    const modal = document.getElementById('briefing-modal');
+    if (!modal) return;
+    renderBriefing(briefing);
+    modal.classList.add('active');
+  }
+
+  function hideBriefing() {
+    const modal = document.getElementById('briefing-modal');
+    if (modal) modal.classList.remove('active');
+  }
+
+  function initBriefing() {
+    const btn = document.getElementById('briefing-continue');
+    if (!btn) return;
+    btn.onclick = () => {
+      hideBriefing();
+      E.drawFeed();
+      renderFeed();
+    };
+  }
+
+  return { init, showTitle, showBgSelect, showAchievements, showHowTo, showCredits, showHighScores, updateScanline, buildPIPLetter, renderInventory, flashInventory, showItemSwapModal, showReferencePicker, showItemUseResult, initBriefing, renderBriefing, showBriefing, hideBriefing };
   })();

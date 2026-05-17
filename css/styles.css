@@ -491,3 +491,47 @@ body.pip-screenshot-mode .pip-screenshot-frame {
 .swap-name{font-weight:700;color:var(--navy);font-size:.9rem}
 .swap-flavor{font-style:italic;color:var(--text-muted);font-size:.78rem;margin:.25rem 0}
 .swap-effect{font-size:.78rem;color:var(--teal);font-weight:600}
+
+/* ========== Inbox Panel ========== */
+.inbox-toggle-btn,.inbox-close-btn{font-family:var(--font-ui);font-size:.82rem;padding:.4rem .85rem;border:1px solid var(--navy);background:var(--card-bg);color:var(--navy);border-radius:var(--radius);cursor:pointer;transition:all .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.inbox-toggle-btn:hover{background:var(--navy);color:#fff}
+.inbox-close-btn{background:transparent;border:1px solid var(--card-border);padding:.3rem .6rem;font-size:1rem;line-height:1;color:var(--text-muted)}
+.inbox-close-btn:hover{background:var(--red);color:#fff;border-color:var(--red)}
+.header-actions{display:flex;gap:.5rem}
+.inbox-panel{display:none;position:fixed;inset:0;z-index:9000;background:rgba(27,42,78,.45)}
+.inbox-panel.open{display:flex;flex-direction:column}
+.inbox-header{display:flex;align-items:center;justify-content:space-between;background:var(--navy);padding:.75rem 1.25rem;color:#fff}
+.inbox-title{font-family:var(--font-display);font-size:1.1rem;margin:0}
+.inbox-layout{display:flex;flex:1;overflow:hidden}
+.inbox-list{width:320px;min-width:260px;max-width:400px;border-right:1px solid var(--card-border);overflow-y:auto;background:var(--bg)}
+.inbox-thread{border-bottom:1px solid var(--card-border);padding:.6rem .75rem;cursor:pointer;transition:background .12s;position:relative}
+.inbox-thread:hover{background:rgba(27,42,78,.05)}
+.inbox-thread.active{background:rgba(63,122,135,.08);border-left:3px solid var(--teal)}
+.inbox-thread.unread .thread-sender{font-weight:700}
+.inbox-thread.unread::after{content:'';position:absolute;left:.35rem;top:50%;width:8px;height:8px;border-radius:50%;background:var(--red);transform:translateY(-60%)}
+.thread-sender{font-weight:600;font-size:.82rem;color:var(--navy)}
+.thread-subject{font-size:.75rem;color:var(--text-muted);margin-top:.1rem;text-overflow:ellipsis;overflow:hidden;white-space:nowrap}
+.thread-date{font-size:.65rem;color:var(--text-muted);margin-top:.08rem;font-family:var(--font-mono)}
+.inbox-message{flex:1;padding:1.25rem;overflow-y:auto;background:var(--card-bg)}
+.inbox-message-placeholder{text-align:center;color:var(--text-muted);font-style:italic;padding:3rem 1rem}
+.msg-header{margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid var(--card-border)}
+.msg-sender{font-weight:700;color:var(--navy);font-size:1rem}
+.msg-company{color:var(--teal);font-size:.85rem}
+.msg-subject{font-size:1.05rem;font-weight:600;color:var(--navy);margin-top:.25rem}
+.msg-date{font-size:.72rem;color:var(--text-muted);font-family:var(--font-mono);margin-top:.25rem}
+.msg-body{white-space:pre-line;line-height:1.6;font-size:.9rem;margin-top:.75rem}
+
+/* ── Morning Briefing ── */
+.briefing-header{text-align:center;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--card-border)}
+.briefing-day{font-family:var(--font-display);font-size:2rem;color:var(--navy);margin-bottom:.5rem}
+.briefing-vibe{font-style:italic;font-size:1rem;color:var(--text-muted);line-height:1.5;max-width:400px;margin:0 auto}
+.briefing-warnings{margin-bottom:1rem}
+.briefing-warnings:empty{margin-bottom:0}
+.briefing-warning{background:rgba(217,72,59,.08);border-left:3px solid var(--red);padding:.5rem .75rem;margin-bottom:.5rem;font-size:.85rem;color:var(--red);border-radius:0 var(--radius) var(--radius) 0}
+.briefing-leads{margin-bottom:1rem}
+.briefing-leads:empty{margin-bottom:0}
+.briefing-lead{background:var(--card-bg);border:1px solid var(--card-border);border-radius:var(--radius);padding:.5rem .75rem;margin-bottom:.4rem;font-size:.82rem;display:flex;justify-content:space-between;align-items:center}
+.briefing-lead-company{font-weight:700;color:var(--navy)}
+.briefing-lead-role{color:var(--text-muted);font-size:.75rem}
+.briefing-lead-stage{font-size:.72rem;color:var(--teal);font-weight:600;font-family:var(--font-mono)}
+.modal-briefing{max-width:520px;width:95%}

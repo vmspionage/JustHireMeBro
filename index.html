@@ -76,7 +76,10 @@
           <span class="logo-subtitle">a Just Hire Me Bro game</span>
         </div>
       </div>
-      <button class="leads-toggle-btn" id="leads-toggle-btn" aria-label="Toggle leads panel">📋 Leads <span id="leads-count">(0)</span></button>
+      <div class="header-actions">
+        <button class="leads-toggle-btn" id="leads-toggle-btn" aria-label="Toggle leads panel">📋 Leads <span id="leads-count">(0)</span></button>
+        <button class="inbox-toggle-btn" id="inbox-toggle-btn" aria-label="Open inbox">📬 Inbox <span id="inbox-count">(0)</span></button>
+      </div>
     </div>
     <div class="day-header-center">
       <span class="news-headline" id="news-display"></span>
@@ -114,6 +117,34 @@
     </div>
   </div>
   <button class="doomscroll-btn" id="doomscroll-btn" aria-label="Doomscroll until tomorrow — End Day">📉 Doomscroll until tomorrow</button>
+</div>
+
+<div class="inbox-panel" id="inbox-panel" role="dialog" aria-label="Inbox" aria-modal="true">
+  <div class="inbox-header">
+    <h2 class="inbox-title">📬 Inbox</h2>
+    <button class="inbox-close-btn" id="inbox-close-btn" aria-label="Close inbox">✕</button>
+  </div>
+  <div class="inbox-layout">
+    <div class="inbox-list" id="inbox-list" role="list" aria-label="Message threads"></div>
+    <div class="inbox-message" id="inbox-message" role="article" aria-label="Selected message">
+      <div class="inbox-message-placeholder">Select a message to read</div>
+    </div>
+  </div>
+</div>
+
+<!-- MORNING BRIEFING MODAL -->
+<div class="modal-overlay" id="briefing-modal" role="dialog" aria-label="Morning Briefing" aria-modal="true">
+  <div class="modal modal-briefing">
+    <div class="briefing-header">
+      <div class="briefing-day" id="briefing-day">☀️ Day 1</div>
+      <div class="briefing-vibe" id="briefing-vibe"></div>
+    </div>
+    <div class="briefing-body">
+      <div class="briefing-warnings" id="briefing-warnings"></div>
+      <div class="briefing-leads" id="briefing-leads"></div>
+    </div>
+    <div class="modal-actions"><button class="title-btn" id="briefing-continue" aria-label="Begin the day">Begin the Day</button></div>
+  </div>
 </div>
 
 <!-- END OF DAY MODAL -->
