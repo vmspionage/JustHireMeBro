@@ -1981,6 +1981,8 @@ const Engine = (() => {
      },
      get state() { return _g; },
     get meta() { return _meta; },
+    saveMeta,
+    toastAchievement,
     weightedPool, drawFeed, createLead, applyCard, resolveLeads, advanceDay, rollInitialGhostVibe, decayGhostVibe, recoverGhostVibe, getVibeTier, markAsSpam, resolveGhostVibeEvent,
     checkLosses, checkWins, track, checkAchievements, saveHighScore,
     startBossFight, startCaptcha, startVideoInterview, startPA, followUpLead,

@@ -2171,6 +2171,8 @@ profileViewed: [
     modal.setAttribute('role', 'dialog');
     modal.setAttribute('aria-label', 'Screening Form');
 
+    const g = E.state;
+
     const fields = [...DATA.SCREENING_FIELDS].sort(() => Math.random() - 0.5).slice(0, 6);
     const fieldHTML = fields.map((f, i) => {
       if (f.type === 'select') {
@@ -2226,10 +2228,10 @@ profileViewed: [
         g.run.stats.credibility = DATA.clamp((g.run.stats.credibility||0)+2, 0, 100);
         g.run.flags.formsCompleted = (g.run.flags.formsCompleted||0) + 1;
       g.run.flags.formSurvivorCount = (g.run.flags.formSurvivorCount||0) + 1;
-      if (g.run.flags.formSurvivorCount >= 10 && !_meta.achievements['form-survivor']) {
-        _meta.achievements['form-survivor'] = true;
+      if (g.run.flags.formSurvivorCount >= 10 && !E.meta.achievements['form-survivor']) {
+        E.meta.achievements['form-survivor'] = true;
         const ach = {id:'form-survivor',name:'Form Survivor',desc:'Complete 10 Screening Forms.',icon:'📝',hidden:false};
-        toastAchievement(ach); saveMeta();
+        E.toastAchievement(ach); E.saveMeta();
       }
       onComplete(true);
     };
@@ -2246,6 +2248,7 @@ profileViewed: [
     modal.setAttribute('role', 'dialog');
     modal.setAttribute('aria-label', 'Take-Home Assignment');
 
+    const g = E.state;
     const cred = (g.run.stats.credibility || 0);
     const options = DATA.TAKE_HOME_OPTIONS.filter(o => !o.requireCred || cred >= o.requireCred);
     const originalIdx = {};
@@ -2294,7 +2297,7 @@ profileViewed: [
 
         if (option.label.includes('Option D') && outcome.credDelta === 5 && outcome.hopeDelta === -3) {
           /* Decline option D that leads to rejection */
-          finishLead(lead, 'rejected', 'They thanked you and "moved forward with other candidates."');
+          E.finishLead(lead, 'rejected', 'They thanked you and "moved forward with other candidates."');
           onComplete(false);
           return;
         }
@@ -2363,15 +2366,15 @@ profileViewed: [
         }
 
         /* Achievement checks */
-        if (answer.label.includes('Honestly?') && answer.credDelta >= 8 && !_meta.achievements['real-answer']) {
-          _meta.achievements['real-answer'] = true;
+        if (answer.label.includes('Honestly?') && answer.credDelta >= 8 && !E.meta.achievements['real-answer']) {
+          E.meta.achievements['real-answer'] = true;
           const ach = {id:'real-answer',name:'A Real Answer',desc:'Pick the honest answer in a Panel Interview and survive.',icon:'💯',hidden:false};
-          toastAchievement(ach); saveMeta();
+          E.toastAchievement(ach); E.saveMeta();
         }
-        if (answer.label.includes('stare back') && answer.hopeDelta === -5 && !_meta.achievements['silent-power']) {
-          _meta.achievements['silent-power'] = true;
+        if (answer.label.includes('stare back') && answer.hopeDelta === -5 && !E.meta.achievements['silent-power']) {
+          E.meta.achievements['silent-power'] = true;
           const ach = {id:'silent-power',name:'Silent Power',desc:'Choose to stare back in the Panel Interview and survive.',icon:'🤫',hidden:true};
-          toastAchievement(ach); saveMeta();
+          E.toastAchievement(ach); E.saveMeta();
         }
 
         modal.classList.remove('active');
@@ -2391,6 +2394,7 @@ profileViewed: [
     modal.setAttribute('role', 'dialog');
     modal.setAttribute('aria-label', 'Salary Discussion');
 
+    const g = E.state;
     const options = DATA.SALARY_STALL_OPTIONS.filter(o => !o.signalOnly || lead.signals.salaryDisclosed);
 
     modal.innerHTML = `
@@ -2428,7 +2432,7 @@ profileViewed: [
         if (option.ghostChance && (E._rng ? E._rng() : Math.random()) < option.ghostChance) {
           modal.classList.remove('active');
           modal.remove();
-          finishLead(lead, 'ghosted', 'You named a number too high. They said "interesting." You know what that means.');
+          E.finishLead(lead, 'ghosted', 'You named a number too high. They said "interesting." You know what that means.');
           onComplete(false);
           return;
         }
