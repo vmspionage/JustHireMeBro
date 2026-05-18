@@ -2067,9 +2067,9 @@ profileViewed: [
     initTitleButtons();
     initDoomscroll();
     initInbox();
-        initBriefing();
-        initDebugMode();
-        showTitle();
+    initBriefing();
+    initDebugMode();
+    showTitle();
     E.showToast('Career reset. Fresh start, same void.', 'info');
   }
 
