@@ -548,3 +548,12 @@ body.pip-screenshot-mode .pip-screenshot-frame {
 .lead-spam-btn:active{background:rgba(217,72,59,.25)}
 .lead-followup-btn{font-family:var(--font-ui);font-size:.6rem;padding:.12rem .35rem;background:var(--navy);color:#fff;border:none;border-radius:3px;cursor:pointer;margin-left:.3rem;transition:background .15s}
 .lead-followup-btn:hover{background:#2a3d6e}.lead-followup-btn:disabled{opacity:.35;cursor:default}
+
+/* ========== Debug Panel ========== */
+#debug-panel{display:none}
+#debug-panel.open{display:flex;align-items:center;justify-content:center}
+#debug-panel .modal{background:var(--card-bg);border:2px solid var(--navy);border-radius:var(--radius);padding:1.5rem;max-height:90vh;overflow-y:auto;box-shadow:0 8px 32px rgba(27,42,78,.25)}
+#debug-panel .modal-title{font-family:var(--font-display);font-size:1.3rem;color:var(--navy);margin-bottom:1rem;border-bottom:2px solid var(--gold);padding-bottom:.5rem}
+#debug-buttons .title-btn{font-size:.85rem;padding:.65rem 1rem;white-space:nowrap;text-align:center}
+#debug-buttons .title-btn:hover{background:#2a3d6e}
+#debug-buttons .title-btn:active{transform:scale(.97)}

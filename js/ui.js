@@ -2067,8 +2067,9 @@ profileViewed: [
     initTitleButtons();
     initDoomscroll();
     initInbox();
-    initBriefing();
-    showTitle();
+        initBriefing();
+        initDebugMode();
+        showTitle();
     E.showToast('Career reset. Fresh start, same void.', 'info');
   }
 
@@ -2153,11 +2154,13 @@ profileViewed: [
         initDoomscroll();
         initInbox();
         initBriefing();
+        initDebugMode();
         showTitle();
         document.getElementById('loading-screen').classList.remove('active');
         document.addEventListener('keydown', handleKey);
       } catch(e) {
-        if (sub) sub.textContent = 'Error: ' + e.message;
+        console.error('UI init failed:', e.name, e.message, e.stack);
+        if (sub) sub.textContent = 'Error: ' + (e.message || String(e));
 
       }
     }, 1500 + Math.random() * 1000);
@@ -2705,6 +2708,65 @@ modal.onclick = (e) => { if (e.target === modal) { modal.remove(); } };
     };
   }
 
-   return { init, showTitle, showBgSelect, showAchievements, showHowTo, showCredits, showHighScores, updateScanline, buildPIPLetter, renderInventory, flashInventory, showItemSwapModal, showReferencePicker, showItemUseResult, initBriefing, renderBriefing, showBriefing, hideBriefing, renderFeed, renderStatBar };
+  function debugLaunch(gameId) {
+    var mockLead = {
+      id: 'debug-lead', company: 'AcmeCorp', role: 'Senior Intern',
+      stageIdx: 0, signals: {salaryDisclosed: false}, history: [],
+      followUpsThisStage: 0,
+      stageTrack: [{name: 'Mock', minigame: 'screening-form'}],
+      currentStage: {name: 'Mock', minigame: 'screening-form'}
+    };
+    switch(gameId) {
+      case 'screening-form': startScreeningForm(mockLead, function(){}); break;
+      case 'take-home': startTakeHome(mockLead, function(){}); break;
+      case 'panel-interview': startPanelInterview(mockLead, function(){}); break;
+      case 'salary-stall': startSalaryStall(mockLead, function(){}); break;
+      case 'personality-test': startPA(mockLead, function(){}); break;
+      case 'video-interview': E.startVideoInterview(mockLead, function(){}); break;
+      case 'result-modal':
+        showResultModal('Interview Results', 'The recruiter says we\'ll get back to you. This is the part where you lose sleep.', null);
+        break;
+      case 'followup-modal':
+        showResultModal('Follow-Up', 'You sent a polite follow-up email. No response yet.', null);
+        break;
+      case 'eod-modal':
+        var mockEodG = {
+          run: {
+            stats: {rent:1500, hope:70, credibility:50, clout:0, atsFavor:60, robotSuspicion:40, humanContact:30, buzzwords:[], energy:3, scamEvidence:0, ghostEvidence:0, scamsFell:0},
+            flags: {applicationsSubmitted:3, leadsGhosted:1, repostsExposed:0, bossFightActive:false, bossFightWon:false, repostsExposed:false},
+            _prevStats: {rent:1700, hope:75, credibility:55},
+            _prevFlags: {applicationsSubmitted:0, leadsGhosted:0}
+          }
+        };
+        showEODModal(mockEodG, []);
+        break;
+      default: console.warn('Unknown debug game:', gameId);
+    }
+  }
+
+  function closeDebugModal() {
+    var dp = document.getElementById('debug-panel');
+    if (dp) dp.classList.remove('open');
+  }
+
+  function initDebugMode() {
+    var debugPanel = document.getElementById('debug-panel');
+    if (!debugPanel) return;
+
+    var titleLogo = document.querySelector('#title-screen .title-logo');
+    if (titleLogo) {
+      titleLogo.addEventListener('click', function(e) {
+        if (e.shiftKey) {
+          debugPanel.classList.toggle('open');
+        }
+      });
+    }
+
+    debugPanel.addEventListener('click', function(e) {
+      if (e.target === debugPanel) closeDebugModal();
+    });
+  }
+
+   return { init, showTitle, showBgSelect, showAchievements, showHowTo, showCredits, showHighScores, updateScanline, buildPIPLetter, renderInventory, flashInventory, showItemSwapModal, showReferencePicker, showItemUseResult, initBriefing, renderBriefing, showBriefing, hideBriefing, renderFeed, renderStatBar, debugLaunch, closeDebugModal, initDebugMode };
   })();
   window.UI = UI;

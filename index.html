@@ -360,6 +360,27 @@
 <div class="confetti-container" id="confetti-container"></div>
 <div class="scanline-overlay" id="scanline-overlay"></div>
 
+<!-- DEBUG MODE PANEL -->
+<div class="modal-overlay" id="debug-panel" role="dialog" aria-label="Debug Mode" aria-modal="true">
+  <div class="modal" style="max-width:600px">
+    <div class="modal-title">🔧 Debug Mode — Minigames</div>
+    <div class="modal-body">
+      <p style="font-size:.85rem;color:var(--text-muted);margin-bottom:1rem">Shift+click title to toggle. Launch any minigame or popup for isolated testing.</p>
+      <div id="debug-buttons" style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem">
+        <button class="title-btn" onclick="UI.debugLaunch('screening-form')">📋 Screening Form</button>
+        <button class="title-btn" onclick="UI.debugLaunch('take-home')">📋 Take-Home</button>
+        <button class="title-btn" onclick="UI.debugLaunch('panel-interview')">🪑 Panel Interview</button>
+        <button class="title-btn" onclick="UI.debugLaunch('salary-stall')">💰 Salary Stall</button>
+        <button class="title-btn" onclick="UI.debugLaunch('personality-test')">📝 Personality Test</button>
+        <button class="title-btn" onclick="UI.debugLaunch('video-interview')">📹 Video Interview</button>
+        <button class="title-btn" onclick="UI.debugLaunch('result-modal')">✅ Result Modal</button>
+        <button class="title-btn" onclick="UI.debugLaunch('followup-modal')">📧 Follow-Up</button>
+        <button class="title-btn" onclick="UI.debugLaunch('eod-modal')">🌙 EOD Modal</button>
+        <button class="title-btn" onclick="UI.closeDebugModal()">✕ Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 <script src="js/data.js"></script>
 <script src="js/engine.js"></script>
 <script src="js/ui.js"></script>
