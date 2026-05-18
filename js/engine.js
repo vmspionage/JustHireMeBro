@@ -64,27 +64,28 @@ const Engine = (() => {
     try {
       if (!_g || !_g.run) return;
       const r = _g.run;
-      const serialized = {
-        day: r.day,
-        background: r.background,
-        energy: r.energy,
-        maxEnergy: r.maxEnergy,
-        stats: {...r.stats, buzzwords: [...(r.stats.buzzwords || [])]},
-        activeLeads: r.activeLeads,
-        feed: r.feed,
-        log: r.log,
-        flags: {...r.flags},
-        permaPlayedCards: [...(r.permaPlayedCards || [])],
-        seed: r.seed,
-        won: r.won,
-        offers: r.offers,
-        inbox: r.inbox,
-        _dailyClout: r._dailyClout,
-        _postsMadeToday: r._postsMadeToday,
-        _prevStats: r._prevStats,
-        _prevFlags: r._prevFlags,
-        version: 1,
-      };
+       const serialized = {
+         day: r.day,
+         background: r.background,
+         energy: r.energy,
+         maxEnergy: r.maxEnergy,
+         stats: {...r.stats, buzzwords: [...(r.stats.buzzwords || [])]},
+         activeLeads: r.activeLeads,
+         feed: r.feed,
+         log: r.log,
+         flags: {...r.flags},
+         permaPlayedCards: [...(r.permaPlayedCards || [])],
+         seed: r.seed,
+         won: r.won,
+         offers: r.offers,
+         inbox: r.inbox,
+         spammedCompanies: [...(r.spammedCompanies || [])],
+         _dailyClout: r._dailyClout,
+         _postsMadeToday: r._postsMadeToday,
+         _prevStats: r._prevStats,
+         _prevFlags: r._prevFlags,
+         version: 1,
+       };
       localStorage.setItem(RUN_KEY, JSON.stringify(serialized));
     } catch(e) {}
   }
@@ -115,7 +116,8 @@ const Engine = (() => {
     r.activeLeads = saved.activeLeads || [];
     r.feed = saved.feed || [];
     r.log = saved.log || [];
-    r.flags = Object.assign({easyApplyCount:0,ghostsExposed:0,scamsReported:0,consecutiveGhosts:0,applicationsSubmitted:0,leadsGhosted:0,leadsGhostedRun:0,bossFightActive:false,bossFightWon:false,bossFightWonFirstTry:false,recruiterTypes:0,maxFinalInterviews:0,cloutGainToday:0,agreeViral:0,offerDay:0,maxClout:0,maxRobotSusp:0,minRobotSusp:100,minHopeRun:100,maxActiveLeads:0,portalApps:0,takeHomeApps:0,referralUsed:false,referralSaved:false,noRecruiterTomorrow:false,recruiterDoubled:false,unicornSeen:false,repostExposed:false,totalAtsLoss:0,scamsReceived:0,autoRejected:0,salaryCryptid:0,offersTurnedDown:0,firstEasyApplyDay:0,touchGrassCount:0,cringePostCount:0,formsCompleted:0,viralPosts:0,maxConsecutiveGhosts:0}, saved.flags || {});
+            r.flags = Object.assign({easyApplyCount:0,ghostsExposed:0,scamsReported:0,consecutiveGhosts:0,applicationsSubmitted:0,leadsGhosted:0,leadsGhostedRun:0,bossFightActive:false,bossFightWon:false,bossFightWonFirstTry:false,recruiterTypes:0,maxFinalInterviews:0,cloutGainToday:0,agreeViral:0,offerDay:0,maxClout:0,maxRobotSusp:0,minRobotSusp:100,minHopeRun:100,maxActiveLeads:0,portalApps:0,takeHomeApps:0,referralUsed:false,referralSaved:false,noRecruiterTomorrow:false,recruiterDoubled:false,unicornSeen:false,repostExposed:false,totalAtsLoss:0,firstEasyApplyDay:0,touchGrassCount:0,cringePostCount:0,formsCompleted:0,viralPosts:0,maxConsecutiveGhosts:0,totalSpam:0,ghostsSpammedCorrectly:0,realLeadSpammed:0,maxVibeLeads:0}, saved.flags || {});
+    r.spammedCompanies = new Set(saved.spammedCompanies || []);
     r.permaPlayedCards = new Set(saved.permaPlayedCards || []);
     r.seed = saved.seed || Date.now();
     r.won = saved.won || null;
@@ -237,7 +239,7 @@ const Engine = (() => {
       rest:        1 + DATA.clamp(Math.max(0, 35 - S.hope) / 15, 0, 3),
       post:        1 + DATA.clamp(S.clout / 80       , 0, 2),
       network:     1 + DATA.clamp(S.humanContact / 40 , 0, 1.5),
-      investigate: 1 + DATA.clamp((S.robotSuspicion - 30) / 15, 0, 2.5),
+
       resume:      1 + DATA.clamp(Math.max(0, 25 - S.credibility) / 15, 0, 1.5),
     };
   }
@@ -287,10 +289,10 @@ const Engine = (() => {
   }
 
   /**
-   * Draw a new set of cards for the current day's feed.
-   * Samples from weighted pools (job, recruiter, post, network, resume,
-   * investigate, rest, gig) based on player stats and background.
-   * Career Goblin gets +1 extra card. ~15% chance of event card.
+    * Draw a new set of cards for the current day's feed.
+    * Samples from weighted pools (job, recruiter, post, network, resume,
+    * rest, gig) based on player stats and background.
+    * Career Goblin gets +1 extra card. ~15% chance of event card.
    * @returns {void} Sets g.run.feed to the new card array.
    */
   function drawFeed() {
@@ -304,7 +306,7 @@ const Engine = (() => {
       ...DATA.POOLS.post.map(c => ({...c, _pool:'post'})),
       ...DATA.POOLS.network.map(c => ({...c, _pool:'network'})),
       ...DATA.POOLS.resume.map(c => ({...c, _pool:'resume'})),
-      ...DATA.POOLS.investigate.map(c => ({...c, _pool:'investigate'})),
+
       ...DATA.POOLS.rest.map(c => ({...c, _pool:'rest'})),
       ...DATA.POOLS.gig.map(c => ({...c, _pool:'gig'})),
     ];
@@ -369,6 +371,7 @@ const Engine = (() => {
     if (g.run.flags.consecutiveGhosts >= 5) ghostChance -= 0.3;
 
     const stageIdx = g.run.stats.humanContact > 10 ? 1 : 0;
+    const vibe = rollInitialGhostVibe(_rng, { isReal, ghostChance });
     const lead = {
       id: 'lead_' + Date.now() + '_' + Math.random().toString(36).substr(2,5),
       company: comp, role, isReal, ghostChance: Math.min(1,ghostChance), scamChance: Math.min(1,scamChance),
@@ -380,6 +383,8 @@ const Engine = (() => {
       followUpsThisStage: 0,
       finalInterviewCount: 0,
       signals: { salaryDisclosed:false, realRecruiter:false, portfolioReviewed:false, referenceTrouble:false },
+      ghostVibe: vibe.vibe, _vibeFloor: vibe.vibeFloor, _vibeNoise: vibe.vibeNoise,
+      day: g.run.day, _missedCallDelay: null,
     };
     g.run.activeLeads.push(lead);
     addInboxMessage({
@@ -390,7 +395,7 @@ const Engine = (() => {
     return lead;
   }
 
-  function generateLeadTrack(rng) {
+   function generateLeadTrack(rng) {
     const t = ['waiting'];
     if (rng() < 0.60) t.push('auto-reply');
     if (rng() < 0.35) t.push('screening-form');
@@ -406,6 +411,106 @@ const Engine = (() => {
     if (rng() < 0.30) t.push('final-interview-3');
     if (rng() < 0.75) t.push('offer-pending');
     return t;
+  }
+
+  /* ── Ghost Vibe System ── */
+  /**
+     Ghost Vibe: ambiguous indicator of how "real" an active lead feels.
+     Based on isReal probability, red flags, and time signals.
+     Unreliable by design — ±30 noise means you can't trust it fully.
+     @returns {{vibe: number, vibeFloor: number, vibeNoise: number}}
+     */
+    function rollInitialGhostVibe(rng, lead) {
+      // Defensive: allow direct call outside of initialized game
+      if (!rng || typeof rng !== 'function') rng = () => Math.random();
+      const isVigilante = _g && _g.run && _g.run.background === 'ghost-vigilante';
+     let noise = isVigilante ? 15 : 30;
+     let vibe;
+     if (lead.isReal) {
+       vibe = 55 + rng() * 20;
+     } else {
+       vibe = 30 + rng() * 25;
+     }
+     const redPenalty = (lead.redFlags || []).length * 4;
+     vibe -= redPenalty;
+     vibe += (rng() - 0.5) * 2 * noise;
+     let vibeFloor;
+     if (lead.isReal) {
+       vibeFloor = 15 + rng() * 15;
+     } else {
+       vibeFloor = 5 + rng() * 10;
+     }
+     return { vibe: DATA.clamp(Math.round(vibe), 0, 95), vibeFloor: Math.round(vibeFloor), vibeNoise: noise };
+   }
+
+   function decayGhostVibe(lead, rng) {
+    const decay = 2 + Math.floor(lead.daysSinceUpdate / 2) + rng() * 2;
+    const before = lead.ghostVibe;
+    lead.ghostVibe = DATA.clamp(lead.ghostVibe - decay, lead._vibeFloor, 100);
+    if (before > 20 && lead.ghostVibe <= 20 && !lead._vibeWentCold) {
+      lead._vibeWentCold = true;
+      const lines = DATA.VIBE_WENT_COLD_LINES;
+      pushLog(_g.run.day, (lines[Math.floor(rng() * lines.length)] || "That sinking feeling...") + " — " + lead.company + " vibe just went cold.");
+    }
+  }
+
+  function recoverGhostVibe(lead, rng) {
+    lead.ghostVibe = DATA.clamp(lead.ghostVibe + 12 + rng() * 18, 0, 100);
+  }
+
+   function getVibeTier(vibe) {
+     if (vibe >= 80) return { label: 'Promising', color: '#3F7A89', cls: 'vibe-promising' };
+     if (vibe >= 60) return { label: 'Warm', color: '#4caf50', cls: 'vibe-warm' };
+     if (vibe >= 40) return { label: 'Quiet', color: '#C8A951', cls: 'vibe-quiet' };
+     if (vibe >= 20) return { label: 'Going Cold', color: '#E08A3C', cls: 'vibe-cold' };
+     return { label: 'Probably a Ghost', color: '#D9483B', cls: 'vibe-ghost' };
+   }
+
+  function markAsSpam(lead) {
+    const g = _g;
+    snapStats();
+    const vibe = lead.ghostVibe;
+    const isVigilante = g.run.background === 'ghost-vigilante';
+    if (vibe < 20) {
+      g.run.stats.hope = DATA.clamp(g.run.stats.hope + 6, 0, 100);
+      g.run.stats.credibility = DATA.clamp(g.run.stats.credibility + 2, 0, 100);
+      pushLog(g.run.day, `Marked ${lead.company} as spam. Something in your gut was right.`);
+    } else if (vibe < 50) {
+      g.run.stats.hope = DATA.clamp(g.run.stats.hope + 3, 0, 100);
+      pushLog(g.run.day, `Marked ${lead.company} as spam. Probably was nothing... but feels clean.`);
+    } else {
+      if (!isVigilante && lead.isReal && g.run.stats.credibility > 0) {
+        g.run.stats.credibility = DATA.clamp(g.run.stats.credibility - 3, 0, 100);
+      }
+      g.run.stats.hope = DATA.clamp(g.run.stats.hope + 2, 0, 100);
+      pushLog(g.run.day, `Marked ${lead.company} as spam. Had a vibe it was legit...`);
+    }
+    const idx = g.run.activeLeads.findIndex(l => l.id === lead.id);
+    if (idx >= 0) g.run.activeLeads.splice(idx, 1);
+    g.run.flags.totalSpam = (g.run.flags.totalSpam || 0) + 1;
+    track('totalSpam', 1);
+    if (!g.run.spammedCompanies) g.run.spammedCompanies = new Set();
+    g.run.spammedCompanies.add(lead.company);
+    if (vibe < 20 && !lead.isReal) {
+      g.run.flags.ghostsSpammedCorrectly = (g.run.flags.ghostsSpammedCorrectly || 0) + 1;
+    }
+    if (lead.isReal && lead.stageIdx >= 4) {
+      g.run.flags.realLeadSpammed = (g.run.flags.realLeadSpammed || 0) + 1;
+      if (_rng() < 0.08) {
+        lead._missedCallDelay = 2 + Math.floor(_rng() * 2);
+        lead._missedCallDay = g.run.day;
+        g.run.missedCallLeads = g.run.missedCallLeads || [];
+        g.run.missedCallLeads.push(lead);
+      }
+    }
+  }
+
+  function resolveGhostVibeEvent(lead, day) {
+    if (day - lead.day >= (lead._missedCallDelay || 3)) {
+      pushLog(day, `✉️ ${lead.company} called. "Hey, about that role..." You missed it.`);
+      lead.ghostVibe = DATA.clamp(lead.ghostVibe + 20, 0, 100);
+      lead._missedCallDelay = null;
+    }
   }
 
  /* Apply handlers */
@@ -478,13 +583,7 @@ const Engine = (() => {
       g.run.stats.humanContact = DATA.clamp((g.run.stats.humanContact || 0) + 3, 0, 100);
       pushLog(g.run.day, 'Consulting call. $50 earned. You sold "digital transformation" to a guy who uses Windows 7.');
       exposeGhost();
-    } else if (effect.effect === 'investigate') {
-      snapStats();
-      g.run.stats.robotSuspicion = DATA.clamp(g.run.stats.robotSuspicion + 1, 0, 100);
-      g.run.stats.hope = DATA.clamp(g.run.stats.hope + 2, 0, 100);
-      pushLog(g.run.day, 'Investigated red flags. Found more red flags.');
-      if (card.id === 'reposted') g.run.flags.repostExposed = true;
-      if (card.id === 'exposeScam' && _rng() < 0.30) grantItem('union-pamphlet');
+
     } else if (effect.effect === 'reportScam') {
       snapStats();
       g.run.stats.scamEvidence = DATA.clamp((g.run.stats.scamEvidence || 0) + 1, 0, 100);
@@ -652,8 +751,7 @@ const Engine = (() => {
       snapStats();
       g.run.stats.scamEvidence = DATA.clamp((g.run.stats.scamEvidence||0)+1,0,100);
       pushLog(g.run.day, 'Reverse image search confirmed: the recruiter is a stock photo model named "Anna." Scam Evidence +1.');
-    } else if (effect.effect === 'glassbore') {
-      pushLog(g.run.day, 'Checked Glassbore. Review: "4 stars, would be PIPped again." - Current Employee');
+;
     } else if (effect.effect === 'askSalary') {
       snapStats();
       g.run.stats.hope = DATA.clamp((g.run.stats.hope||0)+5,0,100);
@@ -823,7 +921,7 @@ const Engine = (() => {
    * Auto-ghosts after 7 days without advancement. Triggers achievement tracking.
    * @returns {void} Mutates g.run.activeLeads and g.run.log.
    */
-  function resolveLeads() {
+   function resolveLeads() {
     const g = _g;
     const offers = [];
 
@@ -833,8 +931,21 @@ const Engine = (() => {
 
       if (lead.daysSinceUpdate >= 8) {
         finishLead(lead, 'ghosted', `${lead.company} hasn't responded in over a week. The trail has gone cold.`);
+        continue;
+      }
+
+      /* Ghost Vibe decay */
+      decayGhostVibe(lead, _rng);
+
+      /* Rare missed-call event for real leads that were spammed */
+      if (lead._missedCallDelay !== undefined && g.run.day - lead.day >= lead._missedCallDelay) {
+        resolveGhostVibeEvent(lead, g.run.day);
       }
     }
+
+    /* Track max warm/promising leads for vibe-check achievement */
+    const vibeWarmOrPromising = g.run.activeLeads.filter(lead => lead.ghostVibe >= 60).length;
+    g.run.flags.maxVibeLeads = Math.max(g.run.flags.maxVibeLeads || 0, vibeWarmOrPromising);
 
     if (g.run.offers && g.run.offers.length) {
       offers.push(...g.run.offers);
@@ -1052,6 +1163,11 @@ const Engine = (() => {
        {id:'good-morning', check: () => _meta.lifetime.morningEvents >= 10},
        {id:'right-thing', check: () => (f.rightThing||0) >= 1},
        {id:'mom-knows', check: () => (f.momCalls||0) >= 3},
+       {id:'ghost-them-back', check: () => (f.totalSpam||0) >= 10},
+       {id:'good-instincts', check: () => (f.ghostsSpammedCorrectly||0) >= 5},
+       {id:'oops', check: () => (f.realLeadSpammed||0) >= 1},
+       {id:'vibe-check', check: () => (f.maxVibeLeads||0) >= 5},
+       {id:'trust-no-one', check: () => g.run.won && (f.totalSpam||0) >= 8},
       ];
 
     for (const ach of checks) {
@@ -1455,16 +1571,20 @@ const Engine = (() => {
       grantItem('good-luck-sweater');
     }
   }
-  /* Follow-up on leads — new stage-progression system */
+
   function followUpLead(leadId) {
     const g = _g;
     const lead = g.run.activeLeads.find(l => l.id === leadId);
-    if (!lead) return null;
+    if (!lead) {
+      return { type:'waiting', title:'📭 Nothing Happened', company:leadId, message:'This lead no longer exists. Move on to the next one.', stats:[] };
+    }
     /* Mentor Advice: first follow-up each day costs 0 Energy */
     if (!g.run.flags._firstFollowUpToday && hasItem('mentor-advice')) {
       g.run.flags._firstFollowUpToday = true;
     } else {
-      if (g.run.energy < 1) return null;
+      if (g.run.energy < 1) {
+        return { type:'waiting', title:'☕ Not Enough Energy', company:lead.company, message:'No energy to follow up. Rest or find another way.', stats:[] };
+      }
       g.run.energy--;
     }
     lead.daysSinceUpdate = 0;
@@ -1492,6 +1612,7 @@ const Engine = (() => {
       }
         lead.stageIdx++;
         hopeBumpOnAdvance();
+        recoverGhostVibe(lead, _rng);
         lead.followUpsThisStage = 0;
       lead.history.push({day:g.run.day,text:'Got a response (finally)'});
       g.run.stats.hope = DATA.clamp((g.run.stats.hope||0) + 4, 0, 100);
@@ -1512,6 +1633,7 @@ const Engine = (() => {
       case 'auto-reply':
         lead.stageIdx++;
         hopeBumpOnAdvance();
+        recoverGhostVibe(lead, _rng);
         lead.history.push({day:g.run.day,text:'Auto-reply received'});
         return {
           type:'flavor', title:'🤖 Auto-Reply', company:lead.company,
@@ -1524,6 +1646,7 @@ const Engine = (() => {
         }
         lead.stageIdx++;
         hopeBumpOnAdvance();
+        recoverGhostVibe(lead, _rng);
         if (_rng() < 0.30) { lead.signals.salaryDisclosed = true; g.run.stats.hope = DATA.clamp((g.run.stats.hope||0)+5, 0, 100); }
         if (_rng() < 0.60) lead.signals.realRecruiter = true;
         lead.history.push({day:g.run.day,text:'Recruiter screen complete'});
@@ -1554,6 +1677,7 @@ const Engine = (() => {
       case 'reference-checks':
         lead.stageIdx++;
         hopeBumpOnAdvance();
+        recoverGhostVibe(lead, _rng);
         if (_rng() < 0.15) {
           lead.signals.referenceTrouble = true;
           g.run.stats.credibility = DATA.clamp((g.run.stats.credibility||0)-4, 0, 100);
@@ -1569,6 +1693,7 @@ const Engine = (() => {
         g.run.flags.maxFinalInterviews = Math.max(g.run.flags.maxFinalInterviews||0, lead.finalInterviewCount);
         lead.stageIdx++;
         hopeBumpOnAdvance();
+        recoverGhostVibe(lead, _rng);
         lead.history.push({day:g.run.day,text:`"Final" interview #${lead.finalInterviewCount}`});
         const hiMsg = lead.finalInterviewCount===1 ? DATA.pickFinalInterviewMessage(1, _rng)
                      : lead.finalInterviewCount===2 ? DATA.pickFinalInterviewMessage(2, _rng)
@@ -1581,6 +1706,7 @@ const Engine = (() => {
       case 'offer-pending':
         lead.stageIdx++;
         hopeBumpOnAdvance();
+        recoverGhostVibe(lead, _rng);
         if (_rng() < 0.20 && !lead.signals.salaryDisclosed) {
           return finishLead(lead, 'ghosted', 'The offer was "coming next week." Next week never came.');
         }
@@ -1591,6 +1717,7 @@ const Engine = (() => {
 
     lead.stageIdx++;
     hopeBumpOnAdvance();
+    recoverGhostVibe(lead, _rng);
     return { type:'flavor', title:'…', company:lead.company, message:'Something happened. Probably.', stats:[] };
   }
 
@@ -1781,14 +1908,15 @@ const Engine = (() => {
           day: 1, background: '', energy: 3, maxEnergy: 3,
           stats: { rent:100, hope:50, credibility:50, clout:0, atsFavor:10, robotSuspicion:100, humanContact:5, buzzwords:[], scamEvidence:0, ghostEvidence:0, scamsFell:0 },
            activeLeads: [], feed: [], log: [],
-           flags: { easyApplyCount:0, ghostsExposed:0, scamsReported:0, consecutiveGhosts:0, applicationsSubmitted:0, leadsGhosted:0, leadsGhostedRun:0, bossFightActive:false, bossFightWon:false, bossFightWonFirstTry:false, recruiterTypes:0, maxFinalInterviews:0, cloutGainToday:0, agreeViral:0, offerDay:0, maxClout:0, maxRobotSusp:0, minRobotSusp:100, minHopeRun:100, maxActiveLeads:0, portalApps:0, takeHomeApps:0, referralUsed:false, referralSaved:false, noRecruiterTomorrow:false, recruiterDoubled:false, unicornSeen:false, repostExposed:false, totalAtsLoss:0, firstEasyApplyDay:0, touchGrassCount:0, cringePostCount:0, formsCompleted:0, viralPosts:0, maxConsecutiveGhosts:0 },
-            permaPlayedCards: new Set(),
-            inventory: [],
-            inbox: [],
-            seed: Date.now(),
-            won: null,
-            offers: [],
-           _bossTimer: null,
+            flags: { easyApplyCount:0, ghostsExposed:0, scamsReported:0, consecutiveGhosts:0, applicationsSubmitted:0, leadsGhosted:0, leadsGhostedRun:0, bossFightActive:false, bossFightWon:false, bossFightWonFirstTry:false, recruiterTypes:0, maxFinalInterviews:0, cloutGainToday:0, agreeViral:0, offerDay:0, maxClout:0, maxRobotSusp:0, minRobotSusp:100, minHopeRun:100, maxActiveLeads:0, portalApps:0, takeHomeApps:0, referralUsed:false, referralSaved:false, noRecruiterTomorrow:false, recruiterDoubled:false, unicornSeen:false, repostExposed:false, totalAtsLoss:0, firstEasyApplyDay:0, touchGrassCount:0, cringePostCount:0, formsCompleted:0, viralPosts:0, maxConsecutiveGhosts:0, totalSpam:0, ghostsSpammedCorrectly:0, realLeadSpammed:0 },
+             permaPlayedCards: new Set(),
+             inventory: [],
+             inbox: [],
+             seed: Date.now(),
+             won: null,
+             offers: [],
+             spammedCompanies: new Set(),
+            _bossTimer: null,
          },
         meta: _meta,
         _rng: null,
@@ -1853,7 +1981,7 @@ const Engine = (() => {
      },
      get state() { return _g; },
     get meta() { return _meta; },
-    weightedPool, drawFeed, createLead, applyCard, resolveLeads, advanceDay,
+    weightedPool, drawFeed, createLead, applyCard, resolveLeads, advanceDay, rollInitialGhostVibe, decayGhostVibe, recoverGhostVibe, getVibeTier, markAsSpam, resolveGhostVibeEvent,
     checkLosses, checkWins, track, checkAchievements, saveHighScore,
     startBossFight, startCaptcha, startVideoInterview, startPA, followUpLead,
     snapStats, pushLog, computeStatDeltas, saveRun, loadRun, clearRun, applyRun, hasRun,
@@ -1861,8 +1989,10 @@ const Engine = (() => {
     showToast,
     getItemDef, hasItem, inventoryFull, grantItem, dropItem, swapItem, useItem, applyReferenceToLead,
     addInboxMessage, markInboxRead, markAllInboxRead, isInboxSent, inboxUnreadCount, inboxByThread, checkBrenda, generateBriefing,
-  };
+   };
 })();
+window.Engine = Engine;
+
 /* ============================================================
    UI — Rendering, Event Handlers, Game Flow
    ============================================================ */

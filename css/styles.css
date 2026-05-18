@@ -114,10 +114,7 @@ body{font-family:var(--font-ui);background:var(--bg);color:var(--text);min-heigh
 .lead-badge.offer{background:#4caf50;color:#fff}
 .lead-badge.ghost{background:#ccc;color:#666}
 .lead-badge.paused{background:#e8e0e8;color:#6a5a6a}
-.lead-vibe{display:flex;align-items:center;gap:.25rem;margin-top:.2rem}
-.vibe-dots{display:flex;gap:1px}
-.vibe-dot{width:6px;height:6px;border-radius:50%;background:#ddd}
-.vibe-dot.hot{background:var(--red)}.vibe-dot.warm{background:var(--gold)}.vibe-dot.cold{background:var(--teal)}
+
 .lead-days-since{font-family:var(--font-mono);font-size:.6rem;color:var(--text-muted);margin-left:auto}
 .feed-area{overflow-y:auto;padding:.75rem;display:flex;flex-direction:column;gap:.5rem}
 .feed-card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:var(--radius);padding:1rem;box-shadow:0 2px 8px rgba(27,42,78,.1);transition:all .15s;position:relative}
@@ -127,7 +124,6 @@ body{font-family:var(--font-ui);background:var(--bg);color:var(--text);min-heigh
 .feed-card.card-post{border-left:3px solid var(--gold)}
 .feed-card.card-network{border-left:3px solid #7a9a6a}
 .feed-card.card-resume{border-left:3px solid #8a6a9a}
-.feed-card.card-investigate{border-left:3px solid var(--red)}
 .feed-card.card-rest{border-left:3px solid #6aaa8a}
 .feed-card.card-event{border-left:3px solid #aa6a6a}
 .feed-card.salary-cryptid{border:2px solid var(--gold);animation:goldGlow 2s ease-in-out}
@@ -535,3 +531,20 @@ body.pip-screenshot-mode .pip-screenshot-frame {
 .briefing-lead-role{color:var(--text-muted);font-size:.75rem}
 .briefing-lead-stage{font-size:.72rem;color:var(--teal);font-weight:600;font-family:var(--font-mono)}
 .modal-briefing{max-width:520px;width:95%}
+
+/* ── Ghost Vibe Bar ── */
+.gv-bar-wrap{display:flex;align-items:center;gap:.35rem;margin-top:.3rem}
+.gv-bar{height:5px;min-width:8px;border-radius:3px;transition:background .2s,width .2s}
+.gv-label{font-family:var(--font-mono);font-size:.58rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;whitespace:nowrap}
+.vibe-promising .gv-label{color:#38b2a0}.vibe-warm .gv-label{color:#4caf50}
+.vibe-quiet .gv-label{color:#ffc107}.vibe-cold .gv-label{color:#ff9800}.vibe-ghost .gv-label{color:#f44336}
+.gv-flicker{animation:gvFlicker 1.8s ease-in-out infinite}
+@keyframes gvFlicker{0%,100%{opacity:1}50%{opacity:.35}}
+@media (prefers-reduced-motion: reduce) {
+  :is(.gv-flicker, .gv-bar.gv-flicker){animation:none;opacity:1}
+}
+.lead-spam-btn{font-family:var(--font-ui);font-size:.6rem;padding:.12rem .35rem;background:transparent;color:var(--red);border:1px solid rgba(217,72,59,.35);border-radius:3px;cursor:pointer;margin-left:.3rem;transition:background .15s}
+.lead-spam-btn:hover{background:rgba(217,72,59,.12)}
+.lead-spam-btn:active{background:rgba(217,72,59,.25)}
+.lead-followup-btn{font-family:var(--font-ui);font-size:.6rem;padding:.12rem .35rem;background:var(--navy);color:#fff;border:none;border-radius:3px;cursor:pointer;margin-left:.3rem;transition:background .15s}
+.lead-followup-btn:hover{background:#2a3d6e}.lead-followup-btn:disabled{opacity:.35;cursor:default}

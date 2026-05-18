@@ -449,6 +449,11 @@ scheduleRender(() => { try { renderLeads(); } catch(e) {} });
         return span;
       });
       cups.forEach(s => energyEl.appendChild(s));
+      const countSpan = document.createElement('span');
+      countSpan.className = 'energy-count';
+      countSpan.textContent = `${g.run.energy}`;
+      countSpan.style.cssText = 'font-size:.85rem;color:var(--text-muted);margin-left:.25rem';
+      energyEl.appendChild(countSpan);
     }
 
     const cloutEl = document.getElementById('clout-display');
@@ -473,22 +478,15 @@ scheduleRender(() => { try { renderLeads(); } catch(e) {} });
     }
 
     const cardsFrag = htmlToDom(cards.map((card, idx) => {
-      const hasGlassbore = (g.run.inventory || []).includes('glassbore-login');
-      const ghostReveal = (card.isGhostReveal || card._investigated || (hasGlassbore && ['job','recruiter'].includes(card.category))) ? `<div class="card-redflags"><span class="rf-label">Red Flags:</span> ${'🚩'.repeat(card.redFlags)} <span style="margin-left:.5rem;color:var(--text-muted)">(${Math.round((card.ghostChance||0)*100)}% ghost)</span></div>` : '';
-
       /* Apply background modifier to post energy cost */
       const isReformedInf = card.category === 'post' && g.run.background === 'reformed-influencer';
       const postCost = isReformedInf && (g.run._postsMadeToday||0) === 0 ? 0 : (card.cost?.energy || 1);
 
-      const catColors = {job:'var(--navy)',recruiter:'var(--teal)',post:'var(--gold)',network:'#7a9a6a',resume:'#8a6a9a',investigate:'var(--red)',rest:'#6aaa8a',event:'#aa6a6a'};
+      const catColors = {job:'var(--navy)',recruiter:'var(--teal)',post:'var(--gold)',network:'#7a9a6a',resume:'#8a6a9a',rest:'#6aaa8a',event:'#aa6a6a',gig:'#8a7a6a'};
       const catColor = catColors[card.category] || 'var(--navy)';
       const extraClass = card.id === 'salary-cryptid' ? ' salary-cryptid' : '';
-      /* Buttons include native buttons + inline investigate if applicable */
+      /* Buttons */
       const allBtns = card.buttons.slice();
-      const canInvestigate = (['job','recruiter'].includes(card.category) && card.redFlags > 0 && !card._investigated && g.run.energy >= 1);
-      if (canInvestigate) {
-        allBtns.push({effect:'_investigateInline',label:'🔍 Investigate',cost:{energy:1},isDiscard:true});
-      }
       return `<div class="feed-card card-${card.category}${extraClass}" role="article" aria-label="Card: ${card.title}" data-card-idx="${idx}">
         <div class="card-header" role="heading" aria-level="3">
           <span class="card-title">${card.title}</span>
@@ -496,9 +494,8 @@ scheduleRender(() => { try { renderLeads(); } catch(e) {} });
           <span class="card-cost" aria-label="Energy cost: ${postCost}">☕ ${postCost}</span>
         </div>
         <div class="card-flavor" role="text">${card.flavor}</div>
-        ${ghostReveal}
         <div class="card-buttons" role="group" aria-label="Actions for ${card.title}">${allBtns.map((btn, bi) => {
-          const btnCost = (card.category === 'investigate' && g.run.background === 'ghost-vigilante') && (btn.effect === 'investigate' || btn.effect === 'reverseImg' || btn.effect === 'glassbore' || btn.effect === 'askSalary' || btn.effect === 'reportScam') ? 0 : (btn.cost?.energy != null ? btn.cost.energy : 1);
+          const btnCost = btn.cost?.energy != null ? btn.cost.energy : 1;
           const canBtn = g.run.energy >= btnCost;
           /* Ghost Vigilante can't easy apply */
           const isEasy = ['applyEasy','applyDesperate','applyPipeline'].includes(btn.effect);
@@ -520,40 +517,9 @@ scheduleRender(() => { try { renderLeads(); } catch(e) {} });
         const card = cards[idx];
         if (!card) return;
 
-        /* Inline investigate button */
-        if (effect === '_investigateInline') {
-           if (g.run.energy < 1) return;
-           g.run.energy--;
-           card._investigated = true;
-           E.showToast('🔍 You read between the lines.', 'info');
-           renderFeed();
-           renderStatBar();
-           checkDayEnd();
-           return;
-         }
-
         /* Find the matching button's effect */
         const btnData = card.buttons.find(b => b.effect === effect);
         if (btnData) {
-          /* Native investigate: reveal flags but don't remove the card */
-          if (effect === 'investigate') {
-            const beforeStats = JSON.parse(JSON.stringify(g.run.stats));
-            beforeStats.energy = g.run.energy;
-            E.applyCard(card, btnData);
-            card._investigated = true;
-            const afterStats = JSON.parse(JSON.stringify(g.run.stats));
-            afterStats.energy = g.run.energy;
-            const deltas = E.computeStatDeltas(beforeStats, afterStats);
-            renderFeed();
-            renderStatBar();
-            checkDayEnd();
-            if (deltas.length > 0) {
-              const response = generateResponse(btnData, card, deltas);
-              showResultModal(btnData.label, response, deltas);
-            }
-            return;
-          }
-
           /* Capture before stats */
           const beforeStats = JSON.parse(JSON.stringify(g.run.stats));
           beforeStats.energy = g.run.energy;
@@ -680,57 +646,7 @@ scheduleRender(() => { try { renderLeads(); } catch(e) {} });
         'Your post hit 10K views. 8K were bots. The rest were cringe compilation seekers.',
         'VIRAL MOMENT. Post about "hustle culture" shared by 47 accounts. 46 were yours.',
       ],
-      investigate: [
-        'Investigated. Found more red flags. Hope went up though. Strange.',
-        'Investigation complete. More red flags found than expected. Hope restored slightly.',
-        'Googled the company. Found Glassdoor reviews from 2019. Company still hasn\'t replied.',
-        'Investigation revealed: the "company" is a LLC registered to a PO Box in Delaware. You applied anyway.',
-      ],
-      reportScam: [
-        'Scam reported to Linkfluence. They said "we\'ll look into it." They won\'t.',
-        'You reported a scam. Your evidence pile grows. Justice, or at least documentation.',
-        'Scam reported. Linkfluence thanked you. Then sent you 3 more scam job postings.',
-        'You reported the scam. The recruiter replied "noted." You know what that means: nothing.',
-      ],
-      scam: [
-        'You scammed the scammer. Karma has entered the chat. Clout increased.',
-        'Reverse psychology deployed. The scammer scammed. You gained clout.',
-        'Sent the scammer a fake invoice. They paid you. Felt guilty. Spent the money.',
-        'Scammed the scammer. Sold them a "premium job board" that was just a Google Doc. Worth it.',
-      ],
-      captcha: [
-        'Captcha complete. Not a robot. The machine has doubts.',
-        'You identified all the traffic lights. Human status temporarily verified.',
-        'Captcha: "Select all images with crosswalks." Selected 12 images. Crosswalks were not crosswalks. Benches.',
-        'Captcha challenge completed. Proved you\'re human. Job application still rejected you. For being too human.',
-      ],
-      bossFight: [
-        'Boss fight won! Defeated the recruiter from hell. Career just leveled up.',
-        'Boss fight victorious! Final interview is behind you. Offer incoming!',
-        'Boss fight: "Tell me about a time you failed." Talked 45 minutes. They nodded. Barely won.',
-        'Boss battle complete. You survived the behavioral questions. Your soul survived less.',
-      ],
-      cancel: [
-        'Declined. Safe choice. Sometimes the best application is the one you don\'t submit.',
-        'Cancelled. Walked away from the job posting. Posting didn\'t even notice. Fair.',
-        'Declined and deleted. Your inbox is 0.7% less painful. Progress.',
-        'Chose peace over a job. Bot Aura will not forgive you. Or maybe it\'s already forgotten.',
-      ],
-      ignore: [
-        'Ignored. In-box grows quieter. Peace, of a sort.',
-        'Ignored the job posting. It will find someone else. Probably someone who cares.',
-        'Ignored. Job posting didn\'t deserve your energy. Or your email address.',
-        'Swiped past. This job posting will haunt your dreams. Or at least your inbox.',
-        'Ignored. Chose mental health over a job posting asking for "ninja" skills. Therapist approves.',
-      ],
-      decline: [
-        'Declined. Not for everyone. That\'s okay — neither are you.',
-        'Hit decline. Company received your rejection. Will forget it by tomorrow.',
-        'Declined. Your career trajectory remains: sideways. Comforting, in a way.',
-        'Nope. Not today. Job market doesn\'t care. You don\'t care back. Mutual.',
-        'Declined. Opportunity moves on. Like your student loans.',
-      ],
-      exposeGhost: [
+    exposeGhost: [
         'Ghost job exposed! Your karma increased. The job market is one star smaller.',
         'Exposed a ghost job. Recruiter\'s reputation tanked. Well played.',
         'Ghost job revealed: posted 47 days ago, 10K applications, 0 interviews. Ghost was human.',
@@ -742,12 +658,7 @@ scheduleRender(() => { try { renderLeads(); } catch(e) {} });
         'Reverse-searched their "team photo." From a Shutterstock catalog. $2.99 per image.',
         'Reverse image search revealed: their "modern office" is a 300 sq ft room with a beanbag and a whiteboard.',
       ],
-      glassbore: [
-        'Glassbore opened. Reviews reveal... the usual. At least now you know.',
-        'Glassbore reviews: brutal but accurate. Knowledge is power.',
-        'Glassbore: 3.2 stars. "Great culture" from the CEO. "Terrible management" from everyone else.',
-        'Glassbore reviews: all mention "work-life balance." None explain what that means. Suspicious.',
-      ],
+
       askSalary: [
         'You asked about salary. The recruiter ghosted. Fair.',
         'Salary transparency requested. The silence was deafening. Classic.',
@@ -1492,6 +1403,25 @@ profileViewed: [
     }
   }
 
+  function showSpamConfirmModal(lead, message) {
+    const overlay = htmlToDom(`<div id="spam-modal" class="modal-overlay">
+      <div class="modal">
+        <div class="modal-title">🚫 Mark ${lead.company} as Spam?</div>
+        <div class="modal-body"><p style="margin-bottom:.75rem;font-size:.9rem;color:var(--text-muted)">${message}</p></div>
+        <div class="modal-footer" style="display:flex;gap:.5rem;justify-content:flex-end">
+          <button class="title-btn secondary cancel-spam-btn">Cancel</button>
+          <button class="title-btn spam-confirm-btn">Confirm</button>
+        </div>
+      </div>
+    </div>`);
+    document.body.appendChild(overlay);
+    /* Must query actual DOM element — appendChild empties the DocumentFragment */
+    const modal = document.querySelector('#spam-modal');
+    modal.querySelector('.cancel-spam-btn').onclick = () => modal.remove();
+    modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+    return modal;
+  }
+
   function renderLeads() {
     const g = E.state;
     const list = document.getElementById('leads-list');
@@ -1517,36 +1447,58 @@ profileViewed: [
       const days = lead.daysSinceUpdate;
       const daysClass = days >= 5 ? 'color:var(--red)' : days >= 3 ? 'color:var(--gold)' : '';
 
-      /* Vibe dots: further along in track = hotter even if idle */
-      const trackProgress = lead.track ? Math.min(lead.stageIdx, lead.track.length - 1) : 0;
-      const trackDepth = lead.track?.length || 1;
-      let vibeHTML = '<div class="lead-vibe"><div class="vibe-dots">';
-      for (let i = 0; i < 5; i++) {
-        const progressRatio = trackDepth > 1 ? trackProgress / (trackDepth - 1) : 0;
-        const dotClass = i < Math.max(0, 5 - days) ? (days < 2 && progressRatio > 0.3 ? 'hot' : days < 4 && progressRatio > 0.1 ? 'warm' : 'cold') : '';
-        vibeHTML += `<div class="vibe-dot ${dotClass}"></div>`;
-      }
-      vibeHTML += '</div></div>';
-
-      return `<div class="lead-item">
+       const vibe = lead.ghostVibe ?? 50;
+       const tier = E.getVibeTier(vibe);
+       const vibeWidth = vibe;
+       const cls = tier.cls + (days > 5 ? ' gv-flicker' : '');
+       const tipArr = DATA.GHOSTVIBE_TOOLTIPS || [];
+       const tipIdx = (lead.id.split('').reduce((a, c) => a + c.charCodeAt(0), 0)) % (tipArr.length || 1);
+       const tip = tipArr[tipIdx] || "Trust it at your peril.";
+       let vibeHTML = `<div class="gv-bar-wrap" title="${tip.replace(/"/g, '&quot;')}"><div class="gv-bar ${cls}" style="width:${vibeWidth}%;background:${tier.color}"></div><div class="gv-label">${tier.label}</div></div>`;
+       const spamArr = DATA.SPAM_BUTTON_LABELS || ["🚫 Spam"];
+       const spamLabel = spamArr[(lead.id.split('').reduce((a, c) => a + c.charCodeAt(0), 0)) % spamArr.length];
+       return `<div class="lead-item">
         <div class="lead-company">${lead.company}</div>
         <div class="lead-role">${lead.role}</div>
         <span class="lead-badge ${stageClass}">${stageDisplay}</span>
         ${vibeHTML}
         <div class="lead-days-since" style="${daysClass}">${days}d ago</div>
         ${days >= 3 ? `<button class="lead-followup-btn" data-lead="${lead.id}" ${g.run.energy<1?'disabled':''} aria-label="Follow up with ${lead.company}">Follow Up (☕1)</button>` : ''}
+        <button class="lead-spam-btn" data-lead="${lead.id}" data-company="${lead.company}" aria-label="Mark ${lead.company} as spam">${spamLabel}</button>
       </div>`;
     }).join(''));
 
     /* Follow-up handlers */
     leadsFrag.querySelectorAll('.lead-followup-btn:not(:disabled)').forEach(btn => {
       btn.onclick = () => {
+        btn.disabled = true;
+        btn.style.pointerEvents = 'none';
         const result = E.followUpLead(btn.dataset.lead);
         renderLeads();
         renderStatBar();
         renderRunLog();
         checkDayEnd();
         if (result) showFollowUpModal(result);
+      };
+    });
+
+    /* Mark as Spam handlers — custom modal */
+    leadsFrag.querySelectorAll('.lead-spam-btn').forEach(btn => {
+      btn.onclick = () => {
+        const lead = leads.find(l => l.id === btn.dataset.lead);
+        if (!lead) return;
+        const confirmLines = DATA.SPAM_CONFIRM_LINES || [];
+        const confirmLine = confirmLines[(lead.id.split('').reduce((a, c) => a + c.charCodeAt(0), 0)) % confirmLines.length] || "You sure?";
+        const spamModal = showSpamConfirmModal(lead, confirmLine);
+        if (spamModal) {
+          const confirmBtn = spamModal.querySelector('.spam-confirm-btn');
+          confirmBtn.onclick = () => {
+            E.markAsSpam(lead);
+            renderLeads();
+            renderStatBar();
+            renderRunLog();
+          };
+        }
       };
     });
     list.replaceChildren(leadsFrag);
@@ -2135,6 +2087,54 @@ profileViewed: [
     document.getElementById('btn-reset')?.addEventListener('click', resetGame);
   }
 
+  function renderInbox() {
+    const listEl = document.getElementById('inbox-list');
+    const msgEl = document.getElementById('inbox-message');
+    const countEl = document.getElementById('inbox-count');
+    const inbox = E.state?.run?.inbox || [];
+    const count = E.inboxUnreadCount();
+    if (countEl) countEl.textContent = `(${count})`;
+    if (listEl) {
+      if (inbox.length === 0) {
+        listEl.innerHTML = '<div style="padding:1rem;color:var(--text-muted)">Inbox empty. The silence is loud.</div>';
+      } else {
+        listEl.innerHTML = inbox.map(m => `<div data-msg-id="${m.id}" class="inbox-thread ${m.read ? 'inbox-read' : 'inbox-unread'}"><div class="inbox-thread-header"><span>${m.sender}</span><span style="color:var(--text-muted);font-size:.7rem">${m.subject}</span></div></div>`).join('');
+        listEl.querySelectorAll('.inbox-thread').forEach(th => {
+          th.addEventListener('click', () => showInboxMessage(+(th.dataset.msgId)));
+        });
+      }
+    }
+    if (msgEl) msgEl.innerHTML = '<div class="inbox-message-placeholder">Select a message to read</div>';
+  }
+
+  function showInboxMessage(msgId) {
+    const msg = E.state?.run?.inbox?.find(m => m.id === msgId);
+    if (!msg) return;
+    E.markInboxRead(msgId);
+    const msgEl = document.getElementById('inbox-message');
+    const name = msg.sender;
+    const company = msg.company?`<span style="color:var(--text-muted)"> @ ${msg.company}</span>`:'';
+    const date = msg.receivedAt?`<time>${msg.receivedAt}</time>`:'';
+    msgEl.innerHTML = `<div class="inbox-message-header"><h3>${name}${company}</h3>${date}<button class="title-btn" style="font-size:.7rem;margin-top:.5rem" data-ack-msg="${msg.id}">Got it</button></div><div class="inbox-message-body"><p>${msg.body.replace(/\n/g,'<br>')}</p></div>`;
+    const ackBtn = msgEl.querySelector('[data-ack-msg]');
+    ackBtn?.addEventListener('click', () => {
+      E.markInboxRead(msgId);
+      renderInbox();
+    });
+  }
+
+  function initInbox() {
+    const toggle = document.getElementById('inbox-toggle-btn');
+    const panel = document.getElementById('inbox-panel');
+    const close = document.getElementById('inbox-close-btn');
+    if (!toggle || !panel || !close) return;
+    toggle.addEventListener('click', () => {
+      panel.classList.add('open');
+      renderInbox();
+    });
+    close.addEventListener('click', () => panel.classList.remove('open'));
+  }
+
   /* Initialize everything */
   function init() {
     /* Loading animation */
@@ -2341,6 +2341,8 @@ profileViewed: [
         const answer = answers[idx];
         const ghostChance = answer.credDelta >= 5 ? 0.05 : answer.credDelta >= 0 ? 0.15 : 0.30;
 
+        const g = E.state;
+
         /* Track achievements */
         if (answer.label.includes('Honestly?')) { g.run.flags.panelHonestAnswers = (g.run.flags.panelHonestAnswers||0) + 1; }
         if (answer.label.includes('stare back')) { g.run.flags.panelStareDowns = (g.run.flags.panelStareDowns||0) + 1; }
@@ -2352,10 +2354,10 @@ profileViewed: [
         lead.followUpsThisStage = 0;
         lead.history.push({day:g.run.day,text:'Panel interview complete'});
 
-        if (_rng() < ghostChance) {
+        if ((E._rng ? E._rng() : Math.random()) < ghostChance) {
           modal.classList.remove('active');
           modal.remove();
-          finishLead(lead, 'ghosted', `You answered "${answer.label}" and they ghosted you.`);
+          E.finishLead(lead, 'ghosted', `You answered "${answer.label}" and they ghosted you.`);
           onComplete(false);
           return;
         }
@@ -2423,7 +2425,7 @@ profileViewed: [
           g.run.flags.salaryWarriorOffer = 1;
         }
 
-        if (option.ghostChance && _rng() < option.ghostChance) {
+        if (option.ghostChance && (E._rng ? E._rng() : Math.random()) < option.ghostChance) {
           modal.classList.remove('active');
           modal.remove();
           finishLead(lead, 'ghosted', 'You named a number too high. They said "interesting." You know what that means.');
@@ -2699,5 +2701,6 @@ modal.onclick = (e) => { if (e.target === modal) { modal.remove(); } };
     };
   }
 
-  return { init, showTitle, showBgSelect, showAchievements, showHowTo, showCredits, showHighScores, updateScanline, buildPIPLetter, renderInventory, flashInventory, showItemSwapModal, showReferencePicker, showItemUseResult, initBriefing, renderBriefing, showBriefing, hideBriefing };
+   return { init, showTitle, showBgSelect, showAchievements, showHowTo, showCredits, showHighScores, updateScanline, buildPIPLetter, renderInventory, flashInventory, showItemSwapModal, showReferencePicker, showItemUseResult, initBriefing, renderBriefing, showBriefing, hideBriefing, renderFeed, renderStatBar };
   })();
+  window.UI = UI;
